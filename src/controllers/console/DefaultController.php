@@ -1,6 +1,6 @@
 <?php
 
-namespace diginova\career\controllers\console;
+namespace portalium\career\controllers\console;
 
 use portalium\web\Controller as WebController;
 

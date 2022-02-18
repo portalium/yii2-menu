@@ -1,6 +1,6 @@
 <?php
 
-namespace diginova\menu;
+namespace portalium\menu;
 
 class Module extends \portalium\base\Module
 {
@@ -15,7 +15,7 @@ class Module extends \portalium\base\Module
     
     public static function moduleInit()
     {
-        self::registerTranslation('menu','@diginova/menu/messages',[
+        self::registerTranslation('menu','@portalium/menu/messages',[
             'menu' => 'menu.php',
         ]);
     }

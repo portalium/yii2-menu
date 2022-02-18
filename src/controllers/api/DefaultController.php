@@ -1,6 +1,6 @@
 <?php
 
-namespace diginova\career\controllers\api;
+namespace portalium\career\controllers\api;
 
 use portalium\rest\ActiveController as RestActiveController;
 

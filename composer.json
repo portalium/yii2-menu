@@ -1,5 +1,5 @@
 {
-	"name" : "diginova/portalium-menu",
+	"name" : "portalium/portalium-menu",
 	"description" : "Portalium menu",
 	"type" : "yii2-extension",
 	"license": "MIT",
@@ -12,11 +12,11 @@
 		}
 	],
 	"support" : {
-		"issues" : "https://github.com/diginova/portalium-menu/issues"
+		"issues" : "https://github.com/portalium/portalium-menu/issues"
 	},
 	"autoload" : {
 		"psr-4" : {
-			"diginova\\menu\\" : "src/"
+			"portalium\\menu\\" : "src/"
 		}
 	}
 }
