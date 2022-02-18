@@ -1,9 +1,9 @@
 {
-	"name" : "portalium/portalium-template",
-	"description" : "Module Template for Portalium",
+	"name" : "diginova/portalium-menu",
+	"description" : "Portalium menu",
 	"type" : "yii2-extension",
 	"license": "MIT",
-	"homepage" : "https://portalium.dev",
+	"homepage" : "https://diginova.com.tr",
 	"authors" : [
 		{
 			"name" : "Uğur YILDIZ",
@@ -12,11 +12,11 @@
 		}
 	],
 	"support" : {
-		"issues" : "https://github.com/portalium/portalium-template/issues"
+		"issues" : "https://github.com/diginova/portalium-menu/issues"
 	},
 	"autoload" : {
 		"psr-4" : {
-			"portalium\\template\\" : "src/"
+			"diginova\\menu\\" : "src/"
 		}
 	}
 }
