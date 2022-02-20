@@ -18,7 +18,7 @@ class MenuSearch extends Menu
     {
         return [
             [['id_menu'], 'integer'],
-            [['name', 'slug', 'date_created', 'date_update'], 'safe'],
+            [['name', 'slug', 'date_create', 'date_update'], 'safe'],
         ];
     }
 
@@ -59,7 +59,7 @@ class MenuSearch extends Menu
         // grid filtering conditions
         $query->andFilterWhere([
             'id_menu' => $this->id_menu,
-            'date_created' => $this->date_created,
+            'date_create' => $this->date_created,
             'date_update' => $this->date_update,
         ]);
 

@@ -10,7 +10,7 @@ use Yii;
  * @property int $id_menu
  * @property string $name
  * @property string $slug
- * @property string $date_created
+ * @property string $date_create
  * @property string $date_update
  */
 class Menu extends \yii\db\ActiveRecord
@@ -35,7 +35,7 @@ class Menu extends \yii\db\ActiveRecord
     {
         return [
             [['name', 'slug'], 'required'],
-            [['date_created', 'date_update'], 'safe'],
+            [['date_create', 'date_update'], 'safe'],
             [['name', 'slug'], 'string', 'max' => 255],
         ];
     }
@@ -49,7 +49,7 @@ class Menu extends \yii\db\ActiveRecord
             'id_menu' => 'Menu ID',
             'name' => 'Name',
             'slug' => 'Slug',
-            'date_created' => 'Date Created',
+            'date_create' => 'Date Created',
             'date_update' => 'Date Updated',
         ];
     }

@@ -22,7 +22,7 @@ class m220218_222512_menu extends Migration
                 'id_menu'=> $this->primaryKey(11),
                 'name'=> $this->string(255)->notNull(),
                 'slug'=> $this->string(255)->notNull(),
-                'date_created'=> $this->datetime()->notNull()->defaultExpression("CURRENT_TIMESTAMP"),
+                'date_create'=> $this->datetime()->notNull()->defaultExpression("CURRENT_TIMESTAMP"),
                 'date_update'=> $this->datetime()->notNull()->defaultExpression("CURRENT_TIMESTAMP"),
             ],$tableOptions
         );

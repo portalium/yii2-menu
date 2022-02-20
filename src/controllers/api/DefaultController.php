@@ -9,13 +9,6 @@ class DefaultController extends RestActiveController
 {
     public $modelClass = 'portalium\menu\models\Menu';
 
-    public function behaviors()
-    {
-        $behaviors = parent::behaviors();
-        $behaviors['authenticator']['except'] = ['items'];
-        return $behaviors;
-    }
-
     public function actions()
     {
         $actions = parent::actions();

@@ -14,7 +14,7 @@ use Yii;
  * @property string $icon
  * @property int $id_parent
  * @property int $id_menu
- * @property string $date_created
+ * @property string $date_create
  * @property string $date_update
  */
 class MenuItem extends \yii\db\ActiveRecord
@@ -36,7 +36,7 @@ class MenuItem extends \yii\db\ActiveRecord
             [['label', 'slug', 'url', 'icon', 'id_menu'], 'required'],
             [['url'], 'string'],
             [['id_parent', 'id_menu'], 'integer'],
-            [['date_created', 'date_update'], 'safe'],
+            [['date_create', 'date_update'], 'safe'],
             [['label', 'slug'], 'string', 'max' => 255],
             [['icon'], 'string', 'max' => 64],
         ];
@@ -55,7 +55,7 @@ class MenuItem extends \yii\db\ActiveRecord
             'icon' => 'Icon',
             'id_parent' => 'Parent ID',
             'id_menu' => 'Menu ID',
-            'date_created' => 'Date Created',
+            'date_create' => 'Date Created',
             'date_update' => 'Date Updated',
         ];
     }

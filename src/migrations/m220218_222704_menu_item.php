@@ -26,7 +26,7 @@ class m220218_222704_menu_item extends Migration
                 'icon'=> $this->string(64)->notNull(),
                 'id_parent'=> $this->integer(11)->notNull()->defaultValue(0),
                 'id_menu'=> $this->integer(11)->notNull(),
-                'date_created'=> $this->datetime()->notNull()->defaultExpression("CURRENT_TIMESTAMP"),
+                'date_create'=> $this->datetime()->notNull()->defaultExpression("CURRENT_TIMESTAMP"),
                 'date_update'=> $this->datetime()->notNull()->defaultExpression("CURRENT_TIMESTAMP"),
             ],$tableOptions
         );

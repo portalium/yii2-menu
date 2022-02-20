@@ -19,17 +19,23 @@ class DefaultController extends Controller
      */
     public function behaviors()
     {
-        return array_merge(
-            parent::behaviors(),
-            [
-                'verbs' => [
-                    'class' => VerbFilter::className(),
-                    'actions' => [
-                        'delete' => ['POST'],
+        return [
+            'verbs' => [
+                'class' => VerbFilter::className(),
+                'actions' => [
+                    'delete' => ['POST'],
+                ],
+            ],
+            'access' => [
+                'class' => \yii\filters\AccessControl::className(),
+                'rules' => [
+                    [
+                        'allow' => true,
+                        'roles' => ['@'],
                     ],
                 ],
-            ]
-        );
+            ],
+        ];
     }
 
     /**
@@ -39,9 +45,6 @@ class DefaultController extends Controller
      */
     public function actionIndex()
     {
-        if (Yii::$app->user->isGuest) {
-            $this->redirect("/admin/site/auth/login");
-        }
         $searchModel = new MenuSearch();
         $dataProvider = $searchModel->search($this->request->queryParams);
 
@@ -59,9 +62,6 @@ class DefaultController extends Controller
      */
     public function actionView($id_menu)
     {
-        if (Yii::$app->user->isGuest) {
-            $this->redirect("/admin/site/auth/login");
-        }
         return $this->render('view', [
             'model' => $this->findModel($id_menu),
         ]);
@@ -74,9 +74,6 @@ class DefaultController extends Controller
      */
     public function actionCreate()
     {
-        if (Yii::$app->user->isGuest) {
-            $this->redirect("/admin/site/auth/login");
-        }
         $model = new Menu();
 
         if ($this->request->isPost) {
@@ -101,9 +98,6 @@ class DefaultController extends Controller
      */
     public function actionUpdate($id_menu)
     {
-        if (Yii::$app->user->isGuest) {
-            $this->redirect("/admin/site/auth/login");
-        }
         $model = $this->findModel($id_menu);
 
         if ($this->request->isPost && $model->load($this->request->post()) && $model->save()) {
@@ -124,9 +118,6 @@ class DefaultController extends Controller
      */
     public function actionDelete($id)
     {
-        if (Yii::$app->user->isGuest) {
-            $this->redirect("/admin/site/auth/login");
-        }
         $this->findModel($id)->delete();
 
         return $this->redirect(['index']);

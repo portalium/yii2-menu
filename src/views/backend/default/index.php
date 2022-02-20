@@ -31,7 +31,7 @@ $this->params['breadcrumbs'][] = $this->title;
             'id_menu',
             'name',
             'slug',
-            'date_created',
+            'date_create',
             'date_update',
             ['class' => 'yii\grid\ActionColumn']
         ],
