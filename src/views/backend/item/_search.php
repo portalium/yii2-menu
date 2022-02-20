@@ -2,7 +2,7 @@
 
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
-
+use portalium\menu\Module;
 /* @var $this yii\web\View */
 /* @var $model portalium\menu\models\MenuItemSearch */
 /* @var $form yii\widgets\ActiveForm */
@@ -34,8 +34,8 @@ use yii\widgets\ActiveForm;
     <?php // echo $form->field($model, 'date_update') ?>
 
     <div class="form-group">
-        <?= Html::submitButton(Yii::t('app', 'Search'), ['class' => 'btn btn-primary']) ?>
-        <?= Html::resetButton(Yii::t('app', 'Reset'), ['class' => 'btn btn-outline-secondary']) ?>
+        <?= Html::submitButton(Module::t('Search'), ['class' => 'btn btn-primary']) ?>
+        <?= Html::resetButton(Module::t('Reset'), ['class' => 'btn btn-outline-secondary']) ?>
     </div>
 
     <?php ActiveForm::end(); ?>

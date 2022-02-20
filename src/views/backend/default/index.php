@@ -5,21 +5,22 @@ use yii\helpers\Url;
 use yii\grid\ActionColumn;
 use yii\grid\GridView;
 use portalium\menu\Module;
-
+use portalium\theme\widgets\Panel;
 /* @var $this yii\web\View */
 /* @var $searchModel portalium\menu\models\MenuSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
-$this->title = Yii::t('app', 'Menus');
+$this->title = Module::t('Menus');
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="menu-index">
 
-    <h1><?= Html::encode($this->title) ?></h1>
-
-    <p>
-        <?= Html::a(Yii::t('app', 'Create Menu'), ['create'], ['class' => 'btn btn-success']) ?>
-    </p>
+    <?php Panel::begin([
+        'title' => Module::t('Menus'),
+        'actions' => [
+            Html::a(Module::t('Create Menu'), ['create'], ['class' => 'btn btn-success']),
+        ],
+    ]) ?>
 
     <?php // echo $this->render('_search', ['model' => $searchModel]); ?>
 
@@ -43,6 +44,8 @@ $this->params['breadcrumbs'][] = $this->title;
                 ]]
         ],
     ]); ?>
+
+    <?php Panel::end() ?>
 
 
 </div>
