@@ -3,7 +3,7 @@
 namespace portalium\menu\models;
 
 use Yii;
-
+use portalium\menu\Module;
 /**
  * This is the model class for table "{{%menu}}".
  *
@@ -46,14 +46,14 @@ class Menu extends \yii\db\ActiveRecord
     public function attributeLabels()
     {
         return [
-            'id_menu' => 'Menu ID',
-            'name' => 'Name',
-            'slug' => 'Slug',
-            'date_create' => 'Date Created',
-            'date_update' => 'Date Updated',
+            'id_menu' => Module::t('Menu ID'),
+            'name' => Module::t('Name'),
+            'slug' => Module::t('Slug'),
+            'date_create' => Module::t('Date Created'),
+            'date_update' => Module::t('Date Updated'),
         ];
     }
-
+    
     public function getItems()
     {
         return $this->hasMany(MenuItem::class, ['id_menu' => 'id_menu']);

@@ -25,7 +25,7 @@ class MenuItem extends \yii\db\ActiveRecord
      */
     public static function tableName()
     {
-        return '{{%' . Module::$tablePrefix . 'menu_item}}';
+        return '{{%' . Module::$tablePrefix . 'item}}';
     }
 
     /**
@@ -49,15 +49,15 @@ class MenuItem extends \yii\db\ActiveRecord
     public function attributeLabels()
     {
         return [
-            'id_item' => 'Item ID',
-            'label' => 'Label',
-            'slug' => 'Slug',
-            'url' => 'Url',
-            'icon' => 'Icon',
-            'id_parent' => 'Parent ID',
-            'id_menu' => 'Menu ID',
-            'date_create' => 'Date Created',
-            'date_update' => 'Date Updated',
+            'id_item' => Module::t('Item ID'),
+            'label' => Module::t('Label'),
+            'slug' => Module::t('Slug'),
+            'url' => Module::t('Url'),
+            'icon' => Module::t('Icon'),
+            'id_parent' => Module::t('Parent ID'),
+            'id_menu' => Module::t('Menu ID'),
+            'date_create' => Module::t('Date Created'),
+            'date_update' => Module::t('Date Updated'),
         ];
     }
 }

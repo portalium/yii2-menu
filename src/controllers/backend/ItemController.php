@@ -8,6 +8,7 @@ use portalium\menu\models\MenuItemSearch;
 use portalium\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
+use portalium\menu\Module;
 
 /**
  * MenuItemController implements the CRUD actions for MenuItem model.
@@ -19,17 +20,23 @@ class ItemController extends Controller
      */
     public function behaviors()
     {
-        return array_merge(
-            parent::behaviors(),
-            [
-                'verbs' => [
-                    'class' => VerbFilter::className(),
-                    'actions' => [
-                        'delete' => ['POST'],
+        return [
+            'verbs' => [
+                'class' => VerbFilter::className(),
+                'actions' => [
+                    'delete' => ['POST'],
+                ],
+            ],
+            'access' => [
+                'class' => \yii\filters\AccessControl::className(),
+                'rules' => [
+                    [
+                        'allow' => true,
+                        'roles' => ['@'],
                     ],
                 ],
-            ]
-        );
+            ],
+        ];
     }
 
     /**
@@ -141,6 +148,6 @@ class ItemController extends Controller
             return $model;
         }
 
-        throw new NotFoundHttpException(Yii::t('app', 'The requested page does not exist.'));
+        throw new NotFoundHttpException(Module::t('The requested page does not exist.'));
     }
 }

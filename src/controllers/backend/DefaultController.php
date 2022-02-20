@@ -7,6 +7,7 @@ use portalium\menu\models\MenuSearch;
 use portalium\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
+use portalium\menu\Module;
 use yii;
 
 /**
@@ -60,10 +61,10 @@ class DefaultController extends Controller
      * @return string
      * @throws NotFoundHttpException if the model cannot be found
      */
-    public function actionView($id_menu)
+    public function actionView($id)
     {
         return $this->render('view', [
-            'model' => $this->findModel($id_menu),
+            'model' => $this->findModel($id),
         ]);
     }
 
@@ -78,7 +79,7 @@ class DefaultController extends Controller
 
         if ($this->request->isPost) {
             if ($model->load($this->request->post()) && $model->save()) {
-                return $this->redirect(['view', 'id_menu' => $model->id_menu]);
+                return $this->redirect(['view', 'id' => $model->id_menu]);
             }
         } else {
             $model->loadDefaultValues();
@@ -96,12 +97,12 @@ class DefaultController extends Controller
      * @return string|\yii\web\Response
      * @throws NotFoundHttpException if the model cannot be found
      */
-    public function actionUpdate($id_menu)
+    public function actionUpdate($id)
     {
-        $model = $this->findModel($id_menu);
+        $model = $this->findModel($id);
 
         if ($this->request->isPost && $model->load($this->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id_menu' => $model->id_menu]);
+            return $this->redirect(['view', 'id' => $model->id_menu]);
         }
 
         return $this->render('update', [
@@ -130,12 +131,12 @@ class DefaultController extends Controller
      * @return Menu the loaded model
      * @throws NotFoundHttpException if the model cannot be found
      */
-    protected function findModel($id_menu)
+    protected function findModel($id)
     {
-        if (($model = Menu::findOne(['id_menu' => $id_menu])) !== null) {
+        if (($model = Menu::findOne(['id_menu' => $id])) !== null) {
             return $model;
         }
 
-        throw new NotFoundHttpException(Yii::t('app', 'The requested page does not exist.'));
+        throw new NotFoundHttpException(Module::t('The requested page does not exist.'));
     }
 }
