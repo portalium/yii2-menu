@@ -4,6 +4,7 @@ namespace portalium\menu;
 
 class Module extends \portalium\base\Module
 {
+    public static $tablePrefix = 'menu_';
     public $apiRules = [
         [
             'class' => 'yii\rest\UrlRule',
@@ -12,10 +13,10 @@ class Module extends \portalium\base\Module
             ]
         ],
     ];
-    
+
     public static function moduleInit()
     {
-        self::registerTranslation('menu','@portalium/menu/messages',[
+        self::registerTranslation('menu', '@portalium/menu/messages', [
             'menu' => 'menu.php',
         ]);
     }

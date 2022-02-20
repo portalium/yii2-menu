@@ -4,12 +4,12 @@ namespace portalium\menu\models;
 
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
-use portalium\menu\models\Menu;
+use portalium\menu\models\MenuItem;
 
 /**
- * MenuSearch represents the model behind the search form of `portalium\menu\models\Menu`.
+ * MenuItemSearch represents the model behind the search form of `portalium\menu\models\MenuItem`.
  */
-class MenuSearch extends Menu
+class MenuItemSearch extends MenuItem
 {
     /**
      * {@inheritdoc}
@@ -17,8 +17,8 @@ class MenuSearch extends Menu
     public function rules()
     {
         return [
-            [['id_menu'], 'integer'],
-            [['name', 'slug', 'date_create', 'date_update'], 'safe'],
+            [['id_item', 'id_parent', 'id_menu'], 'integer'],
+            [['label', 'slug', 'url', 'icon', 'date_create', 'date_update'], 'safe'],
         ];
     }
 
@@ -40,10 +40,9 @@ class MenuSearch extends Menu
      */
     public function search($params)
     {
-        $query = Menu::find();
+        $query = MenuItem::find($params);
 
         // add conditions that should always apply here
-
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
         ]);
@@ -58,13 +57,17 @@ class MenuSearch extends Menu
 
         // grid filtering conditions
         $query->andFilterWhere([
+            'id_item' => $this->id_item,
+            'id_parent' => $this->id_parent,
             'id_menu' => $this->id_menu,
             'date_create' => $this->date_create,
             'date_update' => $this->date_update,
         ]);
 
-        $query->andFilterWhere(['like', 'name', $this->name])
-            ->andFilterWhere(['like', 'slug', $this->slug]);
+        $query->andFilterWhere(['like', 'label', $this->label])
+            ->andFilterWhere(['like', 'slug', $this->slug])
+            ->andFilterWhere(['like', 'url', $this->url])
+            ->andFilterWhere(['like', 'icon', $this->icon]);
 
         return $dataProvider;
     }
