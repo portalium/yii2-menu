@@ -4,6 +4,7 @@ use yii\helpers\Html;
 use yii\helpers\Url;
 use yii\grid\ActionColumn;
 use yii\grid\GridView;
+use portalium\menu\Module;
 
 /* @var $this yii\web\View */
 /* @var $searchModel portalium\menu\models\MenuSearch */
@@ -28,12 +29,18 @@ $this->params['breadcrumbs'][] = $this->title;
         'columns' => [
             ['class' => 'yii\grid\SerialColumn'],
 
-            'id_menu',
+            //'id_menu',
             'name',
             'slug',
             'date_create',
             'date_update',
-            ['class' => 'yii\grid\ActionColumn']
+            ['class' => 'yii\grid\ActionColumn',
+                'template' => "{view} {update} {delete} {items} ",
+                'buttons' => [
+                    'items' => function ($url, $model) {
+                        return Html::a(Html::tag('i', '', ['class' => 'fa-thin fa-bars']), ['/menu/item/index', 'id_menu' => $model->id_menu], ['title' => Module::t('Items')]);
+                    }
+                ]]
         ],
     ]); ?>
 

@@ -2,6 +2,7 @@
 
 namespace portalium\menu\models;
 
+use portalium\menu\Module;
 use Yii;
 
 /**
@@ -24,7 +25,7 @@ class MenuItem extends \yii\db\ActiveRecord
      */
     public static function tableName()
     {
-        return '{{%menu_item}}';
+        return '{{%' . Module::$tablePrefix . 'menu_item}}';
     }
 
     /**
