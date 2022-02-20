@@ -1,6 +1,6 @@
 <?php
 
-namespace portalium\career\controllers\console;
+namespace portalium\menu\controllers\console;
 
 use portalium\web\Controller as WebController;
 
