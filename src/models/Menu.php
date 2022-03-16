@@ -10,17 +10,22 @@ use portalium\menu\Module;
  * @property int $id_menu
  * @property string $name
  * @property string $slug
+ * @property int $type
  * @property string $date_create
  * @property string $date_update
  */
 class Menu extends \yii\db\ActiveRecord
 {
+    const TYPE = [
+        '1' => 'web',
+        '2' => 'mobile'
+    ];
     /**
      * {@inheritdoc}
      */
     public static function tableName()
     {
-        return '{{%menu}}';
+        return '{{%' . Module::$tablePrefix . 'menu}}';
     }
 
     public function extraFields()
@@ -34,9 +39,10 @@ class Menu extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['name', 'slug'], 'required'],
+            [['name', 'slug', 'type'], 'required'],
+            [['type'], 'integer'],
             [['date_create', 'date_update'], 'safe'],
-            [['name', 'slug'], 'string', 'max' => 255],
+            [['name', 'slug'], 'string', 'max' => 255]
         ];
     }
 
@@ -49,8 +55,17 @@ class Menu extends \yii\db\ActiveRecord
             'id_menu' => Module::t('Menu ID'),
             'name' => Module::t('Name'),
             'slug' => Module::t('Slug'),
+            'type' => Module::t('Type'),
             'date_create' => Module::t('Date Created'),
             'date_update' => Module::t('Date Updated'),
+        ];
+    }
+
+    public static function getTypes()
+    {
+        return [
+            '1' => Module::t('Web'),
+            '2' => Module::t('Mobile')
         ];
     }
     

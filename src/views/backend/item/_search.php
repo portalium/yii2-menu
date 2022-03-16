@@ -21,8 +21,6 @@ use portalium\menu\Module;
 
     <?= $form->field($model, 'slug') ?>
 
-    <?= $form->field($model, 'url') ?>
-
     <?= $form->field($model, 'icon') ?>
 
     <?php // echo $form->field($model, 'id_parent') ?>

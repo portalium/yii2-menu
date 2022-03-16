@@ -1,5 +1,6 @@
 <?php
 
+use portalium\menu\models\MenuItem;
 use yii\helpers\Html;
 use yii\helpers\Url;
 use yii\grid\ActionColumn;
@@ -38,7 +39,6 @@ $this->params['breadcrumbs'][] = $this->title;
             //'id_item',
             'label',
             'slug',
-            'url:ntext',
             'icon',
             //'id_parent',
             //'id_menu',
@@ -47,6 +47,7 @@ $this->params['breadcrumbs'][] = $this->title;
             ['class' => 'yii\grid\ActionColumn'],
         ],
     ]); ?>
+    <?php echo MenuItem::getModuleList() ?>
 
     <?php Panel::end() ?>
 
