@@ -15,6 +15,7 @@ use Yii;
  * @property string $icon
  * @property string $data
  * @property int $sort
+ * @property int $name_auth
  * @property int $id_parent
  * @property int $id_menu
  * @property string $date_create
@@ -23,8 +24,12 @@ use Yii;
 class MenuItem extends \yii\db\ActiveRecord
 {
     public $module;
+    public $routeType;
+    public $route;
+    public $model;
+    public $url;
     const TYPE = [
-        'root' => '1',
+        'route' => '1',
         'module' => '2',
         'url' => '3',
     ];
@@ -44,7 +49,7 @@ class MenuItem extends \yii\db\ActiveRecord
         return [
             [['label', 'slug', 'icon', 'id_menu', 'type'], 'required'],
             [['type', 'id_parent', 'id_menu', 'sort'], 'integer'],
-            [['data'], 'string'],
+            [['data', 'module', 'routeType', 'route', 'model', 'url', 'name_auth'], 'string'],
             [['date_create', 'date_update'], 'safe'],
             [['label', 'slug', 'icon'], 'string', 'max' => 255],
         ];
@@ -62,6 +67,12 @@ class MenuItem extends \yii\db\ActiveRecord
             'icon' => Module::t('Icon'),
             'data' => Module::t('Data'),
             'sort' => Module::t('Sort'),
+            'module' => Module::t('Module'),
+            'routeType' => Module::t('Route Type'),
+            'route' => Module::t('Route'),
+            'model' => Module::t('Model'),
+            'url' => Module::t('Url'),
+            'name_auth' => Module::t('Name Auth'),
             'id_parent' => Module::t('Parent ID'),
             'id_menu' => Module::t('Menu ID'),
             'date_create' => Module::t('Date Created'),
@@ -72,7 +83,7 @@ class MenuItem extends \yii\db\ActiveRecord
     public static function getTypeList()
     {
         return [
-            'root' => Module::t('Root'),
+            'route' => Module::t('Route'),
             'module' => Module::t('Module'),
             'url' => Module::t('Url'),
         ];
@@ -81,7 +92,7 @@ class MenuItem extends \yii\db\ActiveRecord
     public static function getTypes()
     {
         return [
-            '1' => 'Root',
+            '1' => 'Route',
             '2' => 'Module',
             '3' => 'Url',
         ];
@@ -91,9 +102,51 @@ class MenuItem extends \yii\db\ActiveRecord
         //yii app all modules
         $modules = Yii::$app->getModules();
         $list = [];
-        foreach ($modules as $key => $value) {
-            $list[$key] = $key;
+        foreach ($modules as $key => $module) {
+            if(isset($module->menuItems)){
+                $list[$key] = (isset($module::$description)) ? $module->t($module::$description) : $key;
+            }
+            
         }
         return $list;
+    }
+
+    public static function getAuthList(){
+        $auth = Yii::$app->authManager;
+        $list = [];
+        //add divider disable
+        $list['role'] = 'Role';
+        foreach ($auth->getRoles() as $key => $role) {
+            $list[$key] = $role->description;
+        }
+        $list['permission'] = 'Permission';
+        foreach ($auth->getPermissions() as $key => $permission) {
+            $list[$key] = $permission->description;
+        }
+
+        return $list;
+    }
+
+    public function beforeSave($insert)
+    {
+        $json_data['type'] = $this->type;
+        if($this->type == self::TYPE['module']){
+            $json_data['data'] = [
+                'module' => $this->module,
+                'routeType' => $this->routeType,
+                'route' => $this->route,
+                'model' => $this->model,
+            ];
+        }elseif($this->type == self::TYPE['url']){
+            $json_data['data'] = [
+                'url' => $this->url,
+            ];
+        }elseif($this->type == self::TYPE['route']){
+            $json_data['data'] = [
+                'route' => $this->route,
+            ];
+        }
+        $this->data = json_encode($json_data);
+        return parent::beforeSave($insert);
     }
 }

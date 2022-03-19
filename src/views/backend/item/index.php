@@ -47,8 +47,7 @@ $this->params['breadcrumbs'][] = $this->title;
             ['class' => 'yii\grid\ActionColumn'],
         ],
     ]); ?>
-    <?php echo MenuItem::getModuleList() ?>
-
+    
     <?php Panel::end() ?>
 
 </div>

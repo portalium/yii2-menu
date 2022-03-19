@@ -29,43 +29,44 @@ use portalium\menu\models\MenuItem;
 
     <?= $form->field($model, 'slug')->textInput(['maxlength' => true]) ?>
 
-    <?= $form->field($model, 'type')->dropDownList(MenuItem::getTypes()) ?>
+    <?= $form->field($model, 'type')->dropDownList(MenuItem::getTypes(), ['id' => 'type']) ?>
 
     <?= $form->field($model, 'icon')->textInput(['maxlength' => true]) ?>
     
     <?php
 
-        echo $form->field($model, 'module')->dropDownList(MenuItem::getModuleList(), ['id' => 'module-list']);
+        echo $form->field($model, 'module', ['options'=>['id' => 'module-list-div']])->dropDownList(MenuItem::getModuleList(), ['id' => 'module-list', 'prompt' => 'Select Module']);
 
-        echo $form->field($model, 'module')->widget(DepDrop::classname(), [
-            'options' => ['id' => 'module-action-list'],
+        echo $form->field($model, 'routeType', ['options'=>['id' => 'routeType-list-div']])->widget(DepDrop::classname(), [
+            'options' => ['id' => 'routeType-list'],
             'pluginOptions' => [
                 'depends' => ['module-list'],
                 'placeholder' => Module::t('Select...'),
-                'url' => Url::to(['/menu/item/controller'])
+                'url' => Url::to(['/menu/item/route-type'])
             ]
         ]);
 
-        //model
-        echo $form->field($model, 'module')->widget(DepDrop::classname(), [
-            'options' => ['id' => 'model-action-list'],
+        echo $form->field($model, 'route', ['options'=>['id' => 'route-list-div']])->widget(DepDrop::classname(), [
+            'options' => ['id' => 'route-list'],
             'pluginOptions' => [
-                'depends' => ['module-list'],
+                'depends' => ['module-list', 'routeType-list'],
+                'placeholder' => Module::t('Select...'),
+                'url' => Url::to(['/menu/item/route'])
+            ]
+        ]);
+
+        echo $form->field($model, 'model', ['options'=>['id' => 'model-list-div']])->widget(DepDrop::classname(), [
+            'options' => ['id' => 'model-list'],
+            'pluginOptions' => [
+                'depends' => ['module-list', 'routeType-list', 'route-list'],
                 'placeholder' => Module::t('Select...'),
                 'url' => Url::to(['/menu/item/model'])
             ]
         ]);
 
-        //action
-        echo $form->field($model, 'module')->widget(DepDrop::classname(), [
-            'options' => ['id' => 'action-list'],
-            'pluginOptions' => [
-                'depends' => ['model-action-list'],
-                'placeholder' => Module::t('Select...'),
-                'url' => Url::to(['/menu/item/data'])
-            ]
-        ]);
+        echo $form->field($model, 'url', ['options'=>['id' => 'url-input-div']])->textInput(['rows' => 6]);
 
+        echo $form->field($model, 'name_auth', ['options'=>['id' => 'name-auth-input-div']])->dropDownList(MenuItem::getAuthList(), ['id' => 'name-auth-input', 'prompt' => 'Select Auth', "options" => ['role' => ['disabled' => true], 'permission' => ['disabled' => true]]]);
 
     ?>
     
@@ -74,3 +75,38 @@ use portalium\menu\models\MenuItem;
     <?php ActiveForm::end(); ?>
 
 </div>
+
+<?php 
+    $this->registerJs('
+        $(document).ready(function(){
+            $("#type").trigger("change");
+
+            $("#model-list-div").hide();
+        });
+        $("#routeType-list").change(function(){
+            if($(this).val() == "routes"){
+                $("#model-list-div").hide();
+            }else{
+                $("#model-list-div").show();
+            }
+        });
+
+        $("#type").change(function(){
+            if($(this).val() == '.MenuItem::TYPE["module"].'){
+                $("#module-list-div").show();
+                $("#routeType-list-div").show();
+                $("#route-list-div").show();
+                $("#url-input-div").hide();
+
+            }else{
+                $("#module-list-div").hide();
+                $("#routeType-list-div").hide();
+                $("#route-list-div").hide();
+                $("#url-input-div").show();
+            }
+
+            $("#model-list-div").hide();
+        });
+    ');
+
+?>

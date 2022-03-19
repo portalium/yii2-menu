@@ -3,17 +3,13 @@
 namespace portalium\menu\controllers\backend;
 
 use Yii;
-use ReflectionClass;
 use portalium\menu\Module;
 use yii\filters\VerbFilter;
 use portalium\web\Controller;
 use portalium\menu\models\Menu;
-use yii\data\ActiveDataProvider;
 use yii\web\NotFoundHttpException;
 use portalium\menu\models\MenuItem;
-use portalium\user\models\UserSearch;
 use portalium\menu\models\MenuItemSearch;
-use portalium\user\models\User;
 
 /**
  * MenuItemController implements the CRUD actions for MenuItem model.
@@ -139,86 +135,70 @@ class ItemController extends Controller
         return $this->redirect(['index', 'id_menu' => $model->id_menu]);
     }
 
-    public function actionController() {
+    public function actionRouteType() {
         $out = [];
         if($this->request->isPost){
-            $moduleName = $this->request->post('depdrop_parents');
-            if ($moduleName != null) {
-                $moduleName = $moduleName[0];
-                $module = Yii::$app->getModule($moduleName);
-                $modulePath = $module->getBasePath();
-                $folderpath = $modulePath.'/controllers/backend/';
-                $files = scandir($folderpath);
-                $controllers = [];
-                foreach ($files as $file) {
-                    if (strpos($file, 'Controller.php') !== false) {
-                        $controllerName = str_replace('Controller.php', '', $file);
-                        $controllers[] = $controllerName;
+            $request = $this->request->post('depdrop_parents');
+            $moduleName = $request[0];
+            $module = Yii::$app->getModule($moduleName);
+            $menuItems = $module->getMenuItems();
+            
+            foreach ($menuItems[0] as $key => $value) {
+                $out[] = ['id' => $value['type'], 'name' => $value['type']];
+            }
+            return json_encode(['output' => $out, 'selected' => '']);
+        }
+    }
+
+    public function actionRoute() {
+        $out = [];
+        if($this->request->isPost){
+            $request = $this->request->post('depdrop_parents');
+            $moduleName = $request[0];
+            $module = Yii::$app->getModule($moduleName);
+            $menuItems = $module->getMenuItems();
+            $routeType = $request[1];
+            foreach ($menuItems[0] as $key => $item) {
+                if($item['type'] == $routeType){
+                    switch ($routeType) {
+                        case 'widget':
+                            $out[] = ['id' => $item['label'], 'name' => $item['name']];
+                            break;
+                        case 'model':
+                            $out[] = ['id' => $item['route'], 'name' => $item['class']];
+                            break;
+                        case 'action':
+                            $out[] = ['id' => $item['route'], 'name' => $item['route']];
+                            break;
                     }
                 }
-                foreach ($controllers as $controller) {
-                    $out[] = ['id' => $controller, 'name' => $controller];
-                }
-                return json_encode(['output'=>$out, 'selected'=>'']);
             }
+            return json_encode(['output' => $out, 'selected' => '']);
         }
-        return json_encode(['output'=>'', 'selected'=>'']);
     }
 
     public function actionModel() {
         $out = [];
         if($this->request->isPost){
-            $moduleName = $this->request->post('depdrop_parents');
-            if ($moduleName != null) {
-                $moduleName = $moduleName[0];
-                $module = Yii::$app->getModule($moduleName);
-                $modulePath = $module->getBasePath();
-                $folderpath = $modulePath.'/models/';
-                $files = scandir($folderpath);
-                $models = [];
-                foreach ($files as $file) {
-                    if (strpos($file, '.php') !== false && strpos($file, 'Search') === false && strpos($file, 'Form') === false) {
-                        $modelName = str_replace('.php', '', $file);
-                        $models[] = $modelName;
-                    }
-                }
-                foreach ($models as $model) {
-                    $moduleClass = Yii::$app->getModule($moduleName);
-                    $moduleClassNamespace = (new ReflectionClass($moduleClass))->getNamespaceName();
-                    //model first letter uppercase
-                    $modelPath = $moduleClassNamespace.'\\models\\'.ucfirst($model);
-                    
-                    $out[] = ['id' => $modelPath, 'name' => $model];
-                }
-                return json_encode(['output'=>$out, 'selected'=>'']);
-            }
-        }
-        return json_encode(['output'=>'', 'selected'=>'']);
-    }
+            $request = $this->request->post('depdrop_parents');
+            $moduleName = $request[0];
+            $routeType = $request[1];
+            $route = $request[2];
+            $modelName = '';
+            $module = Yii::$app->getModule($moduleName);
+            $menuItems = $module->getMenuItems();
+            $field = [];
+            
+            foreach ($menuItems[0] as $key => $item) {
+                if($item['type'] == $routeType && $item['route'] == $route){
+                    $field = $item['field'];
+                    $modelName = $item['class'];
 
-    public function actionData(){
-        $out = [];
-        if($this->request->isPost){
-            $modelName = $this->request->post('depdrop_parents');
-            if ($modelName != null) {
-                $modelName = $modelName[0];
-                Yii::error($modelName);
-                $model = new $modelName;
-                $modelClassNamespace = (new ReflectionClass($model))->getNamespaceName();
-                $modelPath = $modelName;
-                $model = new $modelPath;
-                $dataProvider = new ActiveDataProvider([
-                    'query' => $model->find(),
-                ]);
-                $models = $dataProvider->getModels();
-                $attributes = $model->attributes();
-                
-                foreach ($models as $model) {
-                    $out[] = ['id' => implode(',', $model->primaryKey()), 'name' => $attributes[1]];
                 }
-                
-                return json_encode(['output'=>$out, 'selected'=>'']);
             }
+            $data = $modelName::find()->select(['id' => $field['id'], 'name' => $field['name']])->asArray()->all();
+            
+            return json_encode(['output' => $data, 'selected' => '']);
         }
     }
 
