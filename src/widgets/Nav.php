@@ -31,23 +31,35 @@ class Nav extends Widget
             if ($item->id_parent == 0){
                 $url = $this->getUrl($item);
                 $data = json_decode($item->data, true);
-                $items[] = 
-                    ($data["data"]["routeType"] == "widget") ? $data["data"]["route"] : 
-                        [
-                            'label' => $item->label,
-                            'url' => $url,
-                            'items' => $this->getChildItems($item->id_item),
-                            'visible' => Yii::$app->user->can($item->name_auth),
-                        ];
+                if($item->type == MenuItem::TYPE['module']){
+                    $items[] = 
+                        ($data["data"]["routeType"] == "widget") ? $data["data"]["route"] : 
+                            [
+                                'label' => $item->label,
+                                'url' => $url,
+                                'items' => $this->getChildItems($item->id_item),
+                                'visible' => Yii::$app->user->can($item->name_auth),
+                                'sort' => $item->sort
+                            ];
+                }else{
+                    $items[] = 
+                            [
+                                'label' => $item->label,
+                                'url' => $url,
+                                'items' => $this->getChildItems($item->id_item),
+                                'visible' => Yii::$app->user->can($item->name_auth),
+                                'sort' => $item->sort
+                            ];
+                }
 
             }
         }
-
+        
+        $items = $this->sortItems($items);
         echo BaseNav::widget([
             'options' => ['class' => 'navbar-nav navbar-right'],
             'items' => $items,
         ]);
-        
     }
     
     public function getChildItems($id_parent)
@@ -74,7 +86,8 @@ class Nav extends Widget
 
     }
     
-    public function getUrl($item){
+    public function getUrl($item)
+    {
         $url = "";
         if($item->type == MenuItem::TYPE['module']){
             $item = json_decode($item->data, true);
@@ -86,8 +99,23 @@ class Nav extends Widget
                 $url = [$item['data']['route']];
             }
         }else{
+            $item = json_decode($item->data, true);
             $url = [$item['data']['route']];
         }
         return $url;
     }
+
+    public function sortItems($items)
+    {
+        $sort = [];
+        foreach ($items as $item) {
+            if(isset($item['sort']))
+                $sort[$item['sort']] = $item;
+            else
+                $sort[] = $item;
+        }
+        ksort($sort);
+        return $sort;
+    }
+    
 }
