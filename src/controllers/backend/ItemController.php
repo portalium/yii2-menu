@@ -2,13 +2,14 @@
 
 namespace portalium\menu\controllers\backend;
 
+use Yii;
+use portalium\menu\Module;
+use yii\filters\VerbFilter;
+use portalium\web\Controller;
 use portalium\menu\models\Menu;
+use yii\web\NotFoundHttpException;
 use portalium\menu\models\MenuItem;
 use portalium\menu\models\MenuItemSearch;
-use portalium\web\Controller;
-use yii\web\NotFoundHttpException;
-use yii\filters\VerbFilter;
-use portalium\menu\Module;
 
 /**
  * MenuItemController implements the CRUD actions for MenuItem model.
@@ -76,7 +77,7 @@ class ItemController extends Controller
             'model' => $this->findModel($id),
         ]);
     }
-
+    
     /**
      * Creates a new MenuItem model.
      * If creation is successful, the browser will be redirected to the 'view' page.
@@ -85,12 +86,11 @@ class ItemController extends Controller
     public function actionCreate($id_menu)
     {
         $model = new MenuItem();
-
         if ($this->request->isPost) {
             if ($model->load($this->request->post())) {
                 $model->id_menu = $id_menu;
-                $model->save();
-                return $this->redirect(['index', 'id_menu' => $model->id_menu]);
+                if($model->save())
+                    return $this->redirect(['index', 'id_menu' => $model->id_menu]);
             }
         } else {
             $model->loadDefaultValues();
@@ -133,6 +133,73 @@ class ItemController extends Controller
         $model = $this->findModel($id);
         $this->findModel($id)->delete();
         return $this->redirect(['index', 'id_menu' => $model->id_menu]);
+    }
+
+    public function actionRouteType() {
+        $out = [];
+        if($this->request->isPost){
+            $request = $this->request->post('depdrop_parents');
+            $moduleName = $request[0];
+            $module = Yii::$app->getModule($moduleName);
+            $menuItems = $module->getMenuItems();
+            
+            foreach ($menuItems[0] as $key => $value) {
+                $out[] = ['id' => $value['type'], 'name' => $value['type']];
+            }
+            return json_encode(['output' => $out, 'selected' => '']);
+        }
+    }
+
+    public function actionRoute() {
+        $out = [];
+        if($this->request->isPost){
+            $request = $this->request->post('depdrop_parents');
+            $moduleName = $request[0];
+            $module = Yii::$app->getModule($moduleName);
+            $menuItems = $module->getMenuItems();
+            $routeType = $request[1];
+            foreach ($menuItems[0] as $key => $item) {
+                if($item['type'] == $routeType){
+                    switch ($routeType) {
+                        case 'widget':
+                            $out[] = ['id' => $item['label'], 'name' => $item['name']];
+                            break;
+                        case 'model':
+                            $out[] = ['id' => $item['route'], 'name' => $item['class']];
+                            break;
+                        case 'action':
+                            $out[] = ['id' => $item['route'], 'name' => $item['route']];
+                            break;
+                    }
+                }
+            }
+            return json_encode(['output' => $out, 'selected' => '']);
+        }
+    }
+
+    public function actionModel() {
+        $out = [];
+        if($this->request->isPost){
+            $request = $this->request->post('depdrop_parents');
+            $moduleName = $request[0];
+            $routeType = $request[1];
+            $route = $request[2];
+            $modelName = '';
+            $module = Yii::$app->getModule($moduleName);
+            $menuItems = $module->getMenuItems();
+            $field = [];
+            
+            foreach ($menuItems[0] as $key => $item) {
+                if($item['type'] == $routeType && $item['route'] == $route){
+                    $field = $item['field'];
+                    $modelName = $item['class'];
+
+                }
+            }
+            $data = $modelName::find()->select(['id' => $field['id'], 'name' => $field['name']])->asArray()->all();
+            
+            return json_encode(['output' => $data, 'selected' => '']);
+        }
     }
 
     /**

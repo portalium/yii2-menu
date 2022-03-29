@@ -18,7 +18,7 @@ class MenuItemSearch extends MenuItem
     {
         return [
             [['id_item', 'id_parent', 'id_menu'], 'integer'],
-            [['label', 'slug', 'url', 'icon', 'date_create', 'date_update'], 'safe'],
+            [['label', 'slug', 'icon', 'date_create', 'date_update'], 'safe'],
         ];
     }
 
@@ -66,7 +66,6 @@ class MenuItemSearch extends MenuItem
 
         $query->andFilterWhere(['like', 'label', $this->label])
             ->andFilterWhere(['like', 'slug', $this->slug])
-            ->andFilterWhere(['like', 'url', $this->url])
             ->andFilterWhere(['like', 'icon', $this->icon]);
 
         return $dataProvider;

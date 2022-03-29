@@ -1,5 +1,6 @@
 <?php
 
+use portalium\menu\models\Menu;
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
 use portalium\menu\Module;
@@ -25,6 +26,8 @@ use portalium\theme\widgets\Panel;
     <?= $form->field($model, 'name')->textInput(['maxlength' => true]) ?>
 
     <?= $form->field($model, 'slug')->textInput(['maxlength' => true]) ?>
+
+    <?= $form->field($model, 'type')->dropDownList(Menu::getTypes()) ?>
 
     <?php Panel::end() ?>
 
