@@ -25,6 +25,8 @@
 		}
 	},
 	"scripts": {
-		"pre-install-cmd": "php init"
+		"post-create-project-cmd": [
+			"php init"
+		]
 	}
 }
