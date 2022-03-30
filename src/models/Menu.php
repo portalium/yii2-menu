@@ -17,8 +17,8 @@ use portalium\menu\Module;
 class Menu extends \yii\db\ActiveRecord
 {
     const TYPE = [
-        '1' => 'web',
-        '2' => 'mobile'
+        'web' => '1',
+        'mobile' => '2'
     ];
     /**
      * {@inheritdoc}
@@ -64,8 +64,8 @@ class Menu extends \yii\db\ActiveRecord
     public static function getTypes()
     {
         return [
-            '1' => Module::t('Web'),
-            '2' => Module::t('Mobile')
+            'web' => Module::t('Web'),
+            'mobile' => Module::t('Mobile')
         ];
     }
     

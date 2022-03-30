@@ -20,12 +20,10 @@ class Nav extends Widget
         if ($this->model === null) {
             throw new \yii\base\InvalidConfigException('MenuWidget::$model must be set.');
         }
-
     }
 
     public function run()
     {
-
         $items = [];
         foreach ($this->model->items as $item) {
             if ($item->id_parent == 0){
@@ -33,7 +31,8 @@ class Nav extends Widget
                 $data = json_decode($item->data, true);
                 if($item->type == MenuItem::TYPE['module']){
                     $items[] = 
-                        ($data["data"]["routeType"] == "widget") ? $data["data"]["route"] : 
+                        ($data["data"]["routeType"] == "widget") ? 
+                        $data["data"]["route"]::widget() :
                             [
                                 'label' => $item->label,
                                 'url' => $url,

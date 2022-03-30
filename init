@@ -1,0 +1,8 @@
+#!/usr/bin/env php
+<?php
+
+echo "User Initialization\n";
+passthru("php yii migrate --migrationPath=@portalium/menu/migrations/");
+
+/* -----------------Düzenleme------------*/
+echo "\n  ... initialization completed.\n\n";
