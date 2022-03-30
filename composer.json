@@ -25,8 +25,9 @@
 		}
 	},
 	"scripts": {
-		"post-create-project-cmd": [
-			"php init"
+		"post-update-cmd": [
+			"clear",
+			"echo \"\n\nInstallation Complete\""
 		]
 	}
 }
