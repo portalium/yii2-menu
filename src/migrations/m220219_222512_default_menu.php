@@ -7,7 +7,7 @@ use portalium\menu\models\MenuItem;
 use portalium\menu\Module;
 use portalium\site\widgets\LoginButton;
 
-class m010102_010101_default_menu extends Migration
+class m220219_222512_default_menu extends Migration
 {
     public function up()
     {
