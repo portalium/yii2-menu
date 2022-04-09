@@ -1,7 +1,7 @@
 {
 	"name" : "portalium/portalium-menu",
 	"description" : "Portalium menu",
-	"type" : "yii2-extension",
+	"type" : "portalium-core",
 	"license": "MIT",
 	"homepage" : "https://diginova.com.tr",
 	"authors" : [
@@ -14,9 +14,20 @@
 	"support" : {
 		"issues" : "https://github.com/portalium/portalium-menu/issues"
 	},
+	"minimum-stability" : "dev",
+	"require" : {
+		"php" : ">=7.4.0",
+		"kartik-v/yii2-widget-depdrop": "@dev"
+	},	
 	"autoload" : {
 		"psr-4" : {
 			"portalium\\menu\\" : "src/"
 		}
+	},
+	"scripts": {
+		"post-update-cmd": [
+			"clear",
+			"echo \"\n\nInstallation Complete\""
+		]
 	}
 }

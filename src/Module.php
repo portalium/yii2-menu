@@ -2,8 +2,11 @@
 
 namespace portalium\menu;
 
+use portalium\site\widgets\LoginButton;
+
 class Module extends \portalium\base\Module
 {
+    public static $tablePrefix = 'menu_';
     public $apiRules = [
         [
             'class' => 'yii\rest\UrlRule',
@@ -12,10 +15,33 @@ class Module extends \portalium\base\Module
             ]
         ],
     ];
+
+    public function getMenuItems(){
+        $menuItems = [
+            [
+                [
+                    'type' => 'model',
+                    'class' => 'portalium\menu\models\MenuItem',
+                    'route' => '/menu/item/view',
+                    'field' => [ 'id' => 'id_item', 'name' => 'label' ],
+                ],
+                [
+                    'type' => 'widget',
+                    'label' => LoginButton::widget(),
+                    'name' => 'Login',
+                ],
+                [
+                    'type' => 'action',
+                    'route' => '/menu/default/index',
+                ],
+            ],
+        ];
+        return $menuItems;
+    }
     
     public static function moduleInit()
     {
-        self::registerTranslation('menu','@portalium/menu/messages',[
+        self::registerTranslation('menu', '@portalium/menu/messages', [
             'menu' => 'menu.php',
         ]);
     }

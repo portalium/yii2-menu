@@ -1,6 +1,6 @@
 <?php
 
-namespace portalium\career\controllers\frontend;
+namespace portalium\menu\controllers\frontend;
 
 use portalium\web\Controller as WebController;
 
