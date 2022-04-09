@@ -18,8 +18,8 @@
 	"require": {
 		"kartik-v/yii2-widget-depdrop": "@dev",
 		"php": ">=7.4.0",
-		"portalium/portalium-site": "dev-develop",
-		"portalium/portalium-user": "dev-develop"
+		"portalium/portalium-site": "*",
+		"portalium/portalium-user": "*"
 	},
 	"autoload" : {
 		"psr-4" : {
