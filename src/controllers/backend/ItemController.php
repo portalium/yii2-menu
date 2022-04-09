@@ -47,6 +47,9 @@ class ItemController extends Controller
      */
     public function actionIndex($id_menu = null)
     {
+        if (!\Yii::$app->user->can('menuBackendItemIndex')) {
+            throw new \yii\web\ForbiddenHttpException(Module::t('You are not allowed to access this page.'));
+        }
         $searchModel = new MenuItemSearch();
         $dataProvider = $searchModel->search($this->request->queryParams);
         if ($id_menu != null) {
@@ -73,6 +76,9 @@ class ItemController extends Controller
      */
     public function actionView($id)
     {
+        if (!\Yii::$app->user->can('menuBackendItemView')) {
+            throw new \yii\web\ForbiddenHttpException(Module::t('You are not allowed to access this page.'));
+        }
         return $this->render('view', [
             'model' => $this->findModel($id),
         ]);
@@ -85,6 +91,9 @@ class ItemController extends Controller
      */
     public function actionCreate($id_menu)
     {
+        if (!\Yii::$app->user->can('menuBackendItemCreate')) {
+            throw new \yii\web\ForbiddenHttpException(Module::t('You are not allowed to access this page.'));
+        }
         $model = new MenuItem();
         if ($this->request->isPost) {
             if ($model->load($this->request->post())) {
@@ -110,6 +119,9 @@ class ItemController extends Controller
      */
     public function actionUpdate($id)
     {
+        if (!\Yii::$app->user->can('menuBackendItemUpdate')) {
+            throw new \yii\web\ForbiddenHttpException(Module::t('You are not allowed to access this page.'));
+        }
         $model = $this->findModel($id);
 
         if ($this->request->isPost && $model->load($this->request->post()) && $model->save()) {
@@ -130,12 +142,18 @@ class ItemController extends Controller
      */
     public function actionDelete($id)
     {
+        if (!\Yii::$app->user->can('menuBackendItemDelete')) {
+            throw new \yii\web\ForbiddenHttpException(Module::t('You are not allowed to access this page.'));
+        }
         $model = $this->findModel($id);
         $this->findModel($id)->delete();
         return $this->redirect(['index', 'id_menu' => $model->id_menu]);
     }
 
     public function actionRouteType() {
+        if (!\Yii::$app->user->can('menuBackendItemRouteType')) {
+            throw new \yii\web\ForbiddenHttpException(Module::t('You are not allowed to access this page.'));
+        }
         $out = [];
         if($this->request->isPost){
             $request = $this->request->post('depdrop_parents');
@@ -151,6 +169,9 @@ class ItemController extends Controller
     }
 
     public function actionRoute() {
+        if (!\Yii::$app->user->can('menuBackendItemRoute')) {
+            throw new \yii\web\ForbiddenHttpException(Module::t('You are not allowed to access this page.'));
+        }
         $out = [];
         if($this->request->isPost){
             $request = $this->request->post('depdrop_parents');
@@ -178,6 +199,9 @@ class ItemController extends Controller
     }
 
     public function actionModel() {
+        if (!\Yii::$app->user->can('menuBackendItemModel')) {
+            throw new \yii\web\ForbiddenHttpException(Module::t('You are not allowed to access this page.'));
+        }
         $out = [];
         if($this->request->isPost){
             $request = $this->request->post('depdrop_parents');
