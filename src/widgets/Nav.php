@@ -37,7 +37,7 @@ class Nav extends Widget
                                 'label' => $item->label,
                                 'url' => $url,
                                 'items' => $this->getChildItems($item->id_item),
-                                'visible' => Yii::$app->user->can($item->name_auth),
+                                'visible' => ($item->name_auth != null || $item->name_auth != '') ? Yii::$app->user->can($item->name_auth) : true,
                                 'sort' => $item->sort
                             ];
                 }else{
@@ -46,7 +46,7 @@ class Nav extends Widget
                                 'label' => $item->label,
                                 'url' => $url,
                                 'items' => $this->getChildItems($item->id_item),
-                                'visible' => Yii::$app->user->can($item->name_auth),
+                                'visible' => ($item->name_auth != null || $item->name_auth != '') ? Yii::$app->user->can($item->name_auth) : true,
                                 'sort' => $item->sort
                             ];
                 }
