@@ -147,6 +147,7 @@ class MenuItem extends \yii\db\ActiveRecord
             ];
         }
         $this->data = json_encode($json_data);
+        $this->sort = MenuItem::find()->where(['id_menu' => $this->id_menu])->max('sort') + 1;
         return parent::beforeSave($insert);
     }
 }
