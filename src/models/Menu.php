@@ -64,8 +64,8 @@ class Menu extends \yii\db\ActiveRecord
     public static function getTypes()
     {
         return [
-            'web' => Module::t('Web'),
-            'mobile' => Module::t('Mobile')
+            '1' => Module::t('Web'),
+            '2' => Module::t('Mobile')
         ];
     }
     

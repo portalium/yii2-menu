@@ -164,6 +164,7 @@ class ItemController extends Controller
             foreach ($menuItems[0] as $key => $value) {
                 $out[] = ['id' => $value['type'], 'name' => $value['type']];
             }
+            $out = array_unique($out, SORT_REGULAR);
             return json_encode(['output' => $out, 'selected' => '']);
         }
     }
