@@ -37,7 +37,7 @@ class Nav extends Widget
                                 'label' => $item->label,
                                 'url' => $url,
                                 'items' => $this->getChildItems($item->id_item),
-                                'visible' => ($item->name_auth != null || $item->name_auth != '') ? Yii::$app->user->can($item->name_auth) : true,
+                                'visible' => ($item->name_auth != null || $item->name_auth != '') ? Yii::$app->user->can($item->name_auth) : 1,
                                 'sort' => $item->sort
                             ];
                 }else{
@@ -53,8 +53,10 @@ class Nav extends Widget
 
             }
         }
+       
         
         $items = $this->sortItems($items);
+        
         echo BaseNav::widget([
             'options' => ['class' => 'navbar-nav navbar-right'],
             'items' => $items,
@@ -71,7 +73,7 @@ class Nav extends Widget
                 $itemTemp = [
                     'label' => $item->label,
                     'url' => $url,
-                    'visible' => Yii::$app->user->can($item->name_auth),
+                    'visible' => ($item->name_auth != null || $item->name_auth != '') ? Yii::$app->user->can($item->name_auth) : 1,
                 ];
                 $list = $this->getChildItems($item->id_item);
                 if(!empty($list)){

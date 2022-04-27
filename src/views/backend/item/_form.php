@@ -13,7 +13,9 @@ use portalium\menu\models\MenuItem;
 ?>
 
 <div class="menu-item-form">
-
+    <?php 
+        $isNewRecord = ($model->isNewRecord) ? 1 : 0;
+    ?>
     <?php $form = ActiveForm::begin(); ?>
 
     <?php Panel::begin([
@@ -30,6 +32,8 @@ use portalium\menu\models\MenuItem;
     <?= $form->field($model, 'slug')->textInput(['maxlength' => true]) ?>
 
     <?= $form->field($model, 'type')->dropDownList(MenuItem::getTypes(), ['id' => 'type']) ?>
+
+    <?= $form->field($model, 'id_parent')->dropDownList(MenuItem::getParents(), ['id' => 'id_item']) ?>
 
     <?= $form->field($model, 'icon')->textInput(['maxlength' => true]) ?>
     
@@ -61,6 +65,11 @@ use portalium\menu\models\MenuItem;
                 'depends' => ['module-list', 'routeType-list', 'route-list'],
                 'placeholder' => Module::t('Select...'),
                 'url' => Url::to(['/menu/item/model'])
+            ],
+            'pluginEvents' => [
+                "depdrop:change" => "function(event, id, value) {
+                    console.log('sadas');
+                }"
             ]
         ]);
 
@@ -107,6 +116,26 @@ use portalium\menu\models\MenuItem;
 
             $("#model-list-div").hide();
         });
+        flag = 0;
+        $(document).ajaxStop(function(){
+            if(!'.$isNewRecord.'&& flag == 0){
+                $("#routeType-list").val("'.$model->routeType.'");
+                $("#routeType-list").trigger("change");
+                setTimeout(function(){
+                    $("#route-list").val("'.$model->route.'");
+                    setTimeout(function(){
+                        $("#model-list").val("'.$model->model.'");
+                    }, 500);
+                }, 500);
+                flag = 1;
+            }
+        });
+
+        $("#module-list").trigger("change");
+
+        
+        
+
     ');
 
 ?>
