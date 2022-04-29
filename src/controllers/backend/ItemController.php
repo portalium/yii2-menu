@@ -107,6 +107,7 @@ class ItemController extends Controller
 
         return $this->render('create', [
             'model' => $model,
+            'id_menu' => $id_menu,
         ]);
     }
 
@@ -130,6 +131,7 @@ class ItemController extends Controller
 
         return $this->render('update', [
             'model' => $model,
+            'id_menu' => $model->id_menu,
         ]);
     }
 

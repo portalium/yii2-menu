@@ -70,7 +70,10 @@ class Nav extends Widget
             if ($item->id_parent == $id_parent) {
                      
                 $url = $this->getUrl($item);
-                $itemTemp = [
+                $data = json_decode($item->data, true);
+                $itemTemp = ($item->type == MenuItem::TYPE['module'] && $data["data"]["routeType"] == "widget") ? 
+                $data["data"]["route"]::widget() :
+                [
                     'label' => $item->label,
                     'url' => $url,
                     'visible' => ($item->name_auth != null || $item->name_auth != '') ? Yii::$app->user->can($item->name_auth) : 1,

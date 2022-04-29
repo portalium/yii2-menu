@@ -111,8 +111,8 @@ class MenuItem extends \yii\db\ActiveRecord
         return $list;
     }
 
-    public static function getParents(){
-        $parents = self::find()->where(['id_parent' => 0])->all();
+    public static function getParents($id_menu){
+        $parents = self::find()->where(['id_parent' => 0, 'id_menu' => $id_menu])->all();
         $list = [];
         $list['0'] = Module::t('Root Menu');
         foreach ($parents as $parent) {
@@ -168,7 +168,7 @@ class MenuItem extends \yii\db\ActiveRecord
         if($this->type == self::TYPE['module']){
             $this->module = $json_data['data']['module'];
             $this->routeType = $json_data['data']['routeType'];
-            $this->route = $json_data['data']['route'];
+            $this->route = ($this->routeType == 'widget') ? str_replace('\\', '\\\\', $json_data['data']['route']) : $json_data['data']['route'];
             $this->model = $json_data['data']['model'];
         }elseif($this->type == self::TYPE['url']){
             $this->url = $json_data['data']['url'];

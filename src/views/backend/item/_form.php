@@ -33,7 +33,7 @@ use portalium\menu\models\MenuItem;
 
     <?= $form->field($model, 'type')->dropDownList(MenuItem::getTypes(), ['id' => 'type']) ?>
 
-    <?= $form->field($model, 'id_parent')->dropDownList(MenuItem::getParents(), ['id' => 'id_item']) ?>
+    <?= $form->field($model, 'id_parent')->dropDownList(MenuItem::getParents($id_menu), ['id' => 'id_item']) ?>
 
     <?= $form->field($model, 'icon')->textInput(['maxlength' => true]) ?>
     
