@@ -34,7 +34,7 @@ class Nav extends Widget
                         ($data["data"]["routeType"] == "widget") ? 
                         $data["data"]["route"]::widget() :
                             [
-                                'label' => $item->label,
+                                'label' => Module::t($item->label),
                                 'url' => $url,
                                 'items' => $this->getChildItems($item->id_item),
                                 'visible' => ($item->name_auth != null || $item->name_auth != '') ? Yii::$app->user->can($item->name_auth) : 1,
@@ -43,7 +43,7 @@ class Nav extends Widget
                 }else{
                     $items[] = 
                             [
-                                'label' => $item->label,
+                                'label' => Module::t($item->label),
                                 'url' => $url,
                                 'items' => $this->getChildItems($item->id_item),
                                 'visible' => ($item->name_auth != null || $item->name_auth != '') ? Yii::$app->user->can($item->name_auth) : true,
@@ -74,7 +74,7 @@ class Nav extends Widget
                 $itemTemp = ($item->type == MenuItem::TYPE['module'] && $data["data"]["routeType"] == "widget") ? 
                 $data["data"]["route"]::widget() :
                 [
-                    'label' => $item->label,
+                    'label' => Module::t($item->label),
                     'url' => $url,
                     'visible' => ($item->name_auth != null || $item->name_auth != '') ? Yii::$app->user->can($item->name_auth) : 1,
                 ];
