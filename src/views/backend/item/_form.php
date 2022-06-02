@@ -30,17 +30,48 @@ use portalium\menu\models\MenuItem;
     <?= $form->field($model, 'slug')->textInput(['maxlength' => true]) ?>
 
     <?= $form->field($model, 'type')->dropDownList(MenuItem::getTypes(), ['id' => 'type']) ?>
-
-    <?= $form->field($model, 'icon')->textInput(['maxlength' => true]) ?>
     
+    
+    <?= $form->field($model, 'icon')->textInput(['maxlength' => true]) ?>
+    <?= Html::a(Module::t('You can reach the number of the Icon you will choose by clicking here.'), 'https://api.flutter.dev/flutter/material/Icons-class.html', ['target' => '_blank'], ['class' => 'control-label']).'<br><br>' ?>
+    <?= $form->field($model, 'iconSize')->textInput(['maxlength' => true]) ?>
+
+    <?= $form->field($model, 'color')->widget(\kartik\color\ColorInput::className(), [
+        'options' => ['placeholder' => Module::t('Select Color ...')],
+        'pluginOptions' => [
+            'showInput' => true,
+            'showInitial' => true,
+            'showPalette' => true,
+            'showSelectionPalette' => true,
+            'showAlpha' => true,
+            'preferredFormat' => 'rgb',
+            'palette' => [
+                [
+                    "white", "black", "grey", "silver", "gold", "brown",
+                ],
+                [
+                    "red", "orange", "yellow", "indigo", "maroon", "magenta",
+                ],
+                [
+                    "blue", "light-blue", "cyan", "teal", "green", "lime", "olive",
+                ],
+                [
+                    "purple", "pink", "deep-purple", "light-green", "lime", "brown",
+                ],
+            ],
+        ]
+    ]) ?>
+
     <?php
 
         echo $form->field($model, 'module', ['options'=>['id' => 'module-list-div']])->dropDownList(MenuItem::getModuleList(), ['id' => 'module-list', 'prompt' => 'Select Module']);
 
+        echo $form->field($model, 'menuType')->dropDownList(['web' => 'Web', 'mobile' => 'Mobile'], ['id' => 'menu-type', 'prompt' => 'Select Menu Type'])->label('Menu Type');
+
         echo $form->field($model, 'routeType', ['options'=>['id' => 'routeType-list-div']])->widget(DepDrop::classname(), [
             'options' => ['id' => 'routeType-list'],
             'pluginOptions' => [
-                'depends' => ['module-list'],
+                'depends' => ['menu-type', 'module-list'],
                 'placeholder' => Module::t('Select...'),
                 'url' => Url::to(['/menu/item/route-type'])
             ]
@@ -49,7 +80,7 @@ use portalium\menu\models\MenuItem;
         echo $form->field($model, 'route', ['options'=>['id' => 'route-list-div']])->widget(DepDrop::classname(), [
             'options' => ['id' => 'route-list'],
             'pluginOptions' => [
-                'depends' => ['module-list', 'routeType-list'],
+                'depends' => ['menu-type', 'module-list', 'routeType-list'],
                 'placeholder' => Module::t('Select...'),
                 'url' => Url::to(['/menu/item/route'])
             ]
@@ -58,7 +89,7 @@ use portalium\menu\models\MenuItem;
         echo $form->field($model, 'model', ['options'=>['id' => 'model-list-div']])->widget(DepDrop::classname(), [
             'options' => ['id' => 'model-list'],
             'pluginOptions' => [
-                'depends' => ['module-list', 'routeType-list', 'route-list'],
+                'depends' => ['menu-type', 'module-list', 'routeType-list', 'route-list'],
                 'placeholder' => Module::t('Select...'),
                 'url' => Url::to(['/menu/item/model'])
             ]
@@ -80,7 +111,20 @@ use portalium\menu\models\MenuItem;
     $this->registerJs('
         $(document).ready(function(){
             $("#type").trigger("change");
-
+            $("#menu-type").trigger("change");
+            setTimeout(function(){
+                console.log("selam");
+                $("#routeType-list").val("'.$model->routeType.'");
+                $("#routeType-list").trigger("change");
+                setTimeout(function(){
+                    $("#route-list").val("'.$model->route.'");
+                    $("#route-list").trigger("change");
+                    setTimeout(function(){
+                        $("#model-list").val("'.$model->model.'");
+                        $("#model-list").trigger("change");
+                    }, 1000);
+                }, 1000);
+            }, 1000);
             $("#model-list-div").hide();
         });
         $("#routeType-list").change(function(){
@@ -97,7 +141,6 @@ use portalium\menu\models\MenuItem;
                 $("#routeType-list-div").show();
                 $("#route-list-div").show();
                 $("#url-input-div").hide();
-
             }else{
                 $("#module-list-div").hide();
                 $("#routeType-list-div").hide();
@@ -106,6 +149,17 @@ use portalium\menu\models\MenuItem;
             }
 
             $("#model-list-div").hide();
+        });
+        $("#routeType-list").change(function(){
+            if($(this).val() == "route"){
+                //$("#module-list-div").hide();
+                
+                $("#model-list-div").hide();
+            }else{
+                //$("#module-list-div").show();
+                
+                $("#model-list-div").show();
+            }
         });
     ');
 

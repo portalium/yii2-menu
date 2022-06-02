@@ -3,7 +3,7 @@
 use yii\db\Schema;
 use yii\db\Migration;
 
-class m220218_222512_menu extends Migration
+class m220218_222512_menu_route extends Migration
 {
 
     public function safeUp()
@@ -11,12 +11,13 @@ class m220218_222512_menu extends Migration
         $tableOptions = 'ENGINE=InnoDB';
 
         $this->createTable(
-            '{{%menu_menu}}',
+            '{{%menu_menu_route}}',
             [
-                'id_menu'=> $this->primaryKey(11),
-                'name'=> $this->string(255)->notNull(),
-                'slug'=> $this->string(255)->notNull(),
+                'id_menu_route'=> $this->primaryKey(11),
+                'title'=> $this->string(255)->notNull(),
+                'route'=> $this->string(255)->notNull(),
                 'type'=> $this->integer(11)->notNull(),
+                'module'=> $this->string(255)->notNull(),
                 'date_create'=> $this->datetime()->notNull()->defaultExpression("CURRENT_TIMESTAMP"),
                 'date_update'=> $this->datetime()->notNull()->defaultExpression("CURRENT_TIMESTAMP"),
             ],$tableOptions
@@ -26,6 +27,6 @@ class m220218_222512_menu extends Migration
 
     public function safeDown()
     {
-        $this->dropTable('{{%menu}}');
+        $this->dropTable('{{%menu_menu_route}}');
     }
 }

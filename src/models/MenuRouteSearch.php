@@ -9,7 +9,7 @@ use portalium\menu\models\Menu;
 /**
  * MenuSearch represents the model behind the search form of `portalium\menu\models\Menu`.
  */
-class MenuSearch extends Menu
+class MenuRouteSearch extends Menu
 {
     /**
      * {@inheritdoc}
@@ -17,8 +17,8 @@ class MenuSearch extends Menu
     public function rules()
     {
         return [
-            [['id_menu'], 'integer'],
-            [['name', 'slug', 'date_create', 'date_update'], 'safe'],
+            [['id_menu_route'], 'integer'],
+            [['title', 'route', 'type', 'module', 'date_create', 'date_update'], 'safe'],
         ];
     }
 
@@ -40,7 +40,7 @@ class MenuSearch extends Menu
      */
     public function search($params)
     {
-        $query = Menu::find();
+        $query = MenuRoute::find();
 
         // add conditions that should always apply here
 
@@ -58,13 +58,18 @@ class MenuSearch extends Menu
 
         // grid filtering conditions
         $query->andFilterWhere([
-            'id_menu' => $this->id_menu,
+            'id_menu_route' => $this->id_menu,
+            'route' => $this->route,
+            'type' => $this->type,
+            'module' => $this->module,
             'date_create' => $this->date_create,
             'date_update' => $this->date_update,
         ]);
 
         $query->andFilterWhere(['like', 'name', $this->name])
-            ->andFilterWhere(['like', 'slug', $this->slug]);
+            ->andFilterWhere(['like', 'slug', $this->slug])
+            ->andFilterWhere(['like', 'title', $this->title]);
+
 
         return $dataProvider;
     }

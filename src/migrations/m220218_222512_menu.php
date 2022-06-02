@@ -26,6 +26,6 @@ class m220218_222512_menu extends Migration
 
     public function safeDown()
     {
-        $this->dropTable('{{%menu}}');
+        $this->dropTable('{{%menu_menu}}');
     }
 }

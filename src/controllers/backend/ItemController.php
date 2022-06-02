@@ -10,7 +10,7 @@ use portalium\menu\models\Menu;
 use yii\web\NotFoundHttpException;
 use portalium\menu\models\MenuItem;
 use portalium\menu\models\MenuItemSearch;
-
+use portalium\menu\models\MenuRoute;
 /**
  * MenuItemController implements the CRUD actions for MenuItem model.
  */
@@ -95,11 +95,14 @@ class ItemController extends Controller
             throw new \yii\web\ForbiddenHttpException(Module::t('You are not allowed to access this page.'));
         }
         $model = new MenuItem();
+        $model->style = '{"icon":"0xf0f6","color":"rgb(234, 153, 153)","iconSize":"24"}';
         if ($this->request->isPost) {
             if ($model->load($this->request->post())) {
                 $model->id_menu = $id_menu;
                 if($model->save())
                     return $this->redirect(['index', 'id_menu' => $model->id_menu]);
+                else
+                    Yii::warning($model->getErrors());
             }
         } else {
             $model->loadDefaultValues();
@@ -157,12 +160,14 @@ class ItemController extends Controller
         $out = [];
         if($this->request->isPost){
             $request = $this->request->post('depdrop_parents');
-            $moduleName = $request[0];
+            $menuType = $request[0];
+            $moduleName = $request[1];
             $module = Yii::$app->getModule($moduleName);
             $menuItems = $module->getMenuItems();
             
             foreach ($menuItems[0] as $key => $value) {
-                $out[] = ['id' => $value['type'], 'name' => $value['type']];
+                if($value['menu'] == $menuType)
+                    $out[] = ['id' => $value['type'], 'name' => $value['type']];
             }
             $out = array_unique($out, SORT_REGULAR);
             return json_encode(['output' => $out, 'selected' => '']);
@@ -176,12 +181,13 @@ class ItemController extends Controller
         $out = [];
         if($this->request->isPost){
             $request = $this->request->post('depdrop_parents');
-            $moduleName = $request[0];
+            $menuType = $request[0];
+            $moduleName = $request[1];
             $module = Yii::$app->getModule($moduleName);
             $menuItems = $module->getMenuItems();
-            $routeType = $request[1];
+            $routeType = $request[2];
             foreach ($menuItems[0] as $key => $item) {
-                if($item['type'] == $routeType){
+                if($item['type'] == $routeType && $item['menu'] == $menuType){
                     switch ($routeType) {
                         case 'widget':
                             $out[] = ['id' => $item['label'], 'name' => $item['name']];
@@ -191,6 +197,12 @@ class ItemController extends Controller
                             break;
                         case 'action':
                             $out[] = ['id' => $item['route'], 'name' => $item['route']];
+                            break;
+                        case 'route':
+                            $routes = $item['routes'];
+                            foreach ($routes as $key => $route) {
+                                $out[] = ['id' => $key, 'name' => $route];
+                            }
                             break;
                     }
                 }
@@ -206,9 +218,13 @@ class ItemController extends Controller
         $out = [];
         if($this->request->isPost){
             $request = $this->request->post('depdrop_parents');
-            $moduleName = $request[0];
-            $routeType = $request[1];
-            $route = $request[2];
+            $menuType = $request[0];
+            $moduleName = $request[1];
+            $routeType = $request[2];
+            $route = $request[3];
+            if($menuType == '' || $moduleName == '' || $routeType == '' || $route == ''){
+                return json_encode(['output' => $out, 'selected' => '']);
+            }
             $modelName = '';
             $module = Yii::$app->getModule($moduleName);
             $menuItems = $module->getMenuItems();
@@ -221,8 +237,26 @@ class ItemController extends Controller
 
                 }
             }
-            $data = $modelName::find()->select(['id' => $field['id'], 'name' => $field['name']])->asArray()->all();
-            
+            if ($modelName != '') {
+                $data = $modelName::find()->select(['id' => $field['id'], 'name' => $field['name']])->asArray()->all();
+            }
+               else {
+                    $data = [];
+                }
+            return json_encode(['output' => $data, 'selected' => '']);
+        }
+    }
+
+    public function actionRouteList(){
+        $out = [];
+        if($this->request->isPost){
+            $request = $this->request->post('depdrop_parents');
+            $moduleName = $request[1];
+            $routeType = $request[2];
+            $menuRoutes = MenuRoute::find()->where(['module' => $moduleName])->asArray()->all();
+
+            $data = MenuRoute::find()->select(['id' => 'id_menu_route', 'name' => 'title'])->asArray()->all();
+
             return json_encode(['output' => $data, 'selected' => '']);
         }
     }
