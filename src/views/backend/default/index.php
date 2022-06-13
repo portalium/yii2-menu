@@ -42,7 +42,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 'template' => "{view} {update} {delete} {items} ",
                 'buttons' => [
                     'items' => function ($url, $model) {
-                        return Html::a(Html::tag('i', '', ['class' => 'fa-thin fa-bars']), ['/menu/item/index', 'id_menu' => $model->id_menu], ['title' => Module::t('Items')]);
+                        return Html::a(Html::tag('i', '', ['class' => 'fa fa-thin fa-bars']), ['/menu/item/index', 'id_menu' => $model->id_menu], ['title' => Module::t('Items')]);
                     }
                 ]]
         ],

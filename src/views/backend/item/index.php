@@ -22,7 +22,7 @@ $this->params['breadcrumbs'][] = $this->title;
 <div class="menu-item-index">
 
     <?php Panel::begin([
-        'title' => Module::t('Skills'),
+        'title' => Module::t('Items'),
         'actions' => [
             Html::a(Module::t('Create Menu Item'), ['/menu/item/create', 'id_menu' => (isset($id_menu)) ? $id_menu : null], ['class' => 'btn btn-success']),
         ],
