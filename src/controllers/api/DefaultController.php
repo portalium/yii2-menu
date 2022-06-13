@@ -14,8 +14,10 @@ class DefaultController extends RestActiveController
     public function actions()
     {
         $actions = parent::actions();
-        unset($actions['index']);
-
+        $actions['index']['dataFilter'] = [
+            'class' => \yii\data\ActiveDataFilter::class,
+            'searchModel' => $this->modelClass,
+        ];
         return $actions;
     }
 
@@ -50,14 +52,4 @@ class DefaultController extends RestActiveController
         return true;
     }
 
-
-    public function actionIndex($slug = null)
-    {
-        if ($slug == null) {
-            $data = Menu::find()->all();
-        } else {
-            $data = Menu::find()->where(['slug' => $slug])->all();
-        }
-        return $data;
-    }
 }
