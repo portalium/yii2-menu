@@ -14,10 +14,8 @@
 	"support" : {
 		"issues" : "https://github.com/portalium/portalium-menu/issues"
 	},
-	"minimum-stability" : "dev",
 	"require": {
 		"kartik-v/yii2-widget-depdrop": "@dev",
-		"php": ">=7.4.0",
 		"portalium/portalium-site": "*",
 		"portalium/portalium-user": "*"
 	},
