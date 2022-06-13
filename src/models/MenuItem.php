@@ -127,6 +127,16 @@ class MenuItem extends \yii\db\ActiveRecord
         return $list;
     }
 
+    public static function getParents($id_menu){
+        $parents = self::find()->where(['id_parent' => 0, 'id_menu' => $id_menu])->all();
+        $list = [];
+        $list['0'] = Module::t('Root Menu');
+        foreach ($parents as $parent) {
+            $list[$parent->id_item] = $parent->label;
+        }
+        return $list;
+    }
+
     public static function getAuthList(){
         $auth = Yii::$app->authManager;
         $list = [];
@@ -191,7 +201,6 @@ class MenuItem extends \yii\db\ActiveRecord
         }elseif($this->type == self::TYPE['route']){
             $this->url = $json_data['data']['route'];
         }
-
         $json_style = json_decode($this->style, true);
         $this->icon = $json_style['icon'];
         $this->color = $json_style['color'];
