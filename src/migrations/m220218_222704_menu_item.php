@@ -19,7 +19,7 @@ class m220218_222704_menu_item extends Migration
                 'label'=> $this->string(255),
                 'slug'=> $this->string(255),
                 'type'=> $this->integer(11),
-                'icon'=> $this->string(64),
+                'style'=> $this->text()->defaultValue('{}'),
                 'data'=> $this->text()->defaultValue(0),
                 'sort'=> $this->integer(11)->notNull(),
                 'id_parent'=> $this->integer(11)->notNull()->defaultValue(0),
