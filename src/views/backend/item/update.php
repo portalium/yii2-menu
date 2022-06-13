@@ -16,6 +16,7 @@ $this->params['breadcrumbs'][] = Module::t('Update');
 
     <?= $this->render('_form', [
         'model' => $model,
+        'id_menu' => $id_menu,
     ]) ?>
 
 </div>

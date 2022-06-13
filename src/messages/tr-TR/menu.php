@@ -22,4 +22,13 @@ return [
     'Label' => 'Etiket',
     'Url' => 'URL',
     'Icon' => 'Simge',
+    'Task' => 'Görev',
+    'User' => 'Kullanıcı',
+    'Role' => 'Rol',
+    'Permission' => 'İzin',
+    'Form' => 'Form',
+    'Group' => 'Grup',
+    'USER' => 'KULLANICI',
+    'permission' => 'izin',
+    'Assign Task' => 'Görev Ata',
 ];

@@ -2,8 +2,6 @@
 
 namespace portalium\menu;
 
-use portalium\site\widgets\LoginButton;
-
 class Module extends \portalium\base\Module
 {
     public static $tablePrefix = 'menu_';
@@ -27,7 +25,7 @@ class Module extends \portalium\base\Module
                 ],
                 [
                     'type' => 'widget',
-                    'label' => LoginButton::widget(),
+                    'label' => '\portalium\site\widgets\LoginButton',
                     'name' => 'Login',
                 ],
                 [

@@ -34,27 +34,29 @@ class Nav extends Widget
                         ($data["data"]["routeType"] == "widget") ? 
                         $data["data"]["route"]::widget() :
                             [
-                                'label' => $item->label,
+                                'label' => Module::t($item->label),
                                 'url' => $url,
                                 'items' => $this->getChildItems($item->id_item),
-                                'visible' => Yii::$app->user->can($item->name_auth),
+                                'visible' => ($item->name_auth != null || $item->name_auth != '') ? Yii::$app->user->can($item->name_auth) : 1,
                                 'sort' => $item->sort
                             ];
                 }else{
                     $items[] = 
                             [
-                                'label' => $item->label,
+                                'label' => Module::t($item->label),
                                 'url' => $url,
                                 'items' => $this->getChildItems($item->id_item),
-                                'visible' => Yii::$app->user->can($item->name_auth),
+                                'visible' => ($item->name_auth != null || $item->name_auth != '') ? Yii::$app->user->can($item->name_auth) : true,
                                 'sort' => $item->sort
                             ];
                 }
 
             }
         }
+       
         
         $items = $this->sortItems($items);
+        
         echo BaseNav::widget([
             'options' => ['class' => 'navbar-nav navbar-right'],
             'items' => $items,
@@ -68,10 +70,13 @@ class Nav extends Widget
             if ($item->id_parent == $id_parent) {
                      
                 $url = $this->getUrl($item);
-                $itemTemp = [
-                    'label' => $item->label,
+                $data = json_decode($item->data, true);
+                $itemTemp = ($item->type == MenuItem::TYPE['module'] && $data["data"]["routeType"] == "widget") ? 
+                $data["data"]["route"]::widget() :
+                [
+                    'label' => Module::t($item->label),
                     'url' => $url,
-                    'visible' => Yii::$app->user->can($item->name_auth),
+                    'visible' => ($item->name_auth != null || $item->name_auth != '') ? Yii::$app->user->can($item->name_auth) : 1,
                 ];
                 $list = $this->getChildItems($item->id_item);
                 if(!empty($list)){

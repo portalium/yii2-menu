@@ -107,6 +107,7 @@ class ItemController extends Controller
 
         return $this->render('create', [
             'model' => $model,
+            'id_menu' => $id_menu,
         ]);
     }
 
@@ -123,13 +124,14 @@ class ItemController extends Controller
             throw new \yii\web\ForbiddenHttpException(Module::t('You are not allowed to access this page.'));
         }
         $model = $this->findModel($id);
-
+        
         if ($this->request->isPost && $model->load($this->request->post()) && $model->save()) {
             return $this->redirect(['index', 'id_menu' => $model->id_menu]);
         }
 
         return $this->render('update', [
             'model' => $model,
+            'id_menu' => $model->id_menu,
         ]);
     }
 
@@ -164,6 +166,7 @@ class ItemController extends Controller
             foreach ($menuItems[0] as $key => $value) {
                 $out[] = ['id' => $value['type'], 'name' => $value['type']];
             }
+            $out = array_unique($out, SORT_REGULAR);
             return json_encode(['output' => $out, 'selected' => '']);
         }
     }
