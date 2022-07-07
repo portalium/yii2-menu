@@ -31,4 +31,7 @@ return [
     'USER' => 'KULLANICI',
     'permission' => 'izin',
     'Assign Task' => 'Görev Ata',
+    'Expand All' => 'Genişlet',
+    'Collapse All' => 'Daralt',
+    'Save Menu', 'Kaydet',
 ];

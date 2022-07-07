@@ -40,8 +40,6 @@ class MenuItem extends \yii\db\ActiveRecord
         'url' => '3',
     ];
 
-
-
     /**
      * {@inheritdoc}
      */
@@ -61,6 +59,7 @@ class MenuItem extends \yii\db\ActiveRecord
             [['data', 'module', 'routeType', 'route', 'model', 'url', 'name_auth', 'menuType'], 'string'],
             [['date_create', 'date_update', 'menuRoute', 'icon', 'color', 'iconSize'], 'safe'],
             [['label', 'slug', 'style'], 'string', 'max' => 255],
+            [['style'], 'default', 'value' => '{"icon":"0xf0f6","color":"rgb(234, 153, 153)","iconSize":"24"}'],
         ];
     }
 
@@ -114,20 +113,21 @@ class MenuItem extends \yii\db\ActiveRecord
         ];
     }
 
-    public static function getModuleList(){
+    public static function getModuleList()
+    {
         //yii app all modules
         $modules = Yii::$app->getModules();
         $list = [];
         foreach ($modules as $key => $module) {
-            if(isset($module->menuItems)){
+            if (isset($module->menuItems)) {
                 $list[$key] = (isset($module::$description)) ? $module->t($module::$description) : $key;
             }
-            
         }
         return $list;
     }
 
-    public static function getParents($id_menu){
+    public static function getParents($id_menu)
+    {
         $parents = self::find()->where(['id_parent' => 0, 'id_menu' => $id_menu])->all();
         $list = [];
         $list['0'] = Module::t('Root Menu');
@@ -137,7 +137,43 @@ class MenuItem extends \yii\db\ActiveRecord
         return $list;
     }
 
-    public static function getAuthList(){
+    public function hasChildren()
+    {
+        return self::find()->where(['id_parent' => $this->id_item])->count() > 0;
+    }
+
+    //get children of menu item
+    public static function getMenuTree($id_item)
+    {
+        //order by sort ASC
+        $children = self::find()->where(['id_parent' => $id_item])->orderBy('sort ASC')->all();
+        $list = [];
+        /*
+         * title, id, hasChildren, children
+         */
+        foreach ($children as $child) {
+            if ($child->hasChildren()) {
+                $list[$child->id_item] = [
+                    'title' => $child->label,
+                    'id' => $child->id_item,
+                    'sort' => $child->sort,
+                    'hasChildren' => true,
+                    'children' => self::getMenuTree($child->id_item),
+                ];
+            } else {
+                $list[$child->id_item] = [
+                    'title' => $child->label,
+                    'id' => $child->id_item,
+                    'sort' => $child->sort,
+                    'hasChildren' => false,
+                ];
+            }
+        }
+        return $list;
+    }
+
+    public static function getAuthList()
+    {
         $auth = Yii::$app->authManager;
         $list = [];
         //add divider disable
@@ -156,7 +192,7 @@ class MenuItem extends \yii\db\ActiveRecord
     public function beforeSave($insert)
     {
         $json_data['type'] = $this->type;
-        if($this->type == self::TYPE['module']){
+        if ($this->type == self::TYPE['module']) {
             $json_data['data'] = [
                 'module' => $this->module,
                 'routeType' => $this->routeType,
@@ -165,11 +201,11 @@ class MenuItem extends \yii\db\ActiveRecord
                 'menuRoute' => $this->menuRoute,
                 'menuType' => $this->menuType,
             ];
-        }elseif($this->type == self::TYPE['url']){
+        } elseif ($this->type == self::TYPE['url']) {
             $json_data['data'] = [
                 'url' => $this->url,
             ];
-        }elseif($this->type == self::TYPE['route']){
+        } elseif ($this->type == self::TYPE['route']) {
             $json_data['data'] = [
                 'route' => $this->url,
             ];
@@ -181,7 +217,6 @@ class MenuItem extends \yii\db\ActiveRecord
         $json_style['iconSize'] = $this->iconSize;
         $this->style = json_encode($json_style);
 
-        $this->sort = MenuItem::find()->where(['id_menu' => $this->id_menu])->max('sort') + 1;
         return parent::beforeSave($insert);
     }
 
@@ -189,16 +224,16 @@ class MenuItem extends \yii\db\ActiveRecord
     {
         $json_data = json_decode($this->data, true);
         $this->type = $json_data['type'];
-        if($this->type == self::TYPE['module']){
+        if ($this->type == self::TYPE['module']) {
             $this->module = $json_data['data']['module'];
             $this->routeType = $json_data['data']['routeType'];
             $this->route = $json_data['data']['route'];
             $this->model = $json_data['data']['model'];
             $this->menuRoute = $json_data['data']['menuRoute'];
             $this->menuType = $json_data['data']['menuType'];
-        }elseif($this->type == self::TYPE['url']){
+        } elseif ($this->type == self::TYPE['url']) {
             $this->url = $json_data['data']['url'];
-        }elseif($this->type == self::TYPE['route']){
+        } elseif ($this->type == self::TYPE['route']) {
             $this->url = $json_data['data']['route'];
         }
         $json_style = json_decode($this->style, true);

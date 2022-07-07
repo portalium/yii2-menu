@@ -46,7 +46,6 @@ class DefaultController extends Controller
      */
     public function actionIndex()
     {
-
         if (!\Yii::$app->user->can('menuBackendDefaultIndex')) {
             throw new \yii\web\ForbiddenHttpException(Module::t('You are not allowed to access this page.'));
         }
