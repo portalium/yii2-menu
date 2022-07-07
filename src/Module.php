@@ -10,7 +10,9 @@ class Module extends \portalium\base\Module
             'class' => 'yii\rest\UrlRule',
             'controller' => [
                 'menu/default',
-            ]
+                'menu/item',
+            ],
+            'pluralize' => false
         ],
     ];
 
