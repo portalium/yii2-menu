@@ -478,7 +478,7 @@
         // output initial serialised data
         updateOutput($('#nestable').data('output', $('#nestable-output')));
 
-        $('#nestable-menu').on('click', function (e) {
+        $('.nestable-menu').on('click', function (e) {
             var target = $(e.target),
                 action = target.data('action');
             if (action === 'expand-all') {
