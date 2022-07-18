@@ -38,70 +38,70 @@ class m220219_222513_menu_rbac extends Migration
         $auth->add($menuApiDefaultIndex);
         $auth->addChild($admin, $menuApiDefaultIndex);
 
-        $menuBackendDefaultIndex = $auth->createPermission('menuBackendDefaultIndex');
-        $menuBackendDefaultIndex->description = 'View menu';
-        $auth->add($menuBackendDefaultIndex);
-        $auth->addChild($admin, $menuBackendDefaultIndex);
+        $menuWebDefaultIndex = $auth->createPermission('menuWebDefaultIndex');
+        $menuWebDefaultIndex->description = 'View menu';
+        $auth->add($menuWebDefaultIndex);
+        $auth->addChild($admin, $menuWebDefaultIndex);
 
-        $menuBackendDefaultView = $auth->createPermission('menuBackendDefaultView');
-        $menuBackendDefaultView->description = 'View menu';
-        $auth->add($menuBackendDefaultView);
-        $auth->addChild($admin, $menuBackendDefaultView);
+        $menuWebDefaultView = $auth->createPermission('menuWebDefaultView');
+        $menuWebDefaultView->description = 'View menu';
+        $auth->add($menuWebDefaultView);
+        $auth->addChild($admin, $menuWebDefaultView);
 
-        $menuBackendDefaultCreate = $auth->createPermission('menuBackendDefaultCreate');
-        $menuBackendDefaultCreate->description = 'Create menu';
-        $auth->add($menuBackendDefaultCreate);
-        $auth->addChild($admin, $menuBackendDefaultCreate);
+        $menuWebDefaultCreate = $auth->createPermission('menuWebDefaultCreate');
+        $menuWebDefaultCreate->description = 'Create menu';
+        $auth->add($menuWebDefaultCreate);
+        $auth->addChild($admin, $menuWebDefaultCreate);
 
-        $menuBackendDefaultUpdate = $auth->createPermission('menuBackendDefaultUpdate');
-        $menuBackendDefaultUpdate->description = 'Update menu';
-        $auth->add($menuBackendDefaultUpdate);
-        $auth->addChild($admin, $menuBackendDefaultUpdate);
+        $menuWebDefaultUpdate = $auth->createPermission('menuWebDefaultUpdate');
+        $menuWebDefaultUpdate->description = 'Update menu';
+        $auth->add($menuWebDefaultUpdate);
+        $auth->addChild($admin, $menuWebDefaultUpdate);
 
-        $menuBackendDefaultDelete = $auth->createPermission('menuBackendDefaultDelete');
-        $menuBackendDefaultDelete->description = 'Delete menu';
-        $auth->add($menuBackendDefaultDelete);
-        $auth->addChild($admin, $menuBackendDefaultDelete);
+        $menuWebDefaultDelete = $auth->createPermission('menuWebDefaultDelete');
+        $menuWebDefaultDelete->description = 'Delete menu';
+        $auth->add($menuWebDefaultDelete);
+        $auth->addChild($admin, $menuWebDefaultDelete);
         
-        $menuBackendItemIndex = $auth->createPermission('menuBackendItemIndex');
-        $menuBackendItemIndex->description = 'View menu item';
-        $auth->add($menuBackendItemIndex);
-        $auth->addChild($admin, $menuBackendItemIndex);
+        $menuWebItemIndex = $auth->createPermission('menuWebItemIndex');
+        $menuWebItemIndex->description = 'View menu item';
+        $auth->add($menuWebItemIndex);
+        $auth->addChild($admin, $menuWebItemIndex);
 
-        $menuBackendItemView = $auth->createPermission('menuBackendItemView');
-        $menuBackendItemView->description = 'View menu item';
-        $auth->add($menuBackendItemView);
-        $auth->addChild($admin, $menuBackendItemView);
+        $menuWebItemView = $auth->createPermission('menuWebItemView');
+        $menuWebItemView->description = 'View menu item';
+        $auth->add($menuWebItemView);
+        $auth->addChild($admin, $menuWebItemView);
 
-        $menuBackendItemCreate = $auth->createPermission('menuBackendItemCreate');
-        $menuBackendItemCreate->description = 'Create menu item';
-        $auth->add($menuBackendItemCreate);
-        $auth->addChild($admin, $menuBackendItemCreate);
+        $menuWebItemCreate = $auth->createPermission('menuWebItemCreate');
+        $menuWebItemCreate->description = 'Create menu item';
+        $auth->add($menuWebItemCreate);
+        $auth->addChild($admin, $menuWebItemCreate);
 
-        $menuBackendItemUpdate = $auth->createPermission('menuBackendItemUpdate');
-        $menuBackendItemUpdate->description = 'Update menu item';
-        $auth->add($menuBackendItemUpdate);
-        $auth->addChild($admin, $menuBackendItemUpdate);
+        $menuWebItemUpdate = $auth->createPermission('menuWebItemUpdate');
+        $menuWebItemUpdate->description = 'Update menu item';
+        $auth->add($menuWebItemUpdate);
+        $auth->addChild($admin, $menuWebItemUpdate);
 
-        $menuBackendItemDelete = $auth->createPermission('menuBackendItemDelete');
-        $menuBackendItemDelete->description = 'Delete menu item';
-        $auth->add($menuBackendItemDelete);
-        $auth->addChild($admin, $menuBackendItemDelete);
+        $menuWebItemDelete = $auth->createPermission('menuWebItemDelete');
+        $menuWebItemDelete->description = 'Delete menu item';
+        $auth->add($menuWebItemDelete);
+        $auth->addChild($admin, $menuWebItemDelete);
 
-        $menuBackendItemRouteType = $auth->createPermission('menuBackendItemRouteType');
-        $menuBackendItemRouteType->description = 'View menu item';
-        $auth->add($menuBackendItemRouteType);
-        $auth->addChild($admin, $menuBackendItemRouteType);
+        $menuWebItemRouteType = $auth->createPermission('menuWebItemRouteType');
+        $menuWebItemRouteType->description = 'View menu item';
+        $auth->add($menuWebItemRouteType);
+        $auth->addChild($admin, $menuWebItemRouteType);
 
-        $menuBackendItemRoute = $auth->createPermission('menuBackendItemRoute');
-        $menuBackendItemRoute->description = 'View menu item';
-        $auth->add($menuBackendItemRoute);
-        $auth->addChild($admin, $menuBackendItemRoute);
+        $menuWebItemRoute = $auth->createPermission('menuWebItemRoute');
+        $menuWebItemRoute->description = 'View menu item';
+        $auth->add($menuWebItemRoute);
+        $auth->addChild($admin, $menuWebItemRoute);
 
-        $menuBackendItemModel = $auth->createPermission('menuBackendItemModel');
-        $menuBackendItemModel->description = 'View menu item';
-        $auth->add($menuBackendItemModel);
-        $auth->addChild($admin, $menuBackendItemModel);
+        $menuWebItemModel = $auth->createPermission('menuWebItemModel');
+        $menuWebItemModel->description = 'View menu item';
+        $auth->add($menuWebItemModel);
+        $auth->addChild($admin, $menuWebItemModel);
 
     }
 
@@ -114,19 +114,19 @@ class m220219_222513_menu_rbac extends Migration
         $auth->remove($auth->getPermission('menuApiDefaultUpdate'));
         $auth->remove($auth->getPermission('menuApiDefaultDelete'));
         $auth->remove($auth->getPermission('menuApiDefaultIndex'));
-        $auth->remove($auth->getPermission('menuBackendDefaultIndex'));
-        $auth->remove($auth->getPermission('menuBackendDefaultView'));
-        $auth->remove($auth->getPermission('menuBackendDefaultCreate'));
-        $auth->remove($auth->getPermission('menuBackendDefaultUpdate'));
-        $auth->remove($auth->getPermission('menuBackendDefaultDelete'));
-        $auth->remove($auth->getPermission('menuBackendItemIndex'));
-        $auth->remove($auth->getPermission('menuBackendItemView'));
-        $auth->remove($auth->getPermission('menuBackendItemCreate'));
-        $auth->remove($auth->getPermission('menuBackendItemUpdate'));
-        $auth->remove($auth->getPermission('menuBackendItemDelete'));
-        $auth->remove($auth->getPermission('menuBackendItemRouteType'));
-        $auth->remove($auth->getPermission('menuBackendItemRoute'));
-        $auth->remove($auth->getPermission('menuBackendItemModel'));
+        $auth->remove($auth->getPermission('menuWebDefaultIndex'));
+        $auth->remove($auth->getPermission('menuWebDefaultView'));
+        $auth->remove($auth->getPermission('menuWebDefaultCreate'));
+        $auth->remove($auth->getPermission('menuWebDefaultUpdate'));
+        $auth->remove($auth->getPermission('menuWebDefaultDelete'));
+        $auth->remove($auth->getPermission('menuWebItemIndex'));
+        $auth->remove($auth->getPermission('menuWebItemView'));
+        $auth->remove($auth->getPermission('menuWebItemCreate'));
+        $auth->remove($auth->getPermission('menuWebItemUpdate'));
+        $auth->remove($auth->getPermission('menuWebItemDelete'));
+        $auth->remove($auth->getPermission('menuWebItemRouteType'));
+        $auth->remove($auth->getPermission('menuWebItemRoute'));
+        $auth->remove($auth->getPermission('menuWebItemModel'));
 
     }
 }

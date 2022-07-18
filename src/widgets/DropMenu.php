@@ -55,7 +55,7 @@ class DropMenu extends Widget
                 }
             }
         }
-        echo $this->render('/backend/item/_form', [
+        echo $this->render('/web/item/_form', [
             'model' => $model,
             'id_menu' => $this->id_menu,
         ]);

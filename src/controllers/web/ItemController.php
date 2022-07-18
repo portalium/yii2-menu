@@ -1,6 +1,6 @@
 <?php
 
-namespace portalium\menu\controllers\backend;
+namespace portalium\menu\controllers\web;
 
 use Yii;
 use portalium\menu\Module;
@@ -47,7 +47,7 @@ class ItemController extends Controller
      */
     public function actionIndex($id_menu = null)
     {
-        if (!\Yii::$app->user->can('menuBackendItemIndex')) {
+        if (!\Yii::$app->user->can('menuWebItemIndex')) {
             throw new \yii\web\ForbiddenHttpException(Module::t('You are not allowed to access this page.'));
         }
         $searchModel = new MenuItemSearch();
@@ -76,7 +76,7 @@ class ItemController extends Controller
      */
     public function actionView($id)
     {
-        if (!\Yii::$app->user->can('menuBackendItemView')) {
+        if (!\Yii::$app->user->can('menuWebItemView')) {
             throw new \yii\web\ForbiddenHttpException(Module::t('You are not allowed to access this page.'));
         }
         return $this->render('view', [
@@ -91,7 +91,7 @@ class ItemController extends Controller
      */
     public function actionCreate($id_menu, $id_item = null)
     {
-        if (!\Yii::$app->user->can('menuBackendItemCreate')) {
+        if (!\Yii::$app->user->can('menuWebItemCreate')) {
             throw new \yii\web\ForbiddenHttpException(Module::t('You are not allowed to access this page.'));
         }
         $model = new MenuItem();
@@ -130,7 +130,7 @@ class ItemController extends Controller
      */
     public function actionUpdate($id)
     {
-        if (!\Yii::$app->user->can('menuBackendItemUpdate')) {
+        if (!\Yii::$app->user->can('menuWebItemUpdate')) {
             throw new \yii\web\ForbiddenHttpException(Module::t('You are not allowed to access this page.'));
         }
         $model = $this->findModel($id);
@@ -154,7 +154,7 @@ class ItemController extends Controller
      */
     public function actionDelete($id)
     {
-        if (!\Yii::$app->user->can('menuBackendItemDelete')) {
+        if (!\Yii::$app->user->can('menuWebItemDelete')) {
             throw new \yii\web\ForbiddenHttpException(Module::t('You are not allowed to access this page.'));
         }
         $model = $this->findModel($id);
@@ -168,7 +168,7 @@ class ItemController extends Controller
     }
 
     public function actionRouteType() {
-        if (!\Yii::$app->user->can('menuBackendItemRouteType')) {
+        if (!\Yii::$app->user->can('menuWebItemRouteType')) {
             throw new \yii\web\ForbiddenHttpException(Module::t('You are not allowed to access this page.'));
         }
         $out = [];
@@ -192,7 +192,7 @@ class ItemController extends Controller
     }
 
     public function actionRoute() {
-        if (!\Yii::$app->user->can('menuBackendItemRoute')) {
+        if (!\Yii::$app->user->can('menuWebItemRoute')) {
             throw new \yii\web\ForbiddenHttpException(Module::t('You are not allowed to access this page.'));
         }
         $out = [];
@@ -233,7 +233,7 @@ class ItemController extends Controller
     }
 
     public function actionModel() {
-        if (!\Yii::$app->user->can('menuBackendItemModel')) {
+        if (!\Yii::$app->user->can('menuWebItemModel')) {
             throw new \yii\web\ForbiddenHttpException(Module::t('You are not allowed to access this page.'));
         }
         $out = [];
