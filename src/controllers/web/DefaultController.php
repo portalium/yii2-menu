@@ -46,7 +46,7 @@ class DefaultController extends Controller
      */
     public function actionIndex()
     {
-        if (!\Yii::$app->user->can('menuBackendDefaultIndex')) {
+        if (!\Yii::$app->user->can('menuWebDefaultIndex')) {
             throw new \yii\web\ForbiddenHttpException(Module::t('You are not allowed to access this page.'));
         }
 
@@ -67,7 +67,7 @@ class DefaultController extends Controller
      */
     public function actionView($id)
     {
-        if (!\Yii::$app->user->can('menuBackendDefaultView')) {
+        if (!\Yii::$app->user->can('menuWebDefaultView')) {
             throw new \yii\web\ForbiddenHttpException(Module::t('You are not allowed to access this page.'));
         }
         return $this->render('view', [
@@ -82,7 +82,7 @@ class DefaultController extends Controller
      */
     public function actionCreate()
     {
-        if (!\Yii::$app->user->can('menuBackendDefaultCreate')) {
+        if (!\Yii::$app->user->can('menuWebDefaultCreate')) {
             throw new \yii\web\ForbiddenHttpException(Module::t('You are not allowed to access this page.'));
         }
         $model = new Menu();
@@ -109,7 +109,7 @@ class DefaultController extends Controller
      */
     public function actionUpdate($id)
     {
-        if (!\Yii::$app->user->can('menuBackendDefaultUpdate')) {
+        if (!\Yii::$app->user->can('menuWebDefaultUpdate')) {
             throw new \yii\web\ForbiddenHttpException(Module::t('You are not allowed to access this page.'));
         }
         $model = $this->findModel($id);
@@ -132,7 +132,7 @@ class DefaultController extends Controller
      */
     public function actionDelete($id)
     {
-        if (!\Yii::$app->user->can('menuBackendDefaultDelete')) {
+        if (!\Yii::$app->user->can('menuWebDefaultDelete')) {
             throw new \yii\web\ForbiddenHttpException(Module::t('You are not allowed to access this page.'));
         }
         $this->findModel($id)->delete();
