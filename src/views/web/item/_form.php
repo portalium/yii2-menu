@@ -28,8 +28,11 @@ use portalium\menu\bundles\DropMenuAsset;
         'title' => (isset($model->isNewRecord) && $model->isNewRecord == 1) ? Module::t('Create Menu Item') : Module::t('Update Menu Item'),
         'actions' => [
             'header' => [
+<<<<<<< HEAD:src/views/backend/item/_form.php
             ],
             'footer' => [
+=======
+>>>>>>> develop:src/views/web/item/_form.php
                 Html::button(Module::t('Save'), ['class' => 'btn btn-success create-menu-item', 'id' => 'create-menu-item'])
             ]
         ]

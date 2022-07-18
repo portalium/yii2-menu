@@ -18,7 +18,7 @@
 		"kartik-v/yii2-widget-depdrop": "@dev",
 		"portalium/portalium-site": "*",
 		"portalium/portalium-user": "*",
-		"yiisoft/yii2-jui": "~2.0.0"
+		"kartik-v/yii2-widget-colorinput": "*"
 	},
 	"autoload" : {
 		"psr-4" : {
