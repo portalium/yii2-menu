@@ -4,6 +4,7 @@ namespace portalium\menu\models;
 
 use Yii;
 use portalium\menu\Module;
+
 /**
  * This is the model class for table "{{%menu}}".
  *
@@ -20,6 +21,7 @@ class Menu extends \yii\db\ActiveRecord
         'web' => '1',
         'mobile' => '2'
     ];
+
     /**
      * {@inheritdoc}
      */
@@ -68,10 +70,28 @@ class Menu extends \yii\db\ActiveRecord
             '2' => Module::t('Mobile')
         ];
     }
-    
+
     public function getItems()
     {
-        return $this->hasMany(MenuItem::class, ['id_menu' => 'id_menu']);
+        //sort by sort
+        return $this->hasMany(MenuItem::class, ['id_menu' => 'id_menu'])->orderBy('sort');
+    }
+
+    public static function getMenuWithChildren($slug)
+    {
+        $menu = self::find()->where(['slug' => 'web-menu'])->one();
+        $result = [];
+        foreach ($menu->items as $item) {
+            if ($item->id_parent == 0) {
+                $result[] = [
+                    'title' => $item->label,
+                    'id' => $item->id_item,
+                    'hasChildren' => $item->hasChildren(),
+                    'children' => MenuItem::getMenuTree($item->id_item)
+                ];
+            }
+        }
+        return $result;
     }
 
 }
