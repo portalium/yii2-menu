@@ -1,6 +1,6 @@
 <?php
 
-namespace portalium\menu\controllers\backend;
+namespace portalium\menu\controllers\web;
 
 use Yii;
 use portalium\menu\Module;
@@ -89,7 +89,7 @@ class ItemController extends Controller
      * If creation is successful, the browser will be redirected to the 'view' page.
      * @return string|\yii\web\Response
      */
-    public function actionCreate($id_menu)
+    public function actionCreate($id_menu, $id_item = null)
     {
         if (!\Yii::$app->user->can('menuBackendItemCreate')) {
             throw new \yii\web\ForbiddenHttpException(Module::t('You are not allowed to access this page.'));
@@ -97,10 +97,17 @@ class ItemController extends Controller
         $model = new MenuItem();
         $model->style = '{"icon":"0xf0f6","color":"rgb(234, 153, 153)","iconSize":"24"}';
         if ($this->request->isPost) {
+            if ($id_item != null) {
+                $model = MenuItem::findOne($id_item);
+                if($model == null){
+                    $model = new MenuItem();
+                    $model->style = '{"icon":"0xf0f6","color":"rgb(234, 153, 153)","iconSize":"24"}';
+                }
+            }
             if ($model->load($this->request->post())) {
                 $model->id_menu = $id_menu;
                 if($model->save())
-                    return $this->redirect(['index', 'id_menu' => $model->id_menu]);
+                    return "ok";
                 else
                     Yii::warning($model->getErrors());
             }
@@ -152,7 +159,12 @@ class ItemController extends Controller
         }
         $model = $this->findModel($id);
         $this->findModel($id)->delete();
-        return $this->redirect(['index', 'id_menu' => $model->id_menu]);
+        if (Yii::$app->request->isAjax) {
+            return $this->asJson(['status' => 'success']);
+        } else {
+            return $this->redirect(['index', 'id_menu' => $model->id_menu]);
+        }
+
     }
 
     public function actionRouteType() {
@@ -164,6 +176,9 @@ class ItemController extends Controller
             $request = $this->request->post('depdrop_parents');
             $menuType = $request[0];
             $moduleName = $request[1];
+            if($menuType == null || $moduleName == null || $menuType == '' || $moduleName == ''){
+                return $this->asJson(['output' => [], 'selected' => '']);
+            }
             $module = Yii::$app->getModule($moduleName);
             $menuItems = $module->getMenuItems();
             
@@ -185,9 +200,13 @@ class ItemController extends Controller
             $request = $this->request->post('depdrop_parents');
             $menuType = $request[0];
             $moduleName = $request[1];
+            $routeType = $request[2];
+            if($menuType == null || $moduleName == null || $routeType == null || $menuType == '' || $moduleName == '' || $routeType == ''){
+                return $this->asJson(['output' => [], 'selected' => '']);
+            }
             $module = Yii::$app->getModule($moduleName);
             $menuItems = $module->getMenuItems();
-            $routeType = $request[2];
+
             foreach ($menuItems[0] as $key => $item) {
                 if($item['type'] == $routeType && $item['menu'] == $menuType){
                     switch ($routeType) {
@@ -224,6 +243,9 @@ class ItemController extends Controller
             $moduleName = $request[1];
             $routeType = $request[2];
             $route = $request[3];
+            if($menuType == null || $moduleName == null || $routeType == null || $route == null || $menuType == '' || $moduleName == '' || $routeType == '' || $route == ''){
+                return $this->asJson(['output' => [], 'selected' => '']);
+            }
             if($menuType == '' || $moduleName == '' || $routeType == '' || $route == ''){
                 return json_encode(['output' => $out, 'selected' => '']);
             }
@@ -255,6 +277,9 @@ class ItemController extends Controller
             $request = $this->request->post('depdrop_parents');
             $moduleName = $request[1];
             $routeType = $request[2];
+            if($moduleName == null || $routeType == null || $moduleName == '' || $routeType == ''){
+                return $this->asJson(['output' => [], 'selected' => '']);
+            }
             $menuRoutes = MenuRoute::find()->where(['module' => $moduleName])->asArray()->all();
 
             $data = MenuRoute::find()->select(['id' => 'id_menu_route', 'name' => 'title'])->asArray()->all();

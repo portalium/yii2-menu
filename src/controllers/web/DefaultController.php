@@ -1,6 +1,6 @@
 <?php
 
-namespace portalium\menu\controllers\backend;
+namespace portalium\menu\controllers\web;
 
 use portalium\menu\models\Menu;
 use portalium\menu\models\MenuSearch;
@@ -46,7 +46,6 @@ class DefaultController extends Controller
      */
     public function actionIndex()
     {
-
         if (!\Yii::$app->user->can('menuBackendDefaultIndex')) {
             throw new \yii\web\ForbiddenHttpException(Module::t('You are not allowed to access this page.'));
         }
