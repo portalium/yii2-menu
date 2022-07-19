@@ -10,7 +10,7 @@ use yii\jui\Draggable;
 /* @var $model portalium\menu\models\MenuItem */
 
 $this->title = Module::t('Create Menu Item');
-$this->params['breadcrumbs'][] = ['label' => Module::t('Menu Items'), 'url' => ['index']];
+$this->params['breadcrumbs'][] = ['label' => Module::t('Menu Items'), 'url' => ['index', 'id_menu' => $id_menu]];
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <style>

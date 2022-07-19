@@ -50,22 +50,7 @@ class ItemController extends Controller
         if (!\Yii::$app->user->can('menuWebItemIndex')) {
             throw new \yii\web\ForbiddenHttpException(Module::t('You are not allowed to access this page.'));
         }
-        $searchModel = new MenuItemSearch();
-        $dataProvider = $searchModel->search($this->request->queryParams);
-        if ($id_menu != null) {
-            $dataProvider->query->andWhere(['id_menu' => $id_menu]);
-            $name = Menu::findOne($id_menu)->name;
-            return $this->render('index', [
-                'searchModel' => $searchModel,
-                'dataProvider' => $dataProvider,
-                'id_menu' => $id_menu,
-                'name' => $name,
-            ]);
-        }
-        return $this->render('index', [
-            'searchModel' => $searchModel,
-            'dataProvider' => $dataProvider,
-        ]);
+        return $this->redirect(['/menu/item/create', 'id_menu' => $id_menu]);
     }
 
     /**
