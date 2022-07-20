@@ -13,9 +13,9 @@ $this->params['breadcrumbs'][] = $this->title;
 \yii\web\YiiAsset::register($this);
 ?>
 <div class="menu-view">
-    
+
     <?php Panel::begin([
-        'title' => Module::t('Job Application'),
+        'title' => Module::t('Menu'),
         'actions' => [
             Html::a(Module::t('Update'), ['update', 'id' => $model->id_menu], ['class' => 'btn btn-primary']),
             Html::a(Module::t('Delete'), ['delete', 'id' => $model->id_menu], [
