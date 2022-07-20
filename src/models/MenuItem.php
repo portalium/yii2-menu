@@ -82,7 +82,7 @@ class MenuItem extends \yii\db\ActiveRecord
             'model' => Module::t('Model'),
             'url' => Module::t('Url'),
             'name_auth' => Module::t('Name Auth'),
-            'id_parent' => Module::t('Parent ID'),
+            'id_parent' => Module::t('Parent'),
             'id_menu' => Module::t('Menu ID'),
             'date_create' => Module::t('Date Created'),
             'date_update' => Module::t('Date Updated'),
@@ -132,7 +132,7 @@ class MenuItem extends \yii\db\ActiveRecord
         $list = [];
         $list['0'] = Module::t('Root Menu');
         foreach ($parents as $parent) {
-            $list[$parent->id_item] = $parent->label;
+            $list[$parent->id_item] = isset($parent->module) ? Yii::$app->getModule($parent->module)->t($parent->label) : Module::t($parent->label);
         }
         return $list;
     }
@@ -154,7 +154,7 @@ class MenuItem extends \yii\db\ActiveRecord
         foreach ($children as $child) {
             if ($child->hasChildren()) {
                 $list[$child->id_item] = [
-                    'title' => $child->label,
+                    'title' => isset($child->module) ? Yii::$app->getModule($child->module)->t($child->label) : Module::t($child->label),
                     'id' => $child->id_item,
                     'sort' => $child->sort,
                     'hasChildren' => true,
@@ -162,7 +162,7 @@ class MenuItem extends \yii\db\ActiveRecord
                 ];
             } else {
                 $list[$child->id_item] = [
-                    'title' => $child->label,
+                    'title' => isset($child->module) ? Yii::$app->getModule($child->module)->t($child->label) : Module::t($child->label),
                     'id' => $child->id_item,
                     'sort' => $child->sort,
                     'hasChildren' => false,
