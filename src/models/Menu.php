@@ -84,7 +84,7 @@ class Menu extends \yii\db\ActiveRecord
         foreach ($menu->items as $item) {
             if ($item->id_parent == 0) {
                 $result[] = [
-                    'title' => $item->label,
+                    'title' => isset($item->module) ? Yii::$app->getModule($item->module)->t($item->label) : Module::t($item->label),
                     'id' => $item->id_item,
                     'hasChildren' => $item->hasChildren(),
                     'children' => MenuItem::getMenuTree($item->id_item)
@@ -93,5 +93,4 @@ class Menu extends \yii\db\ActiveRecord
         }
         return $result;
     }
-
 }
