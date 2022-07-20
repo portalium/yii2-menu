@@ -27,9 +27,7 @@ use portalium\menu\bundles\DropMenuAsset;
     <?php Panel::begin([
         'title' => (isset($model->isNewRecord) && $model->isNewRecord == 1) ? Module::t('Create Menu Item') : Module::t('Update Menu Item'),
         'actions' => [
-            'header' => [
-
-            ],
+            'header' => [],
             'footer' => [
                 Html::button(Module::t('Save'), ['class' => 'btn btn-success create-menu-item', 'id' => 'create-menu-item'])
             ]
@@ -45,7 +43,7 @@ use portalium\menu\bundles\DropMenuAsset;
     <?= $form->field($model, 'id_parent')->dropDownList(MenuItem::getParents($id_menu), ['id' => 'id_item']) ?>
 
     <?= $form->field($model, 'icon')->textInput(['maxlength' => true]) ?>
-    <?= Html::a(Module::t('You can reach the number of the Icon you will choose by clicking here.'), 'https://api.flutter.dev/flutter/material/Icons-class.html', ['target' => '_blank'], ['class' => 'control-label']) . '<br><br>' ?>
+    <?= Html::a(Module::t('You can reach the number of the icon you will choose by clicking here.'), 'https://api.flutter.dev/flutter/material/Icons-class.html', ['target' => '_blank'], ['class' => 'control-label']) . '<br><br>' ?>
     <?= $form->field($model, 'iconSize')->textInput(['maxlength' => true]) ?>
 
     <?= $form->field($model, 'color')->widget(\kartik\color\ColorInput::className(), [
@@ -78,7 +76,7 @@ use portalium\menu\bundles\DropMenuAsset;
 
     echo $form->field($model, 'module', ['options' => ['id' => 'module-list-div']])->dropDownList(MenuItem::getModuleList(), ['id' => 'module-list', 'prompt' => 'Select Module']);
 
-    echo $form->field($model, 'menuType')->dropDownList(['web' => 'Web', 'mobile' => 'Mobile'], ['id' => 'menu-type', 'prompt' => 'Select Menu Type'])->label('Menu Type');
+    echo $form->field($model, 'menuType')->dropDownList(['web' => 'Web', 'mobile' => Module::t('Mobile')], ['id' => 'menu-type', 'prompt' => Module::t('Select Menu Type')]);
 
     echo $form->field($model, 'routeType', ['options' => ['id' => 'routeType-list-div']])->widget(DepDrop::classname(), [
         'options' => ['id' => 'routeType-list'],
@@ -113,7 +111,7 @@ use portalium\menu\bundles\DropMenuAsset;
 
     echo $form->field($model, 'url', ['options' => ['id' => 'url-input-div']])->textInput(['rows' => 6]);
 
-    echo $form->field($model, 'name_auth', ['options' => ['id' => 'name-auth-input-div']])->dropDownList(MenuItem::getAuthList(), ['id' => 'name-auth-input', 'prompt' => 'Select Auth', "options" => ['role' => ['disabled' => true], 'permission' => ['disabled' => true]]]);
+    echo $form->field($model, 'name_auth', ['options' => ['id' => 'name-auth-input-div']])->dropDownList(MenuItem::getAuthList(), ['id' => 'name-auth-input', 'prompt' => Module::t('Select Auth'), "options" => ['role' => ['disabled' => true], 'permission' => ['disabled' => true]]]);
 
     ?>
 
