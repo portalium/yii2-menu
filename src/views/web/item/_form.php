@@ -78,7 +78,7 @@ use portalium\menu\bundles\DropMenuAsset;
 
     echo $form->field($model, 'menuType')->dropDownList(['web' => 'Web', 'mobile' => Module::t('Mobile')], ['id' => 'menu-type', 'prompt' => Module::t('Select Menu Type')]);
 
-    echo $form->field($model, 'routeType', ['options' => ['id' => 'routeType-list-div']])->widget(DepDrop::classname(), [
+    echo $form->field($model, 'routeType', ['options' => ['id' => 'routeType-list-div']])->dropDownList(MenuItem::getModuleList(), ['id' => 'module-list', 'prompt' => 'Select Module'])->widget(DepDrop::classname(), [
         'options' => ['id' => 'routeType-list'],
         'pluginOptions' => [
             'depends' => ['menu-type', 'module-list'],
@@ -155,7 +155,13 @@ $this->registerJs('
                 $("#routeType-list-div").show();
                 $("#route-list-div").show();
                 $("#url-input-div").hide();
-            }else{
+            }
+            else if($(this).val() == ' . MenuItem::TYPE["route"] . '){
+                $("#module-list-div").show();
+                $("#routeType-list-div").hide();
+                $("#route-list-div").hide();
+                $("#url-input-div").show();
+            } else{
                 $("#module-list-div").hide();
                 $("#routeType-list-div").hide();
                 $("#route-list-div").hide();
