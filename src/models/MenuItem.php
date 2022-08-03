@@ -208,6 +208,7 @@ class MenuItem extends \yii\db\ActiveRecord
         } elseif ($this->type == self::TYPE['route']) {
             $json_data['data'] = [
                 'route' => $this->url,
+                'module' => $this->module,
             ];
         }
         $this->data = json_encode($json_data);
