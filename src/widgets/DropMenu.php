@@ -2,6 +2,7 @@
 
 namespace portalium\menu\widgets;
 
+use portalium\theme\widgets\Panel;
 use portalium\menu\models\Menu;
 use Yii;
 use yii\base\Widget;
@@ -25,23 +26,35 @@ class DropMenu extends Widget
 
     public function run()
     {
+       
+
         echo Html::beginTag('div', ['class' => 'cf nestable-lists']);
+        echo Html::beginTag('div', ['class' => 'cf dd']);
+        Panel::begin([
+            'title' =>  Module::t('Update Menu Item'),
+            'actions' => [
+                'header' => [],
+                
+            ]
+            ]);
         echo Html::beginTag('menu', ['id' => 'nestable-menu']);
         echo Html::tag('button', Module::t('Expand All'), ['type' => 'button', 'data-action' => 'expand-all', 'class' => 'btn btn-sm btn-primary', 'id' => 'expand-all']);
         echo Html::tag('button', Module::t('Collapse All'), ['type' => 'button', 'data-action' => 'collapse-all', 'class' => 'btn btn-sm btn-primary']);
         echo Html::tag('button', Module::t('Save Menu'), ['type' => 'button', 'class' => 'btn btn-sm btn-primary', 'data-action' => 'save-sort', 'id' => 'save-sort']);
         echo Html::endTag('menu');
+       
         Pjax::begin(['id' => 'nestable-pjax']);
         echo Html::beginTag('div', ['class' => 'dd', 'id' => 'nestable']);
         echo Html::beginTag('ol', ['class' => 'dd-list']);
-
         foreach (Menu::getMenuWithChildren('web-menu') as $item) {
             echo $this->renderItem($item);
         }
 
         echo Html::endTag('ol');
         echo Html::endTag('div');
+        echo Html::endTag('div');
         Pjax::end();
+        Panel::end();
         Pjax::begin(['id' => 'nestable2-pjax']);
         echo Html::beginTag('div', ['class' => 'dd', 'id' => 'nestable2']);
         
@@ -55,6 +68,7 @@ class DropMenu extends Widget
                 }
             }
         }
+
         echo $this->render('/web/item/_form', [
             'model' => $model,
             'id_menu' => $this->id_menu,
@@ -65,6 +79,7 @@ class DropMenu extends Widget
         echo Html::endTag('div');
         echo Html::beginTag('textarea', ['id' => 'nestable-output', 'style' => 'display:none']);
         echo Html::endTag('textarea');
+        
     }
 
     protected function renderItem($item)
