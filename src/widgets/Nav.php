@@ -5,7 +5,11 @@ namespace portalium\menu\widgets;
 use Yii;
 use yii\base\Widget;
 use yii\helpers\Html;
+use yii\helpers\ArrayHelper;
+use yii\web\NotFoundHttpException;
+
 use portalium\menu\Module;
+use portalium\menu\models\Menu;
 use portalium\menu\models\MenuItem;
 use portalium\theme\widgets\NavBar;
 use portalium\theme\widgets\Nav as BaseNav;
@@ -13,12 +17,15 @@ use portalium\theme\widgets\Nav as BaseNav;
 class Nav extends Widget
 {
     public $model;
+    public $slug;
     public $navbar;
+    public $options;
+
     public function init()
     {
         parent::init();
-        if ($this->model === null) {
-            throw new \yii\base\InvalidConfigException('MenuWidget::$model must be set.');
+        if (!$this->model = self::findModel($this->slug)) {
+            throw new \yii\base\InvalidConfigException('Nav::$menu must be set.');
         }
     }
 
@@ -32,14 +39,14 @@ class Nav extends Widget
                 if ($item->type == MenuItem::TYPE['module']) {
                     $items[] =
                         ($data["data"]["routeType"] == "widget") ?
-                        $data["data"]["route"]::widget() :
-                        [
-                            'label' => isset($item->module) ? Yii::$app->getModule($item->module)->t($item->label) : Module::t($item->label),
-                            'url' => $url,
-                            'items' => $this->getChildItems($item->id_item),
-                            'visible' => ($item->name_auth != null || $item->name_auth != '') ? Yii::$app->user->can($item->name_auth) : 1,
-                            'sort' => $item->sort
-                        ];
+                            $data["data"]["route"]::widget() :
+                            [
+                                'label' => isset($item->module) ? Yii::$app->getModule($item->module)->t($item->label) : Module::t($item->label),
+                                'url' => $url,
+                                'items' => $this->getChildItems($item->id_item),
+                                'visible' => ($item->name_auth != null || $item->name_auth != '') ? Yii::$app->user->can($item->name_auth) : 1,
+                                'sort' => $item->sort
+                            ];
                 } else {
                     $items[] =
                         [
@@ -53,12 +60,11 @@ class Nav extends Widget
             }
         }
 
-
         $items = $this->sortItems($items);
 
-        echo BaseNav::widget([
-            'options' => ['class' => 'navbar-nav navbar-right'],
+        return BaseNav::widget([
             'items' => $items,
+            'options' => $this->options
         ]);
     }
 
@@ -118,5 +124,14 @@ class Nav extends Widget
         }
         ksort($sort);
         return $sort;
+    }
+
+    private function findModel($slug)
+    {
+        if (($model = Menu::findOne(['slug' => $slug])) !== null) {
+            return $model;
+        }
+
+        throw new NotFoundHttpException(Module::t('The requested menu does not exist.'));
     }
 }
