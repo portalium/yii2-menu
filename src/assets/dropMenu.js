@@ -534,7 +534,7 @@
         e.preventDefault();
         $.ajax({
             type: 'post',
-            url: '/admin/menu/item/delete?id=' + $(this).attr('data'),
+            url: '/menu/item/delete?id=' + $(this).attr('data'),
             success: function (response) {
                 //wait 1 second before reload pjax
                 $.pjax.reload({container: '#nestable-pjax'});
