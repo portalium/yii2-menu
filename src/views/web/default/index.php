@@ -1,14 +1,9 @@
 <?php
 
-
-use portalium\menu\models\MenuItem;
 use yii\helpers\Html;
-use yii\helpers\Url;
-use yii\grid\ActionColumn;
-use yii\grid\GridView;
 use portalium\menu\Module;
 use portalium\theme\widgets\Panel;
-use portalium\menu\widgets\MenuWidget;
+use portalium\theme\widgets\GridView;
 /* @var $this yii\web\View */
 /* @var $searchModel portalium\menu\models\MenuSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
