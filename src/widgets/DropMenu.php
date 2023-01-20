@@ -41,13 +41,12 @@ class DropMenu extends Widget
             'title' => Module::t('Menu'),
             'actions' => [
                 'header' => [
-                    Html::beginTag('menu', ['id' => 'nestable-menu']),
-                    Html::tag('button', Module::t('Expand All'), ['type' => 'button', 'data-action' => 'expand-all', 'class' => 'btn btn-sm btn-primary', 'id' => 'expand-all']),
-                    Html::tag('button', Module::t('Collapse All'), ['type' => 'button', 'data-action' => 'collapse-all', 'class' => 'btn btn-sm btn-primary']),
-                    Html::tag('button', Module::t('Save Menu'), ['type' => 'button', 'class' => 'btn btn-sm btn-success', 'data-action' => 'save-sort', 'id' => 'save-sort']),
-                    Html::endTag('menu')
+                    Html::tag('button', Module::t(''), ['type' => 'button', 'data-action' => 'expand-all', 'class' => 'fa fa-expand btn btn-sm btn-primary', 'id' => 'expand-all']),
+                    Html::tag('button', Module::t(''), ['type' => 'button', 'data-action' => 'collapse-all', 'class' => 'fa fa-compress btn btn-sm btn-primary', 'id' => 'collapse-all']),
+                    
                 ],
                 'footer' => [
+                    Html::tag('button', Module::t('Save'), ['type' => 'button', 'class' => 'btn btn-sm btn-success', 'data-action' => 'save-sort', 'id' => 'save-sort']),
                 ]
             ]
         ]);
