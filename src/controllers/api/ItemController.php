@@ -35,7 +35,6 @@ class ItemController extends RestActiveController
     public function actionSort()
     {
         $data = Yii::$app->request->post();
-        Yii::warning($data);
         MenuItem::sort($data);
         return "success";
     }

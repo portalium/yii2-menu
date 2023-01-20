@@ -9,6 +9,7 @@ use yii\helpers\Html;
 use portalium\menu\Module;
 use portalium\menu\models\MenuItem;
 use portalium\menu\bundles\DropMenuAsset;
+use portalium\theme\widgets\Panel;
 use yii\widgets\Pjax;
 
 
@@ -25,23 +26,42 @@ class DropMenu extends Widget
 
     public function run()
     {
+        
         echo Html::beginTag('div', ['class' => 'cf nestable-lists']);
-        echo Html::beginTag('menu', ['id' => 'nestable-menu']);
+        
+        /* echo Html::beginTag('menu', ['id' => 'nestable-menu']);
         echo Html::tag('button', Module::t('Expand All'), ['type' => 'button', 'data-action' => 'expand-all', 'class' => 'btn btn-sm btn-primary', 'id' => 'expand-all']);
         echo Html::tag('button', Module::t('Collapse All'), ['type' => 'button', 'data-action' => 'collapse-all', 'class' => 'btn btn-sm btn-primary']);
         echo Html::tag('button', Module::t('Save Menu'), ['type' => 'button', 'class' => 'btn btn-sm btn-primary', 'data-action' => 'save-sort', 'id' => 'save-sort']);
-        echo Html::endTag('menu');
+        echo Html::endTag('menu'); */
+        
         Pjax::begin(['id' => 'nestable-pjax']);
         echo Html::beginTag('div', ['class' => 'dd', 'id' => 'nestable']);
+        Panel::begin([
+            'title' => Module::t('Menu'),
+            'actions' => [
+                'header' => [
+                    Html::beginTag('menu', ['id' => 'nestable-menu']),
+                    Html::tag('button', Module::t('Expand All'), ['type' => 'button', 'data-action' => 'expand-all', 'class' => 'btn btn-sm btn-primary', 'id' => 'expand-all']),
+                    Html::tag('button', Module::t('Collapse All'), ['type' => 'button', 'data-action' => 'collapse-all', 'class' => 'btn btn-sm btn-primary']),
+                    Html::tag('button', Module::t('Save Menu'), ['type' => 'button', 'class' => 'btn btn-sm btn-success', 'data-action' => 'save-sort', 'id' => 'save-sort']),
+                    Html::endTag('menu')
+                ],
+                'footer' => [
+                ]
+            ]
+        ]);
         echo Html::beginTag('ol', ['class' => 'dd-list']);
-
+        
         foreach (Menu::getMenuWithChildren('web-menu') as $item) {
             echo $this->renderItem($item);
         }
-
+        
         echo Html::endTag('ol');
+        Panel::end();
         echo Html::endTag('div');
         Pjax::end();
+        
         Pjax::begin(['id' => 'nestable2-pjax']);
         echo Html::beginTag('div', ['class' => 'dd', 'id' => 'nestable2']);
         
