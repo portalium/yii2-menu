@@ -91,8 +91,9 @@ class ItemController extends Controller
             }
             if ($model->load($this->request->post())) {
                 $model->id_menu = $id_menu;
-                if($model->save())
-                    return "ok";
+                if($model->save()){
+                    return;
+                }
                 else
                     Yii::warning($model->getErrors());
             }

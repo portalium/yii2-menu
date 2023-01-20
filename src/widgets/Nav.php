@@ -106,9 +106,14 @@ class Nav extends Widget
             } elseif ($item['data']['routeType'] == 'action') {
                 $url = [$item['data']['route']];
             }
-        } else {
+        } else if($item->type == MenuItem::TYPE['route']) {
             $item = json_decode($item->data, true);
             $url = [$item['data']['route']];
+        } else if($item->type == MenuItem::TYPE['url']) {
+            $item = json_decode($item->data, true);
+            $url = $item['data']['url'];
+        }else{
+            $url = $item->url;
         }
         return $url;
     }

@@ -191,7 +191,6 @@ class MenuItem extends \yii\db\ActiveRecord
 
     public function beforeSave($insert)
     {
-        $json_data['type'] = $this->type;
         if ($this->type == self::TYPE['module']) {
             $json_data['data'] = [
                 'module' => $this->module,
@@ -224,7 +223,6 @@ class MenuItem extends \yii\db\ActiveRecord
     public function afterFind()
     {
         $json_data = json_decode($this->data, true);
-        $this->type = $json_data['type'];
         if ($this->type == self::TYPE['module']) {
             $this->module = $json_data['data']['module'];
             $this->routeType = $json_data['data']['routeType'];
@@ -243,5 +241,44 @@ class MenuItem extends \yii\db\ActiveRecord
         $this->iconSize = $json_style['iconSize'];
 
         return parent::afterFind();
+    }
+
+    public static function sort($data)
+    {
+        $data = json_decode($data['data'], true);
+        $index = 0;
+        foreach ($data as $item) {
+            $model = MenuItem::findOne($item['id']);
+            if (!$model) {
+                continue;
+            }
+            $model->sort = $index;
+            $model->id_parent = 0;
+            $model->save();
+            $index++;
+            if (isset($item['children'])) {
+                self::sortChildren($item['children'],$item['id'], $index);
+            }
+        }
+        return "success";
+    }
+
+    public static function sortChildren($children, $id_parent, &$index)
+    {
+        foreach ($children as $child) {
+            //Yii::warning($child['id'].' '.$index);
+            $model = MenuItem::findOne($child['id']);
+            if (!$model) {
+                continue;
+            }
+            $model->sort = $index;
+            $model->id_parent = $id_parent;
+            $model->save();
+            $index++;
+            if (isset($child['children'])) {
+                self::sortChildren($child['children'], $child['id'], $index);
+            }
+
+        }
     }
 }
