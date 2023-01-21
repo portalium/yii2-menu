@@ -2,6 +2,7 @@
 
 use yii\db\Schema;
 use yii\db\Migration;
+use portalium\menu\Module;
 
 class m220218_222512_menu extends Migration
 {
@@ -11,7 +12,7 @@ class m220218_222512_menu extends Migration
         $tableOptions = 'ENGINE=InnoDB';
 
         $this->createTable(
-            '{{%menu_menu}}',
+            '{{%' . Module::$tablePrefix . 'menu}}',
             [
                 'id_menu'=> $this->primaryKey(11),
                 'name'=> $this->string(255)->notNull(),
@@ -26,6 +27,6 @@ class m220218_222512_menu extends Migration
 
     public function safeDown()
     {
-        $this->dropTable('{{%menu_menu}}');
+        $this->dropTable('{{%' . Module::$tablePrefix . 'menu}}');
     }
 }
