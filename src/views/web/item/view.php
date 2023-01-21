@@ -17,9 +17,9 @@ $this->params['breadcrumbs'][] = $this->title;
     <?php Panel::begin([
         'title' => Module::t('Job Application'),
         'actions' => [
-            Html::a(Module::t('Update'), ['update', 'id' => $model->id_item], ['class' => 'btn btn-primary']),
+            Html::a(Module::t('Update'), ['update', 'id' => $model->id_item], ['class' => 'fa fa-pencil btn btn-primary']),
             Html::a(Module::t('Delete'), ['delete', 'id' => $model->id_item], [
-                'class' => 'btn btn-danger',
+                'class' => 'fa fa-trash btn btn-danger',
                 'data' => [
                     'confirm' => Module::t('Are you sure you want to delete this item?'),
                     'method' => 'post',

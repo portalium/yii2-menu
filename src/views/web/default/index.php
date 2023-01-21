@@ -16,7 +16,7 @@ $this->params['breadcrumbs'][] = $this->title;
     <?php Panel::begin([
         'title' => Module::t('Menus'),
         'actions' => [
-            Html::a(Module::t('Create Menu'), ['create'], ['class' => 'btn btn-success']),
+            Html::a(Module::t(''), ['create'], ['class' => 'fa fa-plus btn btn-success']),
         ],
     ]) ?>
 
