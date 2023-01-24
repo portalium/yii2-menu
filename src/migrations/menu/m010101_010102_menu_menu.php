@@ -15,12 +15,13 @@ class m010101_010102_menu_menu extends Migration
             'id_menu' => '1',
             'name' => 'Web Menu',
             'slug' => 'web-menu',
-            'type' => Menu::TYPE['web']
+            'type' => Menu::TYPE['web'],
+            'id_user' => '1',
         ]);
         $id_menu = Menu::find()->where(['slug' => 'web-menu'])->one()->id_menu;
 
-        $this->batchInsert('menu_item', ['id_item', 'label', 'slug', 'type', 'style', 'data', 'sort', 'id_parent', 'id_menu', 'name_auth', 'date_create', 'date_update'], [
-            [null, 'Menü', 'menu-parent', '2', '{"icon":"","color":"","iconSize":""}', '{"type":"2","data":{"module":"menu","routeType":"action","route":"\\/menu\\/default\\/index","model":null,"menuRoute":null,"menuType":"web"}}', '1', '0', $id_menu, 'menuWebDefaultIndex', '2022-06-13 15:28:07', '2022-06-13 15:28:07'],
+        $this->batchInsert('menu_item', ['id_item', 'label', 'slug', 'type', 'style', 'data', 'sort', 'id_parent', 'id_menu', 'name_auth', 'id_user', 'date_create', 'date_update'], [
+            [null, 'Menü', 'menu-parent', '2', '{"icon":"","color":"","iconSize":""}', '{"type":"2","data":{"module":"menu","routeType":"action","route":"\\/menu\\/default\\/index","model":null,"menuRoute":null,"menuType":"web"}}', '1', '0', $id_menu, '0', 'menuWebDefaultIndex', '2022-06-13 15:28:07', '2022-06-13 15:28:07'],
         ]);
 
     }
