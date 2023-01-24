@@ -478,16 +478,9 @@
         // output initial serialised data
         updateOutput($('#nestable').data('output', $('#nestable-output')));
 
-        $('#nestable-menu').on('click', function (e) {
+        $('#save-sort').on('click', function (e) {
             var target = $(e.target),
                 action = target.data('action');
-            if (action === 'expand-all') {
-                $('.dd').nestable('expandAll');
-            }
-            if (action === 'collapse-all') {
-                $('.dd').nestable('collapseAll');
-            }
-            if (action === 'save-sort') {
                 $.ajax({
                     url: '/api/menu/item/sort',
                     type: 'POST',
@@ -498,11 +491,20 @@
                         window.location.reload();
                     }
                 });
-            }
+        });
+        $('#expand-all').on('click', function (e) {
+            var target = $(e.target),
+                action = target.data('action');
+                $('.dd').nestable('expandAll');
+        });
+        $('#collapse-all').on('click', function (e) {
+            var target = $(e.target),
+                action = target.data('action');
+                $('.dd').nestable('collapseAll');
         });
 
         $('#nestable3').nestable();
-    });
+        });
 
     //submit form
     $('#create-menu-item .create-menu-item').click(function (e) {

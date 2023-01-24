@@ -44,7 +44,7 @@ class Nav extends Widget
                                 'label' => isset($item->module) ? Yii::$app->getModule($item->module)->t($item->label) : Module::t($item->label),
                                 'url' => $url,
                                 'items' => $this->getChildItems($item->id_item),
-                                'visible' => ($item->name_auth != null || $item->name_auth != '') ? Yii::$app->user->can($item->name_auth) : 1,
+                                'visible' => (($item->name_auth != null || $item->name_auth != '') && $item->name_auth != 'guest') ? Yii::$app->user->can($item->name_auth) : ($item->name_auth == 'guest' ? true : false),
                                 'sort' => $item->sort
                             ];
                 } else {
@@ -53,7 +53,7 @@ class Nav extends Widget
                             'label' => isset($item->module) ? Yii::$app->getModule($item->module)->t($item->label) : Module::t($item->label),
                             'url' => $url,
                             'items' => $this->getChildItems($item->id_item),
-                            'visible' => ($item->name_auth != null || $item->name_auth != '') ? Yii::$app->user->can($item->name_auth) : true,
+                            'visible' => (($item->name_auth != null || $item->name_auth != '') && $item->name_auth != 'guest') ? Yii::$app->user->can($item->name_auth) : ($item->name_auth == 'guest' ? true : false),
                             'sort' => $item->sort
                         ];
                 }
@@ -61,7 +61,6 @@ class Nav extends Widget
         }
 
         $items = $this->sortItems($items);
-
         return BaseNav::widget([
             'items' => $items,
             'options' => $this->options
@@ -81,7 +80,7 @@ class Nav extends Widget
                     [
                         'label' => isset($item->module) ? Yii::$app->getModule($item->module)->t($item->label) : Module::t($item->label),
                         'url' => $url,
-                        'visible' => ($item->name_auth != null || $item->name_auth != '') ? Yii::$app->user->can($item->name_auth) : 1,
+                        'visible' => (($item->name_auth != null || $item->name_auth != '') && $item->name_auth != 'guest') ? Yii::$app->user->can($item->name_auth) : ($item->name_auth == 'guest' ? true : false),
                     ];
                 $list = $this->getChildItems($item->id_item);
                 if (!empty($list)) {
@@ -106,9 +105,14 @@ class Nav extends Widget
             } elseif ($item['data']['routeType'] == 'action') {
                 $url = [$item['data']['route']];
             }
-        } else {
+        } else if($item->type == MenuItem::TYPE['route']) {
             $item = json_decode($item->data, true);
             $url = [$item['data']['route']];
+        } else if($item->type == MenuItem::TYPE['url']) {
+            $item = json_decode($item->data, true);
+            $url = $item['data']['url'];
+        }else{
+            $url = $item->url;
         }
         return $url;
     }
