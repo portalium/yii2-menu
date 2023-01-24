@@ -4,6 +4,7 @@ namespace portalium\menu\models;
 
 use Yii;
 use portalium\menu\Module;
+use yii\behaviors\TimestampBehavior;
 
 /**
  * This is the model class for table "{{%menu}}".
@@ -25,6 +26,27 @@ class Menu extends \yii\db\ActiveRecord
     /**
      * {@inheritdoc}
      */
+    public function behaviors()
+    {
+        return [
+            [
+                'class' => TimestampBehavior::class,
+                'createdAtAttribute' => 'date_create',
+                'updatedAtAttribute' => 'date_update',
+                'value' => date("Y-m-d H:i:s"),
+            ],
+            [
+                'class' => 'yii\behaviors\BlameableBehavior',
+                'createdByAttribute' => 'id_user',
+                'updatedByAttribute' => 'id_user',
+                'value' => Yii::$app->user->id,
+            ],
+        ];
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public static function tableName()
     {
         return '{{%' . Module::$tablePrefix . 'menu}}';
@@ -42,7 +64,7 @@ class Menu extends \yii\db\ActiveRecord
     {
         return [
             [['name', 'slug', 'type'], 'required'],
-            [['type'], 'integer'],
+            [['type', 'id_user'], 'integer'],
             [['date_create', 'date_update'], 'safe'],
             [['name', 'slug'], 'string', 'max' => 255]
         ];
@@ -58,6 +80,7 @@ class Menu extends \yii\db\ActiveRecord
             'name' => Module::t('Name'),
             'slug' => Module::t('Slug'),
             'type' => Module::t('Type'),
+            'id_user' => Module::t('User ID'),
             'date_create' => Module::t('Date Created'),
             'date_update' => Module::t('Date Updated'),
         ];

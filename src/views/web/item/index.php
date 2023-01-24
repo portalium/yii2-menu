@@ -1,12 +1,9 @@
 <?php
 
-use portalium\menu\models\MenuItem;
 use yii\helpers\Html;
-use yii\helpers\Url;
-use yii\grid\ActionColumn;
-use yii\grid\GridView;
 use portalium\menu\Module;
 use portalium\theme\widgets\Panel;
+use portalium\theme\widgets\GridView;
 /* @var $this yii\web\View */
 /* @var $searchModel portalium\menu\models\MenuItemSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
@@ -24,7 +21,7 @@ $this->params['breadcrumbs'][] = $this->title;
     <?php Panel::begin([
         'title' => Module::t('Items'),
         'actions' => [
-            Html::a(Module::t('Create Menu Item'), ['/menu/item/create', 'id_menu' => (isset($id_menu)) ? $id_menu : null], ['class' => 'btn btn-success']),
+            Html::a(Module::t(''), ['/menu/item/create', 'id_menu' => (isset($id_menu)) ? $id_menu : null], ['class' => 'fa fa-plus btn btn-success']),
         ],
     ]) ?>
 

@@ -35,44 +35,8 @@ class ItemController extends RestActiveController
     public function actionSort()
     {
         $data = Yii::$app->request->post();
-        $data = json_decode($data['data'], true);
-        Yii::warning($data);
-        $index = 0;
-        foreach ($data as $item) {
-            $model = MenuItem::findOne($item['id']);
-            if (!$model) {
-                continue;
-            }
-            $model->sort = $index;
-            $model->id_parent = 0;
-            $model->save();
-            $index++;
-            if (isset($item['children'])) {
-                $this->sortChildren($item['children'],$item['id'], $index);
-            }
-        }
+        MenuItem::sort($data);
         return "success";
     }
-
-    public function sortChildren($children, $id_parent, &$index)
-    {
-        foreach ($children as $child) {
-            //Yii::warning($child['id'].' '.$index);
-            $model = MenuItem::findOne($child['id']);
-            if (!$model) {
-                
-                continue;
-            }
-            $model->sort = $index;
-            $model->id_parent = $id_parent;
-            $model->save();
-            $index++;
-            if (isset($child['children'])) {
-                $this->sortChildren($child['children'], $child['id'], $index);
-            }
-
-        }
-    }
-
 
 }

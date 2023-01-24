@@ -47,7 +47,7 @@ class ItemController extends Controller
      */
     public function actionIndex($id_menu = null)
     {
-        if (!\Yii::$app->user->can('menuWebItemIndex')) {
+        if (!\Yii::$app->user->can('menuWebItemIndex') && !\Yii::$app->user->can('menuWebItemIndexOwn')) {
             throw new \yii\web\ForbiddenHttpException(Module::t('You are not allowed to access this page.'));
         }
         return $this->redirect(['/menu/item/create', 'id_menu' => $id_menu]);
@@ -91,8 +91,9 @@ class ItemController extends Controller
             }
             if ($model->load($this->request->post())) {
                 $model->id_menu = $id_menu;
-                if($model->save())
-                    return "ok";
+                if($model->save()){
+                    return;
+                }
                 else
                     Yii::warning($model->getErrors());
             }
@@ -115,7 +116,7 @@ class ItemController extends Controller
      */
     public function actionUpdate($id)
     {
-        if (!\Yii::$app->user->can('menuWebItemUpdate')) {
+        if (!\Yii::$app->user->can('menuWebItemUpdate', ['model' => $this->findModel($id)])) {
             throw new \yii\web\ForbiddenHttpException(Module::t('You are not allowed to access this page.'));
         }
         $model = $this->findModel($id);
@@ -139,7 +140,7 @@ class ItemController extends Controller
      */
     public function actionDelete($id)
     {
-        if (!\Yii::$app->user->can('menuWebItemDelete')) {
+        if (!\Yii::$app->user->can('menuWebItemDelete', ['model' => $this->findModel($id)])) {
             throw new \yii\web\ForbiddenHttpException(Module::t('You are not allowed to access this page.'));
         }
         $model = $this->findModel($id);
