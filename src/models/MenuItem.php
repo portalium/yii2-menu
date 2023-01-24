@@ -57,7 +57,7 @@ class MenuItem extends \yii\db\ActiveRecord
                 'class' => 'yii\behaviors\BlameableBehavior',
                 'createdByAttribute' => 'id_user',
                 'updatedByAttribute' => 'id_user',
-                'value' => Yii::$app->user->id,
+                'value' => isset(Yii::$app->user) ? Yii::$app->user->id : 0,
             ],
         ];
     }
