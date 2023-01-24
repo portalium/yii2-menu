@@ -9,8 +9,8 @@ class m220219_222513_menu_rbac extends Migration
     public function up()
     {
         $auth = Yii::$app->authManager;
-        $settings = yii\helpers\ArrayHelper::map(portalium\site\models\Setting::find()->asArray()->all(),'name','value');
-        $role = $settings['default::role'];
+    
+        $role = Yii::$app->settings->getValue('default::role');
         $admin = (isset($role) && $role != '') ? $auth->getRole($role) : $auth->getRole('admin');
 
         $menuApiDefaultView = $auth->createPermission('menuApiDefaultView');

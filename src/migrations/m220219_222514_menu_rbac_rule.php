@@ -12,8 +12,7 @@ class m220219_222514_menu_rbac_rule extends Migration
         $auth = Yii::$app->authManager;
         $rule = new OwnRule();
         $auth->add($rule);
-        $settings = yii\helpers\ArrayHelper::map(portalium\site\models\Setting::find()->asArray()->all(),'name','value');
-        $role = $settings['default::role'];
+        $role = Yii::$app->settings->getValue('default::role');
         $admin = (isset($role) && $role != '') ? $auth->getRole($role) : $auth->getRole('admin');
         $permissionsName = [
             'menuApiDefaultViewOwn',
