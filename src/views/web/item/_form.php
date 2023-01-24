@@ -111,7 +111,7 @@ use portalium\menu\bundles\DropMenuAsset;
 
     echo $form->field($model, 'url', ['options' => ['id' => 'url-input-div']])->textInput(['rows' => 6]);
 
-    echo $form->field($model, 'name_auth', ['options' => ['id' => 'name-auth-input-div']])->dropDownList(MenuItem::getAuthList(), ['id' => 'name-auth-input', 'prompt' => Module::t('Select Auth'), "options" => ['role' => ['disabled' => true], 'permission' => ['disabled' => true]]]);
+    echo $form->field($model, 'name_auth', ['options' => ['id' => 'name-auth-input-div']])->dropDownList(MenuItem::getAuthList(), ['id' => 'name-auth-input', 'prompt' => Module::t('Disabled'), "options" => ['role' => ['disabled' => true], 'permission' => ['disabled' => true]]]);
 
     ?>
 
