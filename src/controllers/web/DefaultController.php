@@ -46,12 +46,14 @@ class DefaultController extends Controller
      */
     public function actionIndex()
     {
-        if (!\Yii::$app->user->can('menuWebDefaultIndex')) {
+        if (!\Yii::$app->user->can('menuWebDefaultIndex') && !\Yii::$app->user->can('menuWebDefaultIndexOwn')) {
             throw new \yii\web\ForbiddenHttpException(Module::t('You are not allowed to access this page.'));
         }
 
         $searchModel = new MenuSearch();
         $dataProvider = $searchModel->search($this->request->queryParams);
+        if(!\Yii::$app->user->can('menuWebDefaultIndex'))
+            $dataProvider->query->andWhere(['id_user'=>\Yii::$app->user->id]);
 
         return $this->render('index', [
             'searchModel' => $searchModel,
@@ -67,7 +69,7 @@ class DefaultController extends Controller
      */
     public function actionView($id)
     {
-        if (!\Yii::$app->user->can('menuWebDefaultView')) {
+        if (!\Yii::$app->user->can('menuWebDefaultView', ['model' => $this->findModel($id)])) {
             throw new \yii\web\ForbiddenHttpException(Module::t('You are not allowed to access this page.'));
         }
         return $this->render('view', [
@@ -109,7 +111,7 @@ class DefaultController extends Controller
      */
     public function actionUpdate($id)
     {
-        if (!\Yii::$app->user->can('menuWebDefaultUpdate')) {
+        if (!\Yii::$app->user->can('menuWebDefaultUpdate', ['model' => $this->findModel($id)])) {
             throw new \yii\web\ForbiddenHttpException(Module::t('You are not allowed to access this page.'));
         }
         $model = $this->findModel($id);
@@ -132,7 +134,7 @@ class DefaultController extends Controller
      */
     public function actionDelete($id)
     {
-        if (!\Yii::$app->user->can('menuWebDefaultDelete')) {
+        if (!\Yii::$app->user->can('menuWebDefaultDelete', ['model' => $this->findModel($id)])) {
             throw new \yii\web\ForbiddenHttpException(Module::t('You are not allowed to access this page.'));
         }
         $this->findModel($id)->delete();

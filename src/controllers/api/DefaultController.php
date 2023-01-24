@@ -5,6 +5,7 @@ namespace portalium\menu\controllers\api;
 use Yii;
 use portalium\menu\Module;
 use portalium\menu\models\Menu;
+use portalium\menu\models\MenuSearch;
 use portalium\rest\ActiveController as RestActiveController;
 
 class DefaultController extends RestActiveController
@@ -18,6 +19,15 @@ class DefaultController extends RestActiveController
             'class' => \yii\data\ActiveDataFilter::class,
             'searchModel' => $this->modelClass,
         ];
+
+        $actions['index']['prepareDataProvider'] = function ($action) {
+            $searchModel = new MenuSearch();
+            $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
+            if(!Yii::$app->user->can('menuApiDefaultIndex')){
+                $dataProvider->query->andWhere(['id_user'=>Yii::$app->user->id]);
+            }
+            return $dataProvider;
+        };
         return $actions;
     }
 
@@ -44,7 +54,7 @@ class DefaultController extends RestActiveController
                     throw new \yii\web\ForbiddenHttpException(Module::t('You do not have permission to delete this menu.'));
                 break;
             default:
-                if (!Yii::$app->user->can('menuApiDefaultIndex'))
+                if (!Yii::$app->user->can('menuApiDefaultIndex') && !Yii::$app->user->can('menuApiDefaultOwn'))
                     throw new \yii\web\ForbiddenHttpException(Module::t('You do not have permission to delete this menu.'));
                 break;
         }
