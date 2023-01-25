@@ -34,9 +34,10 @@ class DropMenu extends Widget
         echo Html::tag('button', Module::t('Collapse All'), ['type' => 'button', 'data-action' => 'collapse-all', 'class' => 'btn btn-sm btn-primary']);
         echo Html::tag('button', Module::t('Save Menu'), ['type' => 'button', 'class' => 'btn btn-sm btn-primary', 'data-action' => 'save-sort', 'id' => 'save-sort']);
         echo Html::endTag('menu'); */
-        
-        Pjax::begin(['id' => 'nestable-pjax']);
         echo Html::beginTag('div', ['class' => 'dd', 'id' => 'nestable']);
+        
+        
+        DropMenuAsset::register($this->getView());
         Panel::begin([
             'title' => Module::t('Menu'),
             'actions' => [
@@ -50,6 +51,7 @@ class DropMenu extends Widget
                 ]
             ]
         ]);
+        Pjax::begin(['id' => 'nestable-pjax']);
         echo Html::beginTag('ol', ['class' => 'dd-list']);
         
         foreach (Menu::getMenuWithChildren('web-menu') as $item) {
@@ -57,10 +59,11 @@ class DropMenu extends Widget
         }
         
         echo Html::endTag('ol');
-        Panel::end();
-        echo Html::endTag('div');
         Pjax::end();
+        Panel::end();
         
+        
+        echo Html::endTag('div');
         Pjax::begin(['id' => 'nestable2-pjax']);
         echo Html::beginTag('div', ['class' => 'dd', 'id' => 'nestable2']);
         

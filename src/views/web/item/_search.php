@@ -23,8 +23,6 @@ use portalium\menu\Module;
 
     <?= $form->field($model, 'icon') ?>
 
-    <?php // echo $form->field($model, 'id_parent') ?>
-
     <?php // echo $form->field($model, 'id_menu') ?>
 
     <?php // echo $form->field($model, 'date_create') ?>

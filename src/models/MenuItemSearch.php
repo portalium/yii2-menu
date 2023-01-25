@@ -17,7 +17,7 @@ class MenuItemSearch extends MenuItem
     public function rules()
     {
         return [
-            [['id_item', 'id_parent', 'id_menu'], 'integer'],
+            [['id_item', 'id_menu'], 'integer'],
             [['label', 'slug', 'icon', 'date_create', 'date_update'], 'safe'],
         ];
     }
@@ -58,7 +58,6 @@ class MenuItemSearch extends MenuItem
         // grid filtering conditions
         $query->andFilterWhere([
             'id_item' => $this->id_item,
-            'id_parent' => $this->id_parent,
             'id_menu' => $this->id_menu,
             'date_create' => $this->date_create,
             'date_update' => $this->date_update,

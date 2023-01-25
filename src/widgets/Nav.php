@@ -33,7 +33,7 @@ class Nav extends Widget
     {
         $items = [];
         foreach ($this->model->items as $item) {
-            if ($item->id_parent == 0) {
+            if (!isset($item->parent)) {
                 $url = $this->getUrl($item);
                 $data = json_decode($item->data, true);
                 if ($item->type == MenuItem::TYPE['module']) {
@@ -71,7 +71,7 @@ class Nav extends Widget
     {
         $items = [];
         foreach ($this->model->items as $item) {
-            if ($item->id_parent == $id_parent) {
+            if (isset($item->parent) && $item->parent->id_item == $id_parent) {
 
                 $url = $this->getUrl($item);
                 $data = json_decode($item->data, true);
