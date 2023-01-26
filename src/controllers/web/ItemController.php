@@ -91,6 +91,10 @@ class ItemController extends Controller
             }
             if ($model->load($this->request->post())) {
                 $model->id_menu = $id_menu;
+
+                $max = MenuItem::find()->max('sort');
+                $model->sort = $max + 1;
+                Yii::warning("max: $max");
                 if($model->save()){
                     return;
                 }
@@ -242,8 +246,10 @@ class ItemController extends Controller
             
             foreach ($menuItems[0] as $key => $item) {
                 if($item['type'] == $routeType && $item['route'] == $route){
-                    $field = $item['field'];
-                    $modelName = $item['class'];
+
+                        $field = $item['field'];
+                        $modelName = $item['class'];
+
 
                 }
             }
@@ -253,23 +259,6 @@ class ItemController extends Controller
                else {
                     $data = [];
                 }
-            return json_encode(['output' => $data, 'selected' => '']);
-        }
-    }
-
-    public function actionRouteList(){
-        $out = [];
-        if($this->request->isPost){
-            $request = $this->request->post('depdrop_parents');
-            $moduleName = $request[1];
-            $routeType = $request[2];
-            if($moduleName == null || $routeType == null || $moduleName == '' || $routeType == ''){
-                return $this->asJson(['output' => [], 'selected' => '']);
-            }
-            $menuRoutes = MenuRoute::find()->where(['module' => $moduleName])->asArray()->all();
-
-            $data = MenuRoute::find()->select(['id' => 'id_menu_route', 'name' => 'title'])->asArray()->all();
-
             return json_encode(['output' => $data, 'selected' => '']);
         }
     }

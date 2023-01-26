@@ -4,6 +4,8 @@ namespace portalium\menu\models;
 
 use Yii;
 use portalium\menu\Module;
+use yii\helpers\ArrayHelper;
+use portalium\menu\models\ItemChild;
 use yii\behaviors\TimestampBehavior;
 
 /**
@@ -17,7 +19,7 @@ use yii\behaviors\TimestampBehavior;
  * @property string $data
  * @property int $sort
  * @property int $name_auth
- * @property int $id_parent
+ * @property int $parent
  * @property int $id_menu
  * @property string $date_create
  * @property string $date_update
@@ -53,12 +55,6 @@ class MenuItem extends \yii\db\ActiveRecord
                 'updatedAtAttribute' => 'date_update',
                 'value' => date("Y-m-d H:i:s"),
             ],
-            [
-                'class' => 'yii\behaviors\BlameableBehavior',
-                'createdByAttribute' => 'id_user',
-                'updatedByAttribute' => 'id_user',
-                'value' => isset(Yii::$app->user) ? Yii::$app->user->id : 0,
-            ],
         ];
     }
 
@@ -77,9 +73,9 @@ class MenuItem extends \yii\db\ActiveRecord
     {
         return [
             [['label', 'slug', 'style', 'id_menu', 'type'], 'required'],
-            [['type', 'id_parent', 'id_menu', 'sort', 'id_user'], 'integer'],
+            [['type', 'id_menu', 'sort', 'id_user'], 'integer'],
             [['data', 'module', 'routeType', 'route', 'model', 'url', 'name_auth', 'menuType'], 'string'],
-            [['date_create', 'date_update', 'menuRoute', 'icon', 'color', 'iconSize'], 'safe'],
+            [['date_create', 'date_update', 'parent', 'menuRoute', 'icon', 'color', 'iconSize'], 'safe'],
             [['label', 'slug', 'style'], 'string', 'max' => 255],
             [['style'], 'default', 'value' => '{"icon":"0xf0f6","color":"rgb(234, 153, 153)","iconSize":"24"}'],
         ];
@@ -104,7 +100,7 @@ class MenuItem extends \yii\db\ActiveRecord
             'model' => Module::t('Model'),
             'url' => Module::t('Url'),
             'name_auth' => Module::t('Name Auth'),
-            'id_parent' => Module::t('Parent'),
+            'parent' => Module::t('Parent'),
             'id_menu' => Module::t('Menu ID'),
             'id_user' => Module::t('User ID'),
             'date_create' => Module::t('Date Created'),
@@ -149,48 +145,64 @@ class MenuItem extends \yii\db\ActiveRecord
         return $list;
     }
 
-    public static function getParents($id_menu)
+    public function getParent()
     {
-        $parents = self::find()->where(['id_parent' => 0, 'id_menu' => $id_menu])->all();
-        $list = [];
-        $list['0'] = Module::t('Root Menu');
-        foreach ($parents as $parent) {
-            $list[$parent->id_item] = isset($parent->module) ? Yii::$app->getModule($parent->module)->t($parent->label) : Module::t($parent->label);
-        }
-        return $list;
+        return $this->hasOne(ItemChild::class, ['id_child' => 'id_item']);
+    }
+
+    public function getChildren()
+    {
+        return $this->hasMany(ItemChild::class, ['id_item' => 'id_item']);
     }
 
     public function hasChildren()
     {
-        return self::find()->where(['id_parent' => $this->id_item])->count() > 0;
+        return $this->getChildren()->count() > 0;
+    }
+
+    public static function getParents($id_menu)
+    {
+        $parents = self::find()->where(['id_menu' => $id_menu])->all();
+        $list = [];
+        $list['0'] = Module::t('Root Menu');
+        foreach ($parents as $parent) {
+            //if(!isset($parent->parent))
+                $list[$parent->id_item] = isset($parent->module) ? Yii::$app->getModule($parent->module)->t($parent->label) : Module::t($parent->label);
+        }
+        
+        return $list;
     }
 
     //get children of menu item
     public static function getMenuTree($id_item)
     {
-        //order by sort ASC
-        $children = self::find()->where(['id_parent' => $id_item])->orderBy('sort ASC')->all();
+        $model = self::findOne($id_item);
+        $children = $model->children;
+        
         $list = [];
-        /*
-         * title, id, hasChildren, children
-         */
+
         foreach ($children as $child) {
-            if ($child->hasChildren()) {
-                $list[$child->id_item] = [
-                    'title' => isset($child->module) ? Yii::$app->getModule($child->module)->t($child->label) : Module::t($child->label),
-                    'id' => $child->id_item,
-                    'sort' => $child->sort,
-                    'hasChildren' => true,
-                    'children' => self::getMenuTree($child->id_item),
-                ];
-            } else {
-                $list[$child->id_item] = [
-                    'title' => isset($child->module) ? Yii::$app->getModule($child->module)->t($child->label) : Module::t($child->label),
-                    'id' => $child->id_item,
-                    'sort' => $child->sort,
-                    'hasChildren' => false,
-                ];
+            try {
+                if ($child->child->hasChildren()) {
+                    $list[$child->child->id_item] = [
+                        'title' => isset($child->child->module) ? Yii::$app->getModule($child->child->module)->t($child->child->label) : Module::t($child->child->label),
+                        'id' => $child->id_item,
+                        'sort' => $child->sort,
+                        'hasChildren' => true,
+                        'children' => self::getMenuTree($child->id_item),
+                    ];
+                } else {
+                    $list[$child->child->id_item] = [
+                        'title' => isset($child->child->module) ? Yii::$app->getModule($child->child->module)->t($child->child->label) : Module::t($child->child->label),
+                        'id' => $child->child->id_item,
+                        'sort' => $child->child->sort,
+                        'hasChildren' => false,
+                    ];
+                }
+            } catch (\Throwable $th) {
+                
             }
+            
         }
         return $list;
     }
@@ -242,9 +254,10 @@ class MenuItem extends \yii\db\ActiveRecord
         $json_style['color'] = $this->color;
         $json_style['iconSize'] = $this->iconSize;
         $this->style = json_encode($json_style);
-
+        $this->id_user = 1;
         return parent::beforeSave($insert);
     }
+
 
     public function afterFind()
     {
@@ -272,6 +285,9 @@ class MenuItem extends \yii\db\ActiveRecord
     public static function sort($data)
     {
         $data = json_decode($data['data'], true);
+        //drop ıtemchild table
+        ItemChild::deleteAll();
+        //[{"id":1},{"id":2,"children":[{"id":4}]},{"id":8},{"id":9},{"id":3},{"id":5},{"id":6},{"id":7}]
         $index = 0;
         foreach ($data as $item) {
             $model = MenuItem::findOne($item['id']);
@@ -279,32 +295,39 @@ class MenuItem extends \yii\db\ActiveRecord
                 continue;
             }
             $model->sort = $index;
-            $model->id_parent = 0;
-            $model->save();
+            $model->id_user = 1;
+            !$model->save();
+            
             $index++;
+            
             if (isset($item['children'])) {
-                self::sortChildren($item['children'],$item['id'], $index);
+                $index = self::sortChildren($item['children'],$item['id'], $index);
             }
         }
         return "success";
     }
 
-    public static function sortChildren($children, $id_parent, &$index)
+    public static function sortChildren($children, $parent, &$index)
     {
         foreach ($children as $child) {
-            //Yii::warning($child['id'].' '.$index);
             $model = MenuItem::findOne($child['id']);
             if (!$model) {
                 continue;
             }
             $model->sort = $index;
-            $model->id_parent = $id_parent;
-            $model->save();
+            $model->id_user = 1;
+            $itemChild = new ItemChild();
+            $itemChild->id_item = $parent;
+            $itemChild->id_child = $child['id'];
+            !$itemChild->save();
+            
+            !$model->save();
+            
             $index++;
             if (isset($child['children'])) {
-                self::sortChildren($child['children'], $child['id'], $index);
+                $index = self::sortChildren($child['children'], $child['id'], $index);
             }
-
         }
+        return $index;
     }
 }
