@@ -3,6 +3,7 @@
 use yii\db\Schema;
 use yii\db\Migration;
 use portalium\menu\Module;
+use portalium\user\Module as UserModule;
 
 class m220218_222512_menu extends Migration
 {
@@ -22,6 +23,23 @@ class m220218_222512_menu extends Migration
                 'date_create'=> $this->datetime()->notNull()->defaultExpression("CURRENT_TIMESTAMP"),
                 'date_update'=> $this->datetime()->notNull()->defaultExpression("CURRENT_TIMESTAMP"),
             ],$tableOptions
+        );
+
+        // creates index for column `id_user`
+        $this->createIndex(
+            '{{%idx-' . Module::$tablePrefix . 'menu-id_user}}',
+            '{{%' . Module::$tablePrefix . 'menu}}',
+            'id_user'
+        );
+
+        // add foreign key for table `{{%user}}`
+        $this->addForeignKey(
+            '{{%fk-' . Module::$tablePrefix . 'menu-id_user}}',
+            '{{%' . Module::$tablePrefix . 'menu}}',
+            'id_user',
+            '{{%' . UserModule::$tablePrefix . 'user}}',
+            'id_user',
+            'RESTRICT'
         );
 
     }

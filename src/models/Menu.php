@@ -105,7 +105,7 @@ class Menu extends \yii\db\ActiveRecord
         $menu = self::find()->where(['slug' => 'web-menu'])->one();
         $result = [];
         foreach ($menu->items as $item) {
-            if ($item->id_parent == 0) {
+            if (!isset($item->parent)) {
                 $result[] = [
                     'title' => isset($item->module) ? Yii::$app->getModule($item->module)->t($item->label) : Module::t($item->label),
                     'id' => $item->id_item,

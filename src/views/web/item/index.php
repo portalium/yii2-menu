@@ -37,7 +37,6 @@ $this->params['breadcrumbs'][] = $this->title;
             'label',
             'slug',
             'icon',
-            //'id_parent',
             //'id_menu',
             //'date_create',
             //'date_update',

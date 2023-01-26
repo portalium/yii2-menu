@@ -40,7 +40,7 @@ use portalium\menu\bundles\DropMenuAsset;
 
     <?= $form->field($model, 'type')->dropDownList(MenuItem::getTypes(), ['id' => 'type']) ?>
 
-    <?= $form->field($model, 'id_parent')->dropDownList(MenuItem::getParents($id_menu), ['id' => 'id_item']) ?>
+    <?= $form->field($model, 'id_item')->dropDownList(MenuItem::getParents($id_menu), ['id' => 'id_item']) ?>
 
     <?= $form->field($model, 'icon')->textInput(['maxlength' => true]) ?>
     <?= Html::a(Module::t('You can reach the number of the icon you will choose by clicking here.'), 'https://api.flutter.dev/flutter/material/Icons-class.html', ['target' => '_blank'], ['class' => 'control-label']) . '<br><br>' ?>
@@ -122,7 +122,7 @@ use portalium\menu\bundles\DropMenuAsset;
 </div>
 
 <?php
-DropMenuAsset::register($this);
+
 $this->registerJs('
         $(document).ready(function(){
             $("#type").trigger("change");
