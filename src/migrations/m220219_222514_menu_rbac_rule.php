@@ -1,6 +1,6 @@
 <?php
 
-use yii\db\Migration;
+use portalium\db\Migration;
 use portalium\menu\Module;
 use portalium\menu\rbac\OwnRule;
 
