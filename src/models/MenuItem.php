@@ -4,7 +4,6 @@ namespace portalium\menu\models;
 
 use Yii;
 use portalium\menu\Module;
-use yii\helpers\ArrayHelper;
 use portalium\menu\models\ItemChild;
 use yii\behaviors\TimestampBehavior;
 
@@ -286,7 +285,12 @@ class MenuItem extends \yii\db\ActiveRecord
     {
         $data = json_decode($data['data'], true);
         //drop ıtemchild table
-        ItemChild::deleteAll();
+        foreach ($data as $item) {
+            $model = MenuItem::findOne($item['id']);
+            if (!$model) {
+            ItemChild::deleteAll(['id_item' => $item['id']]);
+            }
+        }
         //[{"id":1},{"id":2,"children":[{"id":4}]},{"id":8},{"id":9},{"id":3},{"id":5},{"id":6},{"id":7}]
         $index = 0;
         foreach ($data as $item) {

@@ -9,8 +9,6 @@ use portalium\web\Controller;
 use portalium\menu\models\Menu;
 use yii\web\NotFoundHttpException;
 use portalium\menu\models\MenuItem;
-use portalium\menu\models\MenuItemSearch;
-use portalium\menu\models\MenuRoute;
 /**
  * MenuItemController implements the CRUD actions for MenuItem model.
  */
@@ -104,10 +102,11 @@ class ItemController extends Controller
         } else {
             $model->loadDefaultValues();
         }
-
+        $menuModel = Menu::findOne($id_menu);
         return $this->render('create', [
             'model' => $model,
             'id_menu' => $id_menu,
+            'menuModel' => $menuModel,
         ]);
     }
 

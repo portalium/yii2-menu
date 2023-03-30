@@ -1,11 +1,6 @@
 <?php
 
-use portalium\menu\bundles\DropMenuAsset;
-use yii\helpers\Html;
 use portalium\menu\Module;
-use yii\jui\Sortable;
-use yii\jui\Droppable;
-use yii\jui\Draggable;
 /* @var $this yii\web\View */
 /* @var $model portalium\menu\models\MenuItem */
 
@@ -25,6 +20,7 @@ $this->params['breadcrumbs'][] = $this->title;
         [
             'model' => $model,
             'id_menu' => $id_menu,
+            'menuModel' => $menuModel,
         ]
     );
     

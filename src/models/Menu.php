@@ -102,7 +102,7 @@ class Menu extends \yii\db\ActiveRecord
 
     public static function getMenuWithChildren($slug)
     {
-        $menu = self::find()->where(['slug' => 'web-menu'])->one();
+        $menu = self::find()->where(['slug' => $slug])->one();
         $result = [];
         foreach ($menu->items as $item) {
             if (!isset($item->parent)) {

@@ -18,6 +18,7 @@ class DropMenu extends Widget
     public $items;
     public $model;
     public $id_menu;
+    public $menuModel;
 
     public function init()
     {
@@ -54,7 +55,7 @@ class DropMenu extends Widget
         Pjax::begin(['id' => 'nestable-pjax']);
         echo Html::beginTag('ol', ['class' => 'dd-list']);
         
-        foreach (Menu::getMenuWithChildren('web-menu') as $item) {
+        foreach (Menu::getMenuWithChildren($this->menuModel->slug) as $item) {
             echo $this->renderItem($item);
         }
         
