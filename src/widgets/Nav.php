@@ -17,14 +17,15 @@ use portalium\theme\widgets\Nav as BaseNav;
 class Nav extends Widget
 {
     public $model;
-    public $slug;
     public $navbar;
     public $options;
+    public $id;
 
     public function init()
     {
         parent::init();
-        if (!$this->model = self::findModel($this->slug)) {
+        
+        if (!$this->model = self::findModel($this->id)) {
             throw new \yii\base\InvalidConfigException('Nav::$menu must be set.');
         }
     }
@@ -41,7 +42,7 @@ class Nav extends Widget
                         ($data["data"]["routeType"] == "widget") ?
                             $data["data"]["route"]::widget() :
                             [
-                                'label' => isset($item->module) ? Yii::$app->getModule($item->module)->t($item->label) : Module::t($item->label),
+                                'label' => isset($item->module) ? $this->getIcon($item) . Yii::$app->getModule($item->module)->t($item->label) : $this->getIcon($item) . Module::t($item->label),
                                 'url' => $url,
                                 'items' => $this->getChildItems($item->id_item),
                                 'visible' => (($item->name_auth != null || $item->name_auth != '') && $item->name_auth != 'guest') ? Yii::$app->user->can($item->name_auth) : ($item->name_auth == 'guest' ? true : false),
@@ -50,7 +51,7 @@ class Nav extends Widget
                 } else {
                     $items[] =
                         [
-                            'label' => isset($item->module) ? Yii::$app->getModule($item->module)->t($item->label) : Module::t($item->label),
+                            'label' => isset($item->module) ? $this->getIcon($item) . Yii::$app->getModule($item->module)->t($item->label) : $this->getIcon($item) . Module::t($item->label),
                             'url' => $url,
                             'items' => $this->getChildItems($item->id_item),
                             'visible' => (($item->name_auth != null || $item->name_auth != '') && $item->name_auth != 'guest') ? Yii::$app->user->can($item->name_auth) : ($item->name_auth == 'guest' ? true : false),
@@ -78,7 +79,7 @@ class Nav extends Widget
                 $itemTemp = ($item->type == MenuItem::TYPE['module'] && $data["data"]["routeType"] == "widget") ?
                     $data["data"]["route"]::widget() :
                     [
-                        'label' => isset($item->module) ? Yii::$app->getModule($item->module)->t($item->label) : Module::t($item->label),
+                        'label' =>isset($item->module) ? $this->getIcon($item) . Yii::$app->getModule($item->module)->t($item->label) : $this->getIcon($item) . Module::t($item->label),
                         'url' => $url,
                         'visible' => (($item->name_auth != null || $item->name_auth != '') && $item->name_auth != 'guest') ? Yii::$app->user->can($item->name_auth) : ($item->name_auth == 'guest' ? true : false),
                     ];
@@ -130,9 +131,19 @@ class Nav extends Widget
         return $sort;
     }
 
-    private function findModel($slug)
+    public function getIcon($item)
     {
-        if (($model = Menu::findOne(['slug' => $slug])) !== null) {
+        $style = json_decode($item->style, true);
+        $icon = isset($style['icon']) ? $style['icon'] : '';
+        $color = isset($style['color']) ? $style['color'] : '';
+        $size = isset($style['iconSize']) ? $style['iconSize'] : '';
+        Yii::warning($icon . ' ' . $color . ' ' . $size);
+        return Html::tag('i', '', ['class' => $icon, 'style' => 'color:' . $color . '; margin-right: 5px; font-size:' . $size . 'px;']);
+    }
+
+    private function findModel($id)
+    {
+        if (($model = Menu::findOne(['id_menu' => $id])) !== null) {
             return $model;
         }
 

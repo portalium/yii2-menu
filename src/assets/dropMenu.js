@@ -2,9 +2,9 @@
  * Nestable jQuery Plugin - Copyright (c) 2012 David Bushell - http://dbushell.com/
  * Dual-licensed under the BSD or MIT licenses
  */
-;(function ($, window, document, undefined) {
+(function ($, window, document, undefined) {
     var hasTouch = 'ontouchstart' in document;
-
+    var activeItemId = null;
     /**
      * Detect CSS pointer-events property
      * events are normally disabled on the dragging element to avoid conflicts
@@ -562,6 +562,113 @@
             }, 500);
         }
     );
+
+    $(document).on('click', '#create-menu-item-button', function (e) {
+        e.preventDefault();
+        $.pjax.reload({container: '#nestable-pjax'});
+        setTimeout(function () {
+            $.pjax.reload({container: '#nestable2-pjax', url: '?&id_menu=1' , timeout: false});
+            //trigger expand all button
+            $('#expand-all').trigger('click');
+        }, 500);
+    }
+);
+
+    //name clone-item click
+    $(document).on('click', '.clone-item', function (e) {
+        e.preventDefault();
+        var id = $(this).attr('data');
+        activeItemId = id;
+        $('#modal-clone').modal('show');
+    });
+
+    //name move-item click
+    $(document).on('click', '.move-item', function (e) {
+        e.preventDefault();
+        var id = $(this).attr('data');
+        activeItemId = id;
+        $('#modal-move').modal('show');
+    });
+    
+
+    $('#menu-clone-item-form-button').click(function (e) {
+        console.log('menu-clone-item-form-button');
+        e.preventDefault();
+        var form = $('#menu-clone-item-form');
+        var data = form.serialize();
+        data += '&id_item=' + activeItemId;
+        // data insert output
+        console.log(data);
+        $.ajax({
+            type: 'POST',
+            url: form.attr('action'),
+            data: data,
+            success: function (response) {
+                //wait 1 second before reload pjax
+                $.pjax.reload({container: '#nestable-pjax'});
+                //sleep(1000);
+                setTimeout(function () {
+                    $.pjax.reload({container: '#nestable2-pjax'});
+                    //trigger expand all button
+                    $('#expand-all').trigger('click');
+                    $('#modal-clone').modal('hide');
+                }, 500);
+            }
+        }
+        );
+    });
+
+    $('#menu-move-item-form-button').click(function (e) {
+        console.log('menu-move-item-form-button');
+        e.preventDefault();
+        var form = $('#menu-move-item-form');
+        var data = form.serialize();
+        data += '&id_item=' + activeItemId;
+        // data insert output
+        console.log(data);
+        $.ajax({
+            type: 'POST',
+            url: form.attr('action'),
+            data: data,
+            success: function (response) {
+                //wait 1 second before reload pjax
+                $.pjax.reload({container: '#nestable-pjax'});
+                //sleep(1000);
+                setTimeout(function () {
+                    $.pjax.reload({container: '#nestable2-pjax'});
+                    //trigger expand all button
+                    $('#expand-all').trigger('click');
+                    $('#modal-move').modal('hide');
+                }, 500);
+            }
+        }
+        );
+    });
+
+
+
+    function checkActiveTab() {
+        var activeTab = $('#menu-item-tabs .nav-link.active').attr('href');
+        if(activeTab.replace('#', '') == 'create-menu-item-tab'){
+            //menu-clone-item-form-button is hidden
+            $('#menu-clone-item-form-button').hide();
+            $('#menu-move-item-form-button').hide();
+            //menu-item-form-button is visible
+            $('#create-menu-item').show();
+        }else if(activeTab.replace('#', '') == 'clone-menu-item-tab'){
+            //menu-clone-item-form-button is visible
+            $('#menu-clone-item-form-button').show();
+            $('#menu-move-item-form-button').hide();
+            //menu-item-form-button is hidden
+            $('#create-menu-item').hide();
+        }else if(activeTab.replace('#', '') == 'move-menu-item-tab'){
+            //menu-clone-item-form-button is visible
+            $('#menu-clone-item-form-button').hide();
+            $('#menu-move-item-form-button').show();
+            //menu-item-form-button is hidden
+            $('#create-menu-item').hide();
+        }
+    }
 
 
 })(window.jQuery || window.Zepto, window, document);

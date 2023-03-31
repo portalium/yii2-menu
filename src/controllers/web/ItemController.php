@@ -5,6 +5,7 @@ namespace portalium\menu\controllers\web;
 use Yii;
 use portalium\menu\Module;
 use yii\filters\VerbFilter;
+use portalium\base\Exception;
 use portalium\web\Controller;
 use portalium\menu\models\Menu;
 use yii\web\NotFoundHttpException;
@@ -92,12 +93,9 @@ class ItemController extends Controller
 
                 $max = MenuItem::find()->max('sort');
                 $model->sort = $max + 1;
-                Yii::warning("max: $max");
                 if($model->save()){
                     return;
                 }
-                else
-                    Yii::warning($model->getErrors());
             }
         } else {
             $model->loadDefaultValues();
@@ -154,6 +152,38 @@ class ItemController extends Controller
             return $this->redirect(['index', 'id_menu' => $model->id_menu]);
         }
 
+    }
+
+    public function actionClone()
+    {
+        
+        if (Yii::$app->request->isAjax) {  
+            $id_menu = Yii::$app->request->post('DynamicModel')['id_menu'];
+            $id_item = Yii::$app->request->post['id_item'];
+            $menuModel = Menu::findOne($id_menu);
+            $menuModel->addItem($id_item, true); 
+            return $this->asJson(['status' => 'success']);
+        }
+    }
+
+    public function actionMove()
+    {
+        
+        if (Yii::$app->request->isAjax) {
+            $id_menu = Yii::$app->request->post('DynamicModel')['id_menu'];
+            $id_item = Yii::$app->request->post('id_item');
+            $menuModel = Menu::findOne($id_menu);
+            if ($menuModel->addItem($id_item, true)) {
+                $item = MenuItem::findOne($id_item);
+                try {
+                    $item->deleteChildren();
+                } catch (Exception $e) {
+                    Yii::error($e->getMessage());
+                }
+                $item->delete();
+                return $this->asJson(['status' => 'success']);
+            }
+        }
     }
 
     public function actionRouteType() {
@@ -259,6 +289,24 @@ class ItemController extends Controller
                     $data = [];
                 }
             return json_encode(['output' => $data, 'selected' => '']);
+        }
+    }
+
+    public function actionParentList(){
+        $out = [];
+        if($this->request->isPost){
+            $request = $this->request->post('depdrop_parents');
+            $id_menu = $request[0];
+            if($id_menu == null || $id_menu == ''){
+                return $this->asJson(['output' => [], 'selected' => '']);
+            }
+            $menu = Menu::findOne($id_menu);
+            $menuItems = $menu->getItems()->asArray()->all();
+            $out[] = ['id' => 0, 'name' => Module::t('Root')];
+            foreach ($menuItems as $key => $item) {
+                $out[] = ['id' => $item['id_item'], 'name' => $item['label']];
+            }
+            return json_encode(['output' => $out, 'selected' => '']);
         }
     }
 

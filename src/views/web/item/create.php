@@ -9,11 +9,10 @@ $this->params['breadcrumbs'][] = ['label' => Module::t('Menu Items'), 'url' => [
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <style>
-  #droppable { width: 150px; height: 150px; padding: 0.5em; float: left; margin: 10px; }
-  #draggable, #draggable-nonvalid { width: 100px; height: 100px; padding: 0.5em; float: left; margin: 10px 10px 10px 0; }
-  </style>
-  
-<div class="menu-item-create">
+    #droppable { width: 150px; height: 150px; padding: 0.5em; float: left; margin: 10px; }
+    #draggable, #draggable-nonvalid { width: 100px; height: 100px; padding: 0.5em; float: left; margin: 10px 10px 10px 0; }
+</style>
+
     <?php
 
     echo \portalium\menu\widgets\DropMenu::widget(
@@ -26,6 +25,4 @@ $this->params['breadcrumbs'][] = $this->title;
     
     ?>
 
-
-</div>
 

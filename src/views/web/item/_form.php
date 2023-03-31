@@ -4,9 +4,10 @@ use yii\helpers\Url;
 use yii\helpers\Html;
 use portalium\menu\Module;
 use kartik\depdrop\DepDrop;
-use yii\widgets\ActiveForm;
+
 use portalium\theme\widgets\Panel;
 use portalium\menu\models\MenuItem;
+use portalium\theme\widgets\ActiveForm;
 use portalium\menu\bundles\DropMenuAsset;
 
 /* @var $this yii\web\View */
@@ -21,6 +22,13 @@ use portalium\menu\bundles\DropMenuAsset;
     <?php $form = ActiveForm::begin(
         [
             'id' => 'menu-item-form',
+            'fieldConfig' => [
+                'horizontalCssClasses' => [
+                    'label' => 'col-sm-3',
+                    'wrapper' => 'col-sm-9',
+                ],
+                'labelOptions' => ['style' => 'margin-top: 10px;'],
+            ],
         ]
     ); ?>
 
@@ -38,9 +46,9 @@ use portalium\menu\bundles\DropMenuAsset;
 
     <?= $form->field($model, 'slug')->textInput(['maxlength' => true]) ?>
 
-    <?= $form->field($model, 'type')->dropDownList(MenuItem::getTypes(), ['id' => 'type']) ?>
+    
 
-    <?= $form->field($model, 'id_item')->dropDownList(MenuItem::getParents($id_menu), ['id' => 'id_item']) ?>
+    <?= $form->field($model, 'id_item')->dropDownList(MenuItem::getParents($id_menu), ['id' => 'id_item'])->label(Module::t('Parent')) ?>
 
     <?= $form->field($model, 'icon')->textInput(['maxlength' => true]) ?>
     <?= Html::a(Module::t('You can reach the number of the icon you will choose by clicking here.'), 'https://api.flutter.dev/flutter/material/Icons-class.html', ['target' => '_blank'], ['class' => 'control-label']) . '<br><br>' ?>
@@ -71,7 +79,7 @@ use portalium\menu\bundles\DropMenuAsset;
             ],
         ]
     ]) ?>
-
+    <?= $form->field($model, 'type')->dropDownList(MenuItem::getTypes(), ['id' => 'type']) ?>
     <?php
 
     echo $form->field($model, 'module', ['options' => ['id' => 'module-list-div']])->dropDownList(MenuItem::getModuleList(), ['id' => 'module-list', 'prompt' => 'Select Module']);
@@ -109,7 +117,7 @@ use portalium\menu\bundles\DropMenuAsset;
         ]
     ]);
 
-    echo $form->field($model, 'url', ['options' => ['id' => 'url-input-div']])->textInput(['rows' => 6]);
+    echo $form->field($model, 'url', ['options' => ['id' => 'url-input-div']])->textInput(['rows' => 6])->label(Module::t('URL'));
 
     echo $form->field($model, 'name_auth', ['options' => ['id' => 'name-auth-input-div']])->dropDownList(MenuItem::getAuthList(), ['id' => 'name-auth-input', 'prompt' => Module::t('Disabled'), "options" => ['role' => ['disabled' => true], 'permission' => ['disabled' => true]]]);
 

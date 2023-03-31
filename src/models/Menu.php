@@ -100,9 +100,9 @@ class Menu extends \yii\db\ActiveRecord
         return $this->hasMany(MenuItem::class, ['id_menu' => 'id_menu'])->orderBy('sort');
     }
 
-    public static function getMenuWithChildren($slug)
+    public static function getMenuWithChildren($id_menu)
     {
-        $menu = self::find()->where(['slug' => $slug])->one();
+        $menu = self::find()->where(['id_menu' => $id_menu])->one();
         $result = [];
         foreach ($menu->items as $item) {
             if (!isset($item->parent)) {
@@ -115,5 +115,27 @@ class Menu extends \yii\db\ActiveRecord
             }
         }
         return $result;
+    }
+
+    public function addItem($id_item, $addChildren = false)
+    {
+        try {
+            $item = MenuItem::findOne($id_item);
+            $copyItem = new MenuItem();
+            $copyItem->attributes = $item->attributes;
+            $copyItem->id_item = null;
+            $copyItem->id_menu = $this->id_menu;
+            $copyItem->save();
+            
+            if ($addChildren) {
+                foreach ($item->children as $child) {
+                    $copyItem->addItem($child->id_child, $addChildren);
+                }
+            }
+        } catch (\Exception $e) {
+            return false;
+        }
+
+        return $copyItem;
     }
 }

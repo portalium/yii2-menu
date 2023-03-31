@@ -98,7 +98,7 @@ class MenuItem extends \yii\db\ActiveRecord
             'route' => Module::t('Route'),
             'model' => Module::t('Model'),
             'url' => Module::t('Url'),
-            'name_auth' => Module::t('Name Auth'),
+            'name_auth' => Module::t('Access'),
             'parent' => Module::t('Parent'),
             'id_menu' => Module::t('Menu ID'),
             'id_user' => Module::t('User ID'),
@@ -157,6 +157,11 @@ class MenuItem extends \yii\db\ActiveRecord
     public function hasChildren()
     {
         return $this->getChildren()->count() > 0;
+    }
+
+    public function getMenu()
+    {
+        return $this->hasOne(Menu::class, ['id_menu' => 'id_menu']);
     }
 
     public static function getParents($id_menu)
@@ -323,7 +328,11 @@ class MenuItem extends \yii\db\ActiveRecord
             $itemChild = new ItemChild();
             $itemChild->id_item = $parent;
             $itemChild->id_child = $child['id'];
-            !$itemChild->save();
+            if (!ItemChild::find()->where(['id_item' => $parent, 'id_child' => $child['id']])->one()) {
+                $itemChild->save();
+            }else{
+                $itemChild = ItemChild::find()->where(['id_item' => $parent, 'id_child' => $child['id']])->one();
+            }
             
             !$model->save();
             
@@ -333,5 +342,76 @@ class MenuItem extends \yii\db\ActiveRecord
             }
         }
         return $index;
+    }
+
+    public function addItem($id_item, $addChildren = false){
+        $item = MenuItem::findOne($id_item);
+        $copyItem = new MenuItem();
+        $copyItem->attributes = $item->attributes;
+        $copyItem->id_item = null;
+        $copyItem->id_user = 1;
+        $copyItem->id_menu = $this->id_menu;
+        $copyItem->save();
+        $itemChild = new ItemChild();
+        $itemChild->id_item = $this->id_item;
+        $itemChild->id_child = $copyItem->id_item;
+        if(!ItemChild::find()->where(['id_item' => $this->id_item, 'id_child' => $copyItem->id_item])->one())
+            $itemChild->save();
+        else
+            $itemChild = ItemChild::find()->where(['id_item' => $this->id_item, 'id_child' => $copyItem->id_item])->one();
+
+        if($addChildren){
+            $children = ItemChild::find()->where(['id_item' => $id_item])->all();
+            foreach ($children as $child) {
+                $copyItem->addItem($child->id_child, $addChildren);
+            }
+        }        
+    }
+
+    // 
+    public function getChildrenArray($id_menu)
+    {
+        $items = MenuItem::find()->where(['id_menu' => $id_menu])->orderBy('sort')->all();
+        $arr = [];
+        foreach ($items as $item) {
+            if (!isset($item->parent->id_item) || $item->parent->id_item == null) {
+                $arr[] = [
+                    'id' => $item->id_item,
+                ];
+            }else{
+                $added = false;
+                foreach ($arr as $key => $value) {
+                    if($value['id'] == $item->parent->id_item){
+                        $arr[$key]['children'][] = [
+                            'id' => $item->id_item,
+                        ];
+                        $added = true;
+                    }
+                }
+                if(!$added){
+                    $arr[] = [
+                        'id' => $item->parent->id_item,
+                        'children' => [
+                            [
+                                'id' => $item->id_item,
+                            ]
+                        ]
+                    ];
+                }
+            }
+        }
+        return $arr;
+    }
+
+    public function deleteChildren()
+    {
+        $children = ItemChild::find()->where(['id_item' => $this->id_item])->all();
+        foreach ($children as $child) {
+            $model = MenuItem::findOne($child->id_child);
+            if ($model) {
+                $model->deleteChildren();
+                $model->delete();
+            }
+        }
     }
 }
