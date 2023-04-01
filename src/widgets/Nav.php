@@ -5,13 +5,10 @@ namespace portalium\menu\widgets;
 use Yii;
 use yii\base\Widget;
 use yii\helpers\Html;
-use yii\helpers\ArrayHelper;
 use yii\web\NotFoundHttpException;
-
 use portalium\menu\Module;
 use portalium\menu\models\Menu;
 use portalium\menu\models\MenuItem;
-use portalium\theme\widgets\NavBar;
 use portalium\theme\widgets\Nav as BaseNav;
 
 class Nav extends Widget
@@ -64,7 +61,8 @@ class Nav extends Widget
         $items = $this->sortItems($items);
         return BaseNav::widget([
             'items' => $items,
-            'options' => $this->options
+            'options' => $this->options,
+            'encodeLabels' => false,
         ]);
     }
 
@@ -137,7 +135,6 @@ class Nav extends Widget
         $icon = isset($style['icon']) ? $style['icon'] : '';
         $color = isset($style['color']) ? $style['color'] : '';
         $size = isset($style['iconSize']) ? $style['iconSize'] : '';
-        Yii::warning($icon . ' ' . $color . ' ' . $size);
         return Html::tag('i', '', ['class' => $icon, 'style' => 'color:' . $color . '; margin-right: 5px; font-size:' . $size . 'px;']);
     }
 

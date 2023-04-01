@@ -159,9 +159,11 @@ class ItemController extends Controller
         
         if (Yii::$app->request->isAjax) {  
             $id_menu = Yii::$app->request->post('DynamicModel')['id_menu'];
-            $id_item = Yii::$app->request->post['id_item'];
+            $id_item = Yii::$app->request->post('id_item');
+            $id_parent = Yii::$app->request->post('DynamicModel')['id_parent'];
+            
             $menuModel = Menu::findOne($id_menu);
-            $menuModel->addItem($id_item, true); 
+            $menuModel->addItem($id_item, true, $id_parent); 
             return $this->asJson(['status' => 'success']);
         }
     }
@@ -172,8 +174,9 @@ class ItemController extends Controller
         if (Yii::$app->request->isAjax) {
             $id_menu = Yii::$app->request->post('DynamicModel')['id_menu'];
             $id_item = Yii::$app->request->post('id_item');
+            $id_parent = Yii::$app->request->post('DynamicModel')['id_parent'];
             $menuModel = Menu::findOne($id_menu);
-            if ($menuModel->addItem($id_item, true)) {
+            if ($menuModel->addItem($id_item, true, $id_parent)) {
                 $item = MenuItem::findOne($id_item);
                 try {
                     $item->deleteChildren();
@@ -193,16 +196,14 @@ class ItemController extends Controller
         $out = [];
         if($this->request->isPost){
             $request = $this->request->post('depdrop_parents');
-            $menuType = $request[0];
-            $moduleName = $request[1];
-            if($menuType == null || $moduleName == null || $menuType == '' || $moduleName == ''){
+            $moduleName = $request[0];
+            if($moduleName == null || $moduleName == ''){
                 return $this->asJson(['output' => [], 'selected' => '']);
             }
             $module = Yii::$app->getModule($moduleName);
             $menuItems = $module->getMenuItems();
             
             foreach ($menuItems[0] as $key => $value) {
-                if($value['menu'] == $menuType)
                     $out[] = ['id' => $value['type'], 'name' => $value['type']];
             }
             $out = array_unique($out, SORT_REGULAR);
@@ -217,17 +218,17 @@ class ItemController extends Controller
         $out = [];
         if($this->request->isPost){
             $request = $this->request->post('depdrop_parents');
-            $menuType = $request[0];
-            $moduleName = $request[1];
-            $routeType = $request[2];
-            if($menuType == null || $moduleName == null || $routeType == null || $menuType == '' || $moduleName == '' || $routeType == ''){
+
+            $moduleName = $request[0];
+            $routeType = $request[1];
+            if($moduleName == null || $routeType == null || $moduleName == '' || $routeType == ''){
                 return $this->asJson(['output' => [], 'selected' => '']);
             }
             $module = Yii::$app->getModule($moduleName);
             $menuItems = $module->getMenuItems();
 
             foreach ($menuItems[0] as $key => $item) {
-                if($item['type'] == $routeType && $item['menu'] == $menuType){
+                if($item['type'] == $routeType){
                     switch ($routeType) {
                         case 'widget':
                             $out[] = ['id' => $item['label'], 'name' => $item['name']];
@@ -258,14 +259,13 @@ class ItemController extends Controller
         $out = [];
         if($this->request->isPost){
             $request = $this->request->post('depdrop_parents');
-            $menuType = $request[0];
-            $moduleName = $request[1];
-            $routeType = $request[2];
-            $route = $request[3];
-            if($menuType == null || $moduleName == null || $routeType == null || $route == null || $menuType == '' || $moduleName == '' || $routeType == '' || $route == ''){
+            $moduleName = $request[0];
+            $routeType = $request[1];
+            $route = $request[2];
+            if($moduleName == null || $routeType == null || $moduleName == '' || $routeType == '' || $routeType == 'widget' || $routeType == 'route' || $routeType == 'action'){
                 return $this->asJson(['output' => [], 'selected' => '']);
             }
-            if($menuType == '' || $moduleName == '' || $routeType == '' || $route == ''){
+            if($moduleName == '' || $routeType == ''){
                 return json_encode(['output' => $out, 'selected' => '']);
             }
             $modelName = '';
@@ -275,11 +275,8 @@ class ItemController extends Controller
             
             foreach ($menuItems[0] as $key => $item) {
                 if($item['type'] == $routeType && $item['route'] == $route){
-
                         $field = $item['field'];
                         $modelName = $item['class'];
-
-
                 }
             }
             if ($modelName != '') {

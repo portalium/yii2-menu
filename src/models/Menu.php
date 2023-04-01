@@ -117,7 +117,7 @@ class Menu extends \yii\db\ActiveRecord
         return $result;
     }
 
-    public function addItem($id_item, $addChildren = false)
+    public function addItem($id_item, $addChildren = false, $id_parent = null)
     {
         try {
             $item = MenuItem::findOne($id_item);
@@ -126,7 +126,12 @@ class Menu extends \yii\db\ActiveRecord
             $copyItem->id_item = null;
             $copyItem->id_menu = $this->id_menu;
             $copyItem->save();
-            
+            if ($id_parent != null || $id_parent != 0){
+                $itemChild = new ItemChild();
+                $itemChild->id_item = $id_parent;
+                $itemChild->id_child = $copyItem->id_item;
+                $itemChild->save();
+            }
             if ($addChildren) {
                 foreach ($item->children as $child) {
                     $copyItem->addItem($child->id_child, $addChildren);

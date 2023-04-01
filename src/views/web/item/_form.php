@@ -1,14 +1,11 @@
 <?php
 
-use yii\helpers\Url;
 use yii\helpers\Html;
 use portalium\menu\Module;
-use kartik\depdrop\DepDrop;
-
 use portalium\theme\widgets\Panel;
 use portalium\menu\models\MenuItem;
 use portalium\theme\widgets\ActiveForm;
-use portalium\menu\bundles\DropMenuAsset;
+use portalium\theme\widgets\Tabs;
 
 /* @var $this yii\web\View */
 /* @var $model portalium\menu\models\MenuItem */
@@ -41,87 +38,26 @@ use portalium\menu\bundles\DropMenuAsset;
             ]
         ]
     ]) ?>
-
-    <?= $form->field($model, 'label')->textInput(['maxlength' => true]) ?>
-
-    <?= $form->field($model, 'slug')->textInput(['maxlength' => true]) ?>
-
-    
-
-    <?= $form->field($model, 'id_item')->dropDownList(MenuItem::getParents($id_menu), ['id' => 'id_item'])->label(Module::t('Parent')) ?>
-
-    <?= $form->field($model, 'icon')->textInput(['maxlength' => true]) ?>
-    <?= Html::a(Module::t('You can reach the number of the icon you will choose by clicking here.'), 'https://api.flutter.dev/flutter/material/Icons-class.html', ['target' => '_blank'], ['class' => 'control-label']) . '<br><br>' ?>
-    <?= $form->field($model, 'iconSize')->textInput(['maxlength' => true]) ?>
-
-    <?= $form->field($model, 'color')->widget(\kartik\color\ColorInput::className(), [
-        'options' => ['placeholder' => Module::t('Select Color ...')],
-        'pluginOptions' => [
-            'showInput' => true,
-            'showInitial' => true,
-            'showPalette' => true,
-            'showSelectionPalette' => true,
-            'showAlpha' => true,
-            'preferredFormat' => 'rgb',
-            'palette' => [
-                [
-                    "white", "black", "grey", "silver", "gold", "brown",
-                ],
-                [
-                    "red", "orange", "yellow", "indigo", "maroon", "magenta",
-                ],
-                [
-                    "blue", "light-blue", "cyan", "teal", "green", "lime", "olive",
-                ],
-                [
-                    "purple", "pink", "deep-purple", "light-green", "lime", "brown",
-                ],
-            ],
-        ]
-    ]) ?>
-    <?= $form->field($model, 'type')->dropDownList(MenuItem::getTypes(), ['id' => 'type']) ?>
     <?php
+        Tabs::begin([
+            'items' => [
+                [
+                    'label' => Module::t('General'),
+                    'content' => $this->render('_form-general', ['model' => $model, 'form' => $form, 'id_menu' => $id_menu]),
+                    'active' => true,
+                    'options' => ['style' => 'margin-top: 10px;']
+                ],
+                [
+                    'label' => Module::t('Style'),
+                    'content' => $this->render('_form-style', ['model' => $model, 'form' => $form, 'menuModel' => $menuModel]),
+                    'options' => ['style' => 'margin-top: 10px;']
 
-    echo $form->field($model, 'module', ['options' => ['id' => 'module-list-div']])->dropDownList(MenuItem::getModuleList(), ['id' => 'module-list', 'prompt' => 'Select Module']);
-
-    echo $form->field($model, 'menuType')->dropDownList(['web' => 'Web', 'mobile' => Module::t('Mobile')], ['id' => 'menu-type', 'prompt' => Module::t('Select Menu Type')]);
-
-    echo $form->field($model, 'routeType', ['options' => ['id' => 'routeType-list-div']])->dropDownList(MenuItem::getModuleList(), ['id' => 'module-list', 'prompt' => 'Select Module'])->widget(DepDrop::classname(), [
-        'options' => ['id' => 'routeType-list'],
-        'pluginOptions' => [
-            'depends' => ['menu-type', 'module-list'],
-            'placeholder' => Module::t('Select...'),
-            'url' => Url::to(['/menu/item/route-type'])
-        ]
-    ]);
-
-    echo $form->field($model, 'route', ['options' => ['id' => 'route-list-div']])->widget(DepDrop::classname(), [
-        'options' => ['id' => 'route-list'],
-        'pluginOptions' => [
-            'depends' => ['menu-type', 'module-list', 'routeType-list'],
-            'placeholder' => Module::t('Select...'),
-            'url' => Url::to(['/menu/item/route'])
-        ]
-    ]);
-
-    echo $form->field($model, 'model', ['options' => ['id' => 'model-list-div']])->widget(DepDrop::classname(), [
-        'options' => ['id' => 'model-list'],
-        'pluginOptions' => [
-            'depends' => ['menu-type', 'module-list', 'routeType-list', 'route-list'],
-            'placeholder' => Module::t('Select...'),
-            'url' => Url::to(['/menu/item/model'])
-        ],
-        'pluginEvents' => [
-            "depdrop:change" => "function(event, id, value) {
-                }"
-        ]
-    ]);
-
-    echo $form->field($model, 'url', ['options' => ['id' => 'url-input-div']])->textInput(['rows' => 6])->label(Module::t('URL'));
-
-    echo $form->field($model, 'name_auth', ['options' => ['id' => 'name-auth-input-div']])->dropDownList(MenuItem::getAuthList(), ['id' => 'name-auth-input', 'prompt' => Module::t('Disabled'), "options" => ['role' => ['disabled' => true], 'permission' => ['disabled' => true]]]);
-
+                ],
+            ]
+        ]);
     ?>
+    <?php Tabs::end() ?>
+    
 
     <?php Panel::end() ?>
 
@@ -152,24 +88,26 @@ $this->registerJs('
         $("#routeType-list").change(function(){
             if($(this).val() == "routes"){
                 $("#model-list-div").hide();
-            }else{
+            }else if($(this).val() == "models"){
                 $("#model-list-div").show();
+            }else if($(this).val() == "action"){
+                $("#model-list-div").hide();
             }
         });
 
         $("#type").change(function(){
             if($(this).val() == ' . MenuItem::TYPE["module"] . '){
                 $("#module-list-div").show();
-                $("#routeType-list-div").show();
-                $("#route-list-div").show();
+                $("#routeType-list-div").hide();
+                $("#route-list-div").hide();
                 $("#url-input-div").hide();
             }
             else if($(this).val() == ' . MenuItem::TYPE["route"] . '){
-                $("#module-list-div").show();
+                $("#module-list-div").hide();
                 $("#routeType-list-div").hide();
                 $("#route-list-div").hide();
                 $("#url-input-div").show();
-            } else{
+            } else if($(this).val() == ' . MenuItem::TYPE["url"] . '){
                 $("#module-list-div").hide();
                 $("#routeType-list-div").hide();
                 $("#route-list-div").hide();
@@ -177,17 +115,23 @@ $this->registerJs('
             }
 
             $("#model-list-div").hide();
+            $("#module-list").trigger("change");
         });
 
         $("#routeType-list").change(function(){
-            if($(this).val() == "route"){
+
+            if($(this).val() == "widget"){
                 //$("#module-list-div").hide();
-                
                 $("#model-list-div").hide();
-            }else{
+                $("#route-list-div").show();
+            }else if($(this).val() == "model"){
                 //$("#module-list-div").show();
-                
                 $("#model-list-div").show();
+                $("#route-list-div").show();
+            }else if($(this).val() == "action"){
+                //$("#module-list-div").show();
+                $("#model-list-div").hide();
+                $("#route-list-div").show();
             }
         });
         flag = 0;
@@ -206,6 +150,15 @@ $this->registerJs('
         });
 
         $("#module-list").trigger("change");
+
+        $("#module-list").change(function(){
+            if ($("#type").val() == ' . MenuItem::TYPE["module"] . ' && $(this).val() != ""){
+                $("#routeType-list-div").show();
+            }else{
+                $("#routeType-list-div").hide();
+            }
+            
+        });
         
         $("#create-menu-item").click(function (e) {
             e.preventDefault();
