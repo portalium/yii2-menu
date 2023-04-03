@@ -5,12 +5,12 @@ namespace portalium\menu\controllers\web;
 use Yii;
 use portalium\menu\Module;
 use yii\filters\VerbFilter;
+use portalium\base\Exception;
+use portalium\menu\models\ItemChild;
 use portalium\web\Controller;
 use portalium\menu\models\Menu;
 use yii\web\NotFoundHttpException;
 use portalium\menu\models\MenuItem;
-use portalium\menu\models\MenuItemSearch;
-use portalium\menu\models\MenuRoute;
 /**
  * MenuItemController implements the CRUD actions for MenuItem model.
  */
@@ -91,23 +91,27 @@ class ItemController extends Controller
             }
             if ($model->load($this->request->post())) {
                 $model->id_menu = $id_menu;
-
+                $id_parent = $this->request->post('MenuItem')['id_parent'];
                 $max = MenuItem::find()->max('sort');
                 $model->sort = $max + 1;
-                Yii::warning("max: $max");
                 if($model->save()){
+                    if($id_parent != null && $id_parent != 0){
+                        $itemChildModel = new ItemChild();
+                        $itemChildModel->id_item = $id_parent;
+                        $itemChildModel->id_child = $model->id_item;
+                        $itemChildModel->save();
+                    }
                     return;
                 }
-                else
-                    Yii::warning($model->getErrors());
             }
         } else {
             $model->loadDefaultValues();
         }
-
+        $menuModel = Menu::findOne($id_menu);
         return $this->render('create', [
             'model' => $model,
             'id_menu' => $id_menu,
+            'menuModel' => $menuModel,
         ]);
     }
 
@@ -157,6 +161,41 @@ class ItemController extends Controller
 
     }
 
+    public function actionClone()
+    {
+        
+        if (Yii::$app->request->isAjax) {  
+            $id_menu = Yii::$app->request->post('DynamicModel')['id_menu'];
+            $id_item = Yii::$app->request->post('id_item');
+            $id_parent = Yii::$app->request->post('DynamicModel')['id_parent'];
+            
+            $menuModel = Menu::findOne($id_menu);
+            $menuModel->addItem($id_item, true, $id_parent); 
+            return $this->asJson(['status' => 'success']);
+        }
+    }
+
+    public function actionMove()
+    {
+        
+        if (Yii::$app->request->isAjax) {
+            $id_menu = Yii::$app->request->post('DynamicModel')['id_menu'];
+            $id_item = Yii::$app->request->post('id_item');
+            $id_parent = Yii::$app->request->post('DynamicModel')['id_parent'];
+            $menuModel = Menu::findOne($id_menu);
+            if ($menuModel->addItem($id_item, true, $id_parent)) {
+                $item = MenuItem::findOne($id_item);
+                try {
+                    $item->deleteChildren();
+                } catch (Exception $e) {
+                    Yii::error($e->getMessage());
+                }
+                $item->delete();
+                return $this->asJson(['status' => 'success']);
+            }
+        }
+    }
+
     public function actionRouteType() {
         if (!\Yii::$app->user->can('menuWebItemRouteType')) {
             throw new \yii\web\ForbiddenHttpException(Module::t('You are not allowed to access this page.'));
@@ -164,16 +203,14 @@ class ItemController extends Controller
         $out = [];
         if($this->request->isPost){
             $request = $this->request->post('depdrop_parents');
-            $menuType = $request[0];
-            $moduleName = $request[1];
-            if($menuType == null || $moduleName == null || $menuType == '' || $moduleName == ''){
+            $moduleName = $request[0];
+            if($moduleName == null || $moduleName == ''){
                 return $this->asJson(['output' => [], 'selected' => '']);
             }
             $module = Yii::$app->getModule($moduleName);
             $menuItems = $module->getMenuItems();
             
             foreach ($menuItems[0] as $key => $value) {
-                if($value['menu'] == $menuType)
                     $out[] = ['id' => $value['type'], 'name' => $value['type']];
             }
             $out = array_unique($out, SORT_REGULAR);
@@ -188,17 +225,17 @@ class ItemController extends Controller
         $out = [];
         if($this->request->isPost){
             $request = $this->request->post('depdrop_parents');
-            $menuType = $request[0];
-            $moduleName = $request[1];
-            $routeType = $request[2];
-            if($menuType == null || $moduleName == null || $routeType == null || $menuType == '' || $moduleName == '' || $routeType == ''){
+
+            $moduleName = $request[0];
+            $routeType = $request[1];
+            if($moduleName == null || $routeType == null || $moduleName == '' || $routeType == ''){
                 return $this->asJson(['output' => [], 'selected' => '']);
             }
             $module = Yii::$app->getModule($moduleName);
             $menuItems = $module->getMenuItems();
 
             foreach ($menuItems[0] as $key => $item) {
-                if($item['type'] == $routeType && $item['menu'] == $menuType){
+                if($item['type'] == $routeType){
                     switch ($routeType) {
                         case 'widget':
                             $out[] = ['id' => $item['label'], 'name' => $item['name']];
@@ -229,14 +266,13 @@ class ItemController extends Controller
         $out = [];
         if($this->request->isPost){
             $request = $this->request->post('depdrop_parents');
-            $menuType = $request[0];
-            $moduleName = $request[1];
-            $routeType = $request[2];
-            $route = $request[3];
-            if($menuType == null || $moduleName == null || $routeType == null || $route == null || $menuType == '' || $moduleName == '' || $routeType == '' || $route == ''){
+            $moduleName = $request[0];
+            $routeType = $request[1];
+            $route = $request[2];
+            if($moduleName == null || $routeType == null || $moduleName == '' || $routeType == '' || $routeType == 'widget' || $routeType == 'route' || $routeType == 'action'){
                 return $this->asJson(['output' => [], 'selected' => '']);
             }
-            if($menuType == '' || $moduleName == '' || $routeType == '' || $route == ''){
+            if($moduleName == '' || $routeType == ''){
                 return json_encode(['output' => $out, 'selected' => '']);
             }
             $modelName = '';
@@ -246,11 +282,8 @@ class ItemController extends Controller
             
             foreach ($menuItems[0] as $key => $item) {
                 if($item['type'] == $routeType && $item['route'] == $route){
-
                         $field = $item['field'];
                         $modelName = $item['class'];
-
-
                 }
             }
             if ($modelName != '') {
@@ -260,6 +293,24 @@ class ItemController extends Controller
                     $data = [];
                 }
             return json_encode(['output' => $data, 'selected' => '']);
+        }
+    }
+
+    public function actionParentList(){
+        $out = [];
+        if($this->request->isPost){
+            $request = $this->request->post('depdrop_parents');
+            $id_menu = $request[0];
+            if($id_menu == null || $id_menu == ''){
+                return $this->asJson(['output' => [], 'selected' => '']);
+            }
+            $menu = Menu::findOne($id_menu);
+            $menuItems = $menu->getItems()->asArray()->all();
+            $out[] = ['id' => 0, 'name' => Module::t('Root')];
+            foreach ($menuItems as $key => $item) {
+                $out[] = ['id' => $item['id_item'], 'name' => $item['label']];
+            }
+            return json_encode(['output' => $out, 'selected' => '']);
         }
     }
 
