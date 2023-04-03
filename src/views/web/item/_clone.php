@@ -1,7 +1,8 @@
 <?php
 
 use yii\helpers\Url;
-use diginova\mhsb\Module;
+
+use portalium\menu\Module;
 use kartik\depdrop\DepDrop;
 use portalium\theme\widgets\ActiveForm;
 
