@@ -35,16 +35,24 @@ class Nav extends Widget
                 $url = $this->getUrl($item);
                 $data = json_decode($item->data, true);
                 if ($item->type == MenuItem::TYPE['module']) {
-                    $items[] =
-                        ($data["data"]["routeType"] == "widget") ?
-                            $data["data"]["route"]::widget() :
-                            [
+                    if ($data["data"]["routeType"] == "widget"){
+                        if (property_exists($data["data"]["route"]::className(), 'icon')) {
+                            $items[] = $data["data"]["route"]::widget([
+                                'icon' => $this->getIcon($item),
+                            ]);
+                        } else {
+                            $items[] = $data["data"]["route"]::widget();
+                        }
+                    }else{
+                        
+                    $items[] = [
                                 'label' => isset($item->module) ? $this->getIcon($item) . Yii::$app->getModule($item->module)->t($item->label) : $this->getIcon($item) . Module::t($item->label),
                                 'url' => $url,
                                 'items' => $this->getChildItems($item->id_item),
                                 'visible' => (($item->name_auth != null || $item->name_auth != '') && $item->name_auth != 'guest') ? Yii::$app->user->can($item->name_auth) : ($item->name_auth == 'guest' ? true : false),
                                 'sort' => $item->sort
                             ];
+                        }
                 } else {
                     $items[] =
                         [
@@ -75,7 +83,7 @@ class Nav extends Widget
                 $url = $this->getUrl($item);
                 $data = json_decode($item->data, true);
                 $itemTemp = ($item->type == MenuItem::TYPE['module'] && $data["data"]["routeType"] == "widget") ?
-                    $data["data"]["route"]::widget() :
+                    $this->getIcon($item) . $data["data"]["route"]::widget() :
                     [
                         'label' =>isset($item->module) ? $this->getIcon($item) . Yii::$app->getModule($item->module)->t($item->label) : $this->getIcon($item) . Module::t($item->label),
                         'url' => $url,

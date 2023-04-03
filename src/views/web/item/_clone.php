@@ -36,7 +36,7 @@ use portalium\theme\widgets\ActiveForm;
                 },
             ],
         ])->label('clone Item'); */
-        echo $form->field($model, 'id_menu', ['options' => ['id' => 'menu-list-clone-div']])->dropDownList($menuArray, ['id' => 'menu-list-clone', 'prompt' => 'Select Menu']);
+        echo $form->field($model, 'id_menu', ['options' => ['id' => 'menu-list-clone-div']])->dropDownList($menuArray, ['id' => 'menu-list-clone', 'prompt' => 'Select Menu'])->label('Menu');
 
         echo $form->field($model, 'id_parent', ['options' => ['id' => 'parent-list-clone-div']])->widget(DepDrop::classname(), [
             'options' => ['id' => 'parent-list-clone'],
@@ -45,7 +45,7 @@ use portalium\theme\widgets\ActiveForm;
                 'placeholder' => Module::t('Select...'),
                 'url' => Url::to(['/menu/item/parent-list'])
             ]
-        ]);
+        ])->label('Parent');
         ActiveForm::end();
     ?>
 

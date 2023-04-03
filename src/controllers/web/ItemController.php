@@ -6,6 +6,7 @@ use Yii;
 use portalium\menu\Module;
 use yii\filters\VerbFilter;
 use portalium\base\Exception;
+use portalium\menu\models\ItemChild;
 use portalium\web\Controller;
 use portalium\menu\models\Menu;
 use yii\web\NotFoundHttpException;
@@ -90,10 +91,16 @@ class ItemController extends Controller
             }
             if ($model->load($this->request->post())) {
                 $model->id_menu = $id_menu;
-
+                $id_parent = $this->request->post('MenuItem')['id_parent'];
                 $max = MenuItem::find()->max('sort');
                 $model->sort = $max + 1;
                 if($model->save()){
+                    if($id_parent != null && $id_parent != 0){
+                        $itemChildModel = new ItemChild();
+                        $itemChildModel->id_item = $id_parent;
+                        $itemChildModel->id_child = $model->id_item;
+                        $itemChildModel->save();
+                    }
                     return;
                 }
             }

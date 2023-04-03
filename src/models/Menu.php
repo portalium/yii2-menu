@@ -125,6 +125,8 @@ class Menu extends \yii\db\ActiveRecord
             $copyItem->attributes = $item->attributes;
             $copyItem->id_item = null;
             $copyItem->id_menu = $this->id_menu;
+            $copyItem->data = $item->data;
+            $copyItem->loadData();
             $copyItem->save();
             if ($id_parent != null || $id_parent != 0){
                 $itemChild = new ItemChild();

@@ -35,6 +35,7 @@ class MenuItem extends \yii\db\ActiveRecord
     public $icon;
     public $color;
     public $iconSize;
+    public $id_parent;
 
     const TYPE = [
         'route' => '1',
@@ -262,8 +263,28 @@ class MenuItem extends \yii\db\ActiveRecord
         return parent::beforeSave($insert);
     }
 
+    public function afterSave($insert, $changedAttributes)
+    {
+        if ($this->id_parent != 0 && $this->id_parent != null) {
+            $parent = ItemChild::findOne(['id_item' => $this->id_parent, 'id_child' => $this->id_item]);
+            if ($parent == null) {
+                $parent = new ItemChild();
+                $parent->id_item = $this->id_parent;
+                $parent->id_child = $this->id_item;
+                $parent->save();
+            }
+        }
+        return parent::afterSave($insert, $changedAttributes);
+    }
 
     public function afterFind()
+    {
+        
+        $this->loadData();
+        return parent::afterFind();
+    }
+
+    public function loadData()
     {
         $json_data = json_decode($this->data, true);
         if ($this->type == self::TYPE['module']) {
@@ -282,8 +303,7 @@ class MenuItem extends \yii\db\ActiveRecord
         $this->icon = $json_style['icon'];
         $this->color = $json_style['color'];
         $this->iconSize = $json_style['iconSize'];
-
-        return parent::afterFind();
+        $this->id_parent = isset($this->getParent()->one()->id_item) ? $this->getParent()->one()->id_item : 0;
     }
 
     public static function sort($data)
@@ -292,8 +312,8 @@ class MenuItem extends \yii\db\ActiveRecord
         //drop ıtemchild table
         foreach ($data as $item) {
             $model = MenuItem::findOne($item['id']);
-            if (!$model) {
-            ItemChild::deleteAll(['id_item' => $item['id']]);
+            if ($model) {
+                ItemChild::deleteAll(['id_item' => $item['id']]);
             }
         }
         //[{"id":1},{"id":2,"children":[{"id":4}]},{"id":8},{"id":9},{"id":3},{"id":5},{"id":6},{"id":7}]
@@ -346,12 +366,15 @@ class MenuItem extends \yii\db\ActiveRecord
 
     public function addItem($id_item, $addChildren = false){
         $item = MenuItem::findOne($id_item);
+        
         $copyItem = new MenuItem();
         $copyItem->attributes = $item->attributes;
         $copyItem->id_item = null;
         $copyItem->id_user = 1;
         $copyItem->id_menu = $this->id_menu;
+        $copyItem->loadData();
         $copyItem->save();
+        
         $itemChild = new ItemChild();
         $itemChild->id_item = $this->id_item;
         $itemChild->id_child = $copyItem->id_item;

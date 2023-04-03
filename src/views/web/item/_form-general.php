@@ -12,7 +12,7 @@ use portalium\menu\models\MenuItem;
 
     
 
-    <?= $form->field($model, 'id_item')->dropDownList(MenuItem::getParents($id_menu), ['id' => 'id_item'])->label(Module::t('Parent')) ?>
+    <?= $form->field($model, 'id_parent')->dropDownList(MenuItem::getParents($id_menu), ['id' => 'id_item'])->label(Module::t('Parent')) ?>
 
     
     <?= $form->field($model, 'type')->dropDownList(MenuItem::getTypes(), ['id' => 'type']) ?>
