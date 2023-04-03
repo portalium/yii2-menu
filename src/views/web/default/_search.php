@@ -1,7 +1,7 @@
 <?php
 
 use yii\helpers\Html;
-use yii\widgets\ActiveForm;
+use portalium\theme\widgets\ActiveForm;
 use portalium\menu\Module;
 /* @var $this yii\web\View */
 /* @var $model portalium\menu\models\MenuSearch */
