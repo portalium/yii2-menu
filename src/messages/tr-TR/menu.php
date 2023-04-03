@@ -39,6 +39,7 @@ return [
     'Type' => 'Tip',
     'Mobile' => 'Mobil',
     'Users' => 'Kullanıcılar',
+    'Accounting' => 'Muhasebe',
     'Parent' => 'Üst Menü',
     'Root Menu' => 'Kök Menü',
     'Icon Size' => 'Simge Boyutu',
