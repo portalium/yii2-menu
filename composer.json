@@ -14,17 +14,12 @@
 	"support" : {
 		"issues" : "https://github.com/portalium/portalium-menu/issues"
 	},
-	"repositories": [
-		{
-			"type": "git",
-			"url": "https://github.com/diginova/kartik-yii2-widget-depdrop.git"
-		}
-	],
 	"minimum-stability": "dev",
 	"require": {
 		"portalium/portalium-site": "*",
 		"portalium/portalium-user": "*",
-		"kartik-v/yii2-widget-colorinput": "*"
+		"kartik-v/yii2-widget-colorinput": "*",
+		"diginova/kartik-yii2-widget-depdrop": "*"
 	},
 	"autoload" : {
 		"psr-4" : {
