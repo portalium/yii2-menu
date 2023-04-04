@@ -24,7 +24,8 @@
 	"require": {
 		"portalium/portalium-site": "*",
 		"portalium/portalium-user": "*",
-		"kartik-v/yii2-widget-colorinput": "*"
+		"kartik-v/yii2-widget-colorinput": "*",
+		"kartik-v/yii2-widget-depdrop": "@dev"
 	},
 	"autoload" : {
 		"psr-4" : {
