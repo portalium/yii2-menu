@@ -183,7 +183,7 @@ class MenuItem extends \yii\db\ActiveRecord
     {
         $model = self::findOne($id_item);
         $children = $model->children;
-        
+
         $list = [];
 
         foreach ($children as $child) {
@@ -191,10 +191,10 @@ class MenuItem extends \yii\db\ActiveRecord
                 if ($child->child->hasChildren()) {
                     $list[$child->child->id_item] = [
                         'title' => isset($child->child->module) ? Yii::$app->getModule($child->child->module)->t($child->child->label) : Module::t($child->child->label),
-                        'id' => $child->id_item,
-                        'sort' => $child->sort,
+                        'id' => $child->child->id_item,
+                        'sort' => $child->child->sort,
                         'hasChildren' => true,
-                        'children' => self::getMenuTree($child->id_item),
+                        'children' => self::getMenuTree($child->id_child),
                     ];
                 } else {
                     $list[$child->child->id_item] = [
@@ -205,10 +205,10 @@ class MenuItem extends \yii\db\ActiveRecord
                     ];
                 }
             } catch (\Throwable $th) {
-                
             }
             
         }
+
         return $list;
     }
 
@@ -309,6 +309,7 @@ class MenuItem extends \yii\db\ActiveRecord
     public static function sort($data)
     {
         $data = json_decode($data['data'], true);
+
         //drop ıtemchild table
         foreach ($data as $item) {
             $model = MenuItem::findOne($item['id']);
@@ -316,6 +317,7 @@ class MenuItem extends \yii\db\ActiveRecord
                 ItemChild::deleteAll(['id_item' => $item['id']]);
             }
         }
+        
         //[{"id":1},{"id":2,"children":[{"id":4}]},{"id":8},{"id":9},{"id":3},{"id":5},{"id":6},{"id":7}]
         $index = 0;
         foreach ($data as $item) {
@@ -336,7 +338,7 @@ class MenuItem extends \yii\db\ActiveRecord
         return "success";
     }
 
-    public static function sortChildren($children, $parent, &$index)
+    public static function sortChildren($children, $parent, $index)
     {
         foreach ($children as $child) {
             $model = MenuItem::findOne($child['id']);
