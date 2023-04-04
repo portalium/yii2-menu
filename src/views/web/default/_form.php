@@ -2,7 +2,7 @@
 
 use portalium\menu\models\Menu;
 use yii\helpers\Html;
-use yii\widgets\ActiveForm;
+use portalium\theme\widgets\ActiveForm;
 use portalium\menu\Module;
 use portalium\theme\widgets\Panel;
 /* @var $this yii\web\View */
