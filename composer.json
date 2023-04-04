@@ -22,7 +22,6 @@
 	],
 	"minimum-stability": "dev",
 	"require": {
-		"diginova/kartik-yii2-widget-depdrop": "dev-master",
 		"portalium/portalium-site": "*",
 		"portalium/portalium-user": "*",
 		"kartik-v/yii2-widget-colorinput": "*"
