@@ -20,6 +20,7 @@
 			"url": "https://github.com/diginova/kartik-yii2-widget-depdrop.git"
 		}
 	],
+	"minimum-stability": "dev",
 	"require": {
 		"diginova/kartik-yii2-widget-depdrop": "dev-master",
 		"portalium/portalium-site": "*",
