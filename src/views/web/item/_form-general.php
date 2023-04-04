@@ -10,8 +10,6 @@ use portalium\menu\models\MenuItem;
 
     <?= $form->field($model, 'slug')->textInput(['maxlength' => true]) ?>
 
-    
-
     <?= $form->field($model, 'id_parent')->dropDownList(MenuItem::getParents($id_menu), ['id' => 'id_item'])->label(Module::t('Parent')) ?>
 
     
