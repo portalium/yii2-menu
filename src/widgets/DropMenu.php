@@ -124,6 +124,7 @@ class DropMenu extends Widget
         $html .= Html::endTag('div');
         if (isset($item['hasChildren']) && $item['hasChildren']) {
             $html .= Html::beginTag('ol', ['class' => 'dd-list']);
+
             foreach ($item['children'] as $child) {
                 $html .= $this->renderItem($child);
             }
