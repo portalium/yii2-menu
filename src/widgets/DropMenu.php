@@ -30,83 +30,80 @@ class DropMenu extends Widget
 
     public function run()
     {
+        /*  */
         echo Html::beginTag('div', ['class' => 'cf nestable-lists']);
-        echo Html::beginTag('div', ['class' => 'dd', 'id' => 'nestable', 'style' => 'padding-right: 20px;']);
-        DropMenuAsset::register($this->getView());
-        Panel::begin([
-            'title' =>Module::t('Menu'),
-            'actions' => [
-                'header' => [
-                    
-                    Html::tag('button', Module::t(''), ['type' => 'button', 'data-action' => 'expand-all', 'class' => 'fa fa-expand btn btn-sm btn-primary', 'id' => 'expand-all']),
-                    Html::tag('button', Module::t(''), ['type' => 'button', 'data-action' => 'collapse-all', 'class' => 'fa fa-compress btn btn-sm btn-primary', 'id' => 'collapse-all']),
-                    Html::tag('button', Module::t(''), ['type' => 'button', 'class' => 'fa fa-plus btn btn-sm btn-success', 'id' => 'create-menu-item-button', 'style' => '', 'id_menu' => $this->id_menu]),
-                ],
-                'footer' => [
-                    Html::tag('button', Module::t('Save'), ['type' => 'button', 'class' => 'btn btn-sm btn-success', 'data-action' => 'save-sort', 'id' => 'save-sort']),
-                ]
-            ]
-        ]);
-        Pjax::begin(['id' => 'nestable-pjax']);
-        echo Html::beginTag('ol', ['class' => 'dd-list']);
+            echo Html::beginTag('div', ['class' => 'dd', 'id' => 'nestable', 'style' => 'padding-right: 20px;']);
+                DropMenuAsset::register($this->getView());
+                Panel::begin([
+                    'title' =>Module::t('Menu'),
+                    'actions' => [
+                        'header' => [
+                            
+                            Html::tag('button', Module::t(''), ['type' => 'button', 'data-action' => 'expand-all', 'class' => 'fa fa-expand btn btn-sm btn-primary', 'id' => 'expand-all']),
+                            Html::tag('button', Module::t(''), ['type' => 'button', 'data-action' => 'collapse-all', 'class' => 'fa fa-compress btn btn-sm btn-primary', 'id' => 'collapse-all']),
+                            Html::tag('button', Module::t(''), ['type' => 'button', 'class' => 'fa fa-plus btn btn-sm btn-success', 'id' => 'create-menu-item-button', 'style' => '', 'id_menu' => $this->id_menu]),
+                        ],
+                        'footer' => [
+                            Html::tag('button', Module::t('Save'), ['type' => 'button', 'class' => 'btn btn-success', 'data-action' => 'save-sort', 'id' => 'save-sort']),
+                        ]
+                    ]
+                ]);
+                    Pjax::begin(['id' => 'nestable-pjax']);
+                        echo Html::beginTag('ol', ['class' => 'dd-list']);
+                        foreach (Menu::getMenuWithChildren($this->menuModel->id_menu) as $item) {
+                            echo $this->renderItem($item);
+                        }
+                        echo Html::endTag('ol');
+                    Pjax::end();
+                Panel::end();
+            echo Html::endTag('div');
+            Pjax::begin(['id' => 'nestable2-pjax']);
+                echo Html::beginTag('div', ['class' => 'dd', 'id' => 'nestable2']);
 
-        foreach (Menu::getMenuWithChildren($this->menuModel->id_menu) as $item) {
-            echo $this->renderItem($item);
-        }
-
-        echo Html::endTag('ol');
-        Pjax::end();
-        Panel::end();
-
-
-        echo Html::endTag('div');
-        Pjax::begin(['id' => 'nestable2-pjax']);
-        echo Html::beginTag('div', ['class' => 'dd', 'id' => 'nestable2']);
-
-        $model = new MenuItem();
-        if (Yii::$app->request->isGet) {
-            $id_item = Yii::$app->request->get('id_item');
-            if ($id_item) {
-                $model = MenuItem::findOne($id_item);
-                if (!$model) {
                     $model = new MenuItem();
-                }
-            }
-        }
-        echo $this->render('/web/item/_form', [
-            'model' => $model,
-            'id_menu' => $this->id_menu,
-            'menuModel' => $this->menuModel,
-        ]);
+                    if (Yii::$app->request->isGet) {
+                        $id_item = Yii::$app->request->get('id_item');
+                        if ($id_item) {
+                            $model = MenuItem::findOne($id_item);
+                            if (!$model) {
+                                $model = new MenuItem();
+                            }
+                        }
+                    }
+                    echo $this->render('/web/item/_form', [
+                        'model' => $model,
+                        'id_menu' => $this->id_menu,
+                        'menuModel' => $this->menuModel,
+                    ]);
+                echo Html::endTag('div');
+            Pjax::end();
         echo Html::endTag('div');
-        Pjax::end();
-        echo Html::endTag('div');
-        echo Html::endTag('div');
+
         echo Html::beginTag('textarea', ['id' => 'nestable-output', 'style' => 'display:none']);
         echo Html::endTag('textarea');
 
         Modal::begin([
             'id' => 'modal-move',
             'title' => Html::tag('h4', Module::t('Move Menu Item'), ['class' => 'modal-title']),
-            'footer' => Html::button(Module::t('Close'), ['class' => 'btn btn-default', 'data-bs-dismiss' => 'modal']) . Html::button(Module::t('Save'), ['class' => 'btn btn-primary', 'id' => 'menu-move-item-form-button']),
+            'footer' => Html::button(Module::t('Save'), ['class' => 'btn btn-primary', 'id' => 'menu-move-item-form-button']),
         ]);
-        echo $this->render('/web/item/_move', [
-            'id_menu' => $this->id_menu,
-            'menuArray' => ArrayHelper::map(Menu::find()->all(), 'id_menu', 'name'),
-            'model' => new DynamicModel(['id_item' => null, 'id_menu' => null, 'id_parent' => null]),
-        ]);
+            echo $this->render('/web/item/_move', [
+                'id_menu' => $this->id_menu,
+                'menuArray' => ArrayHelper::map(Menu::find()->all(), 'id_menu', 'name'),
+                'model' => new DynamicModel(['id_item' => null, 'id_menu' => null, 'id_parent' => null]),
+            ]);
         Modal::end();
 
         Modal::begin([
             'id' => 'modal-clone',
             'title' => Html::tag('h4', Module::t('Clone Menu Item'), ['class' => 'modal-title']),
-            'footer' => Html::button(Module::t('Close'), ['class' => 'btn btn-default', 'data-dismiss' => 'modal']) . Html::button(Module::t('Save'), ['class' => 'btn btn-primary', 'id' => 'menu-clone-item-form-button']),
+            'footer' => Html::button(Module::t('Save'), ['class' => 'btn btn-primary', 'id' => 'menu-clone-item-form-button']),
         ]);
-        echo $this->render('/web/item/_clone', [
-            'id_menu' => $this->id_menu,
-            'menuArray' => ArrayHelper::map(Menu::find()->all(), 'id_menu', 'name'),
-            'model' => new DynamicModel(['id_item' => null, 'id_menu' => null, 'id_parent' => null]),
-        ]);
+            echo $this->render('/web/item/_clone', [
+                'id_menu' => $this->id_menu,
+                'menuArray' => ArrayHelper::map(Menu::find()->all(), 'id_menu', 'name'),
+                'model' => new DynamicModel(['id_item' => null, 'id_menu' => null, 'id_parent' => null]),
+            ]);
         Modal::end();
     }
 
@@ -119,7 +116,7 @@ class DropMenu extends Widget
         $html .= Html::tag('button', '<i class="fa fa-copy"></i>', ['class' => 'btn btn-sm btn-info btn-clone clone-item', 'name' => "clone-item", 'style' => 'float:right; margin-right:5px; padding:0px 6px;', 'data' => $item['id'], 'id_menu' => $this->id_menu]);
         $html .= Html::tag('button', '<i class="fa fa-arrow-circle-right"></i>', ['class' => 'btn btn-sm btn-warning btn-move move-item', 'name' => "move-item", 'style' => 'float:right; margin-right:5px; padding:0px 6px;', 'data' => $item['id'], 'id_menu' => $this->id_menu]);
         $html .= Html::tag('button', '<i class="fa fa-times"></i>', ['class' => 'btn btn-sm btn-danger btn-delete delete-item', 'name' => "delete-item", 'style' => 'float:right; margin-right:5px; padding:0px 6px;', 'data' => $item['id'], 'id_menu' => $this->id_menu]);
-        $html .= Html::tag('button', '<i class="fa fa-edit"></i>', ['class' => 'btn btn-sm btn-primary btn-edit edit-item', 'name' => "edit-item", 'style' => 'float:right; margin-right:5px; padding:0px 6px;', 'data' => $item['id'], 'id_menu' => $this->id_menu]);
+        $html .= Html::tag('button', '<i class="fa fa-edit"></i>', ['class' => 'btn btn-sm btn-primary btn-edit edit-item', 'name' => "edit-item", 'style' => 'float:right; margin-right:5px; padding:0px 6px;', 'data' => $item['id'], 'id_menu' => $this->id_menu, 'onclick' => '(function ( $event ) { alert("Button 3 clicked"); })();']);
 
         $html .= Html::endTag('div');
         if (isset($item['hasChildren']) && $item['hasChildren']) {

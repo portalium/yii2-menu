@@ -34,7 +34,8 @@ use portalium\theme\widgets\Tabs;
         'actions' => [
             'header' => [],
             'footer' => [
-                Html::button(Module::t('Save'), ['class' => 'btn btn-success create-menu-item', 'id' => 'create-menu-item'])
+                Html::button(Module::t('Save'), ['class' => 'btn btn-success create-menu-item', 'id' => 'create-menu-item']),
+                Html::tag('div', '', ['class' => 'spinner-border text-primary', 'role' => 'status', 'style' => 'display:none; margin-left: 3px; margin-bottom: -10px;', 'id' => 'spinner'])
             ]
         ]
     ]) ?>
@@ -170,16 +171,23 @@ $this->registerJs('
                 type: "POST",
                 url: form.attr("action"),
                 data: data,
+                beforeSend: function () {
+                    $("#spinner").show();
+                    console.log("acil");
+                },
                 success: function (response) {
                     //wait 1 second before reload pjax
                     $.pjax.reload({container: "#nestable-pjax"});
+                    console.log("kapan");
+                    
                     //sleep(1000);
                     setTimeout(function () {
                         $.pjax.reload({container: "#nestable2-pjax"});
                         //trigger expand all button
                         $("#expand-all").trigger("click");
+                        $("#spinner").hide();
                     }, 1000);
-    
+                    
                 }
             });
         });

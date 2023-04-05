@@ -535,6 +535,10 @@ $("#create-menu-item .create-menu-item").click(function (e) {
 
 
 $(document).on("click", ".delete-item", function (e) {
+    console.log(this);
+    $(this).addClass("spinner-border spinner-border-sm");
+    $(this).removeClass("btn-danger");
+    $(this).find("i").remove();
     e.preventDefault();
     var id_menu = $(this).attr("id_menu");
     $.ajax({
