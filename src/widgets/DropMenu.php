@@ -84,7 +84,7 @@ class DropMenu extends Widget
 
         Modal::begin([
             'id' => 'modal-move',
-            'title' => Html::tag('h4', Module::t('Move Menu Item'), ['class' => 'modal-title']),
+            'title' => Module::t('Move Menu Item'),
             'footer' => Html::button(Module::t('Save'), ['class' => 'btn btn-primary', 'id' => 'menu-move-item-form-button']),
         ]);
             echo $this->render('/web/item/_move', [
@@ -96,7 +96,7 @@ class DropMenu extends Widget
 
         Modal::begin([
             'id' => 'modal-clone',
-            'title' => Html::tag('h4', Module::t('Clone Menu Item'), ['class' => 'modal-title']),
+            'title' => Module::t('Clone Menu Item'),
             'footer' => Html::button(Module::t('Save'), ['class' => 'btn btn-primary', 'id' => 'menu-clone-item-form-button']),
         ]);
             echo $this->render('/web/item/_clone', [
