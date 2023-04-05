@@ -75,7 +75,7 @@ $this->registerJs('
                 $("#routeType-list").val("' . $model->routeType . '");
                 $("#routeType-list").trigger("change");
                 setTimeout(function(){
-                    $("#route-list").val("' . str_replace('\\', '\\\\', $model->route) . '");
+                    $("#route-list").val("' . str_replace('\\', '\\\\', $model->route ? $model->route : '') . '");
                     $("#route-list").trigger("change");
                     setTimeout(function(){
                         $("#model-list").val("' . $model->model . '");
@@ -140,7 +140,7 @@ $this->registerJs('
                 $("#routeType-list").val("' . $model->routeType . '");
                 $("#routeType-list").trigger("change");
                 setTimeout(function(){
-                    $("#route-list").val("' . str_replace('\\', '\\\\', $model->route) . '");
+                    $("#route-list").val("' . str_replace('\\', '\\\\', $model->route ? $model->route : '') . '");
                     setTimeout(function(){
                         $("#model-list").val("' . $model->model . '");
                     }, 1000);
