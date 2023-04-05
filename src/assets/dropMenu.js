@@ -564,9 +564,14 @@ $(document).on("click", ".edit-item", function (e) {
     var id_menu = $(this).attr("id_menu");
     var id = $(this).attr("data");
     $.pjax.reload({ container: "#nestable-pjax" }).done(function () {
-    $.pjax.reload({ container: "#nestable2-pjax", url: "?id_item=" + id + "&id_menu=" + id_menu, timeout: false });
+    $.pjax.reload({ container: "#nestable2-pjax", url: "?id_item=" + id + "&id_menu=" + id_menu, timeout: false })
+        .done(function () {
+            $("#drop-menu-page").show();
+            $("#spinner-div").hide();
+        });
     
     $("#expand-all").trigger("click");
+    
     });
 });
 
