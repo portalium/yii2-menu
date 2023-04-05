@@ -539,6 +539,11 @@ $(document).on("click", ".delete-item", function (e) {
     $(this).addClass("spinner-border spinner-border-sm");
     $(this).removeClass("btn-danger");
     $(this).find("i").remove();
+    $(this).css("margin-right", "10px");
+    $(this).css("padding", "0px 5px");
+    $(this).css("margin-left", "4px");
+    $(this).css("margin-top", "3px");
+
     e.preventDefault();
     var id_menu = $(this).attr("id_menu");
     $.ajax({
