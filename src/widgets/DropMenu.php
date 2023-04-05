@@ -116,7 +116,7 @@ class DropMenu extends Widget
         $html .= Html::tag('button', '<i class="fa fa-copy"></i>', ['class' => 'btn btn-sm btn-info btn-clone clone-item', 'name' => "clone-item", 'style' => 'float:right; margin-right:5px; padding:0px 6px;', 'data' => $item['id'], 'id_menu' => $this->id_menu]);
         $html .= Html::tag('button', '<i class="fa fa-arrow-circle-right"></i>', ['class' => 'btn btn-sm btn-warning btn-move move-item', 'name' => "move-item", 'style' => 'float:right; margin-right:5px; padding:0px 6px;', 'data' => $item['id'], 'id_menu' => $this->id_menu]);
         $html .= Html::tag('button', '<i class="fa fa-times"></i>', ['class' => 'btn btn-sm btn-danger btn-delete delete-item', 'name' => "delete-item", 'style' => 'float:right; margin-right:5px; padding:0px 6px;', 'data' => $item['id'], 'id_menu' => $this->id_menu]);
-        $html .= Html::tag('button', '<i class="fa fa-edit"></i>', ['class' => 'btn btn-sm btn-primary btn-edit edit-item', 'name' => "edit-item", 'style' => 'float:right; margin-right:5px; padding:0px 6px;', 'data' => $item['id'], 'id_menu' => $this->id_menu, 'onclick' => '(function ( $event ) { alert("Button 3 clicked"); })();']);
+        $html .= Html::tag('button', '<i class="fa fa-edit"></i>', ['class' => 'btn btn-sm btn-primary btn-edit edit-item', 'name' => "edit-item", 'style' => 'float:right; margin-right:5px; padding:0px 6px;', 'data' => $item['id'], 'id_menu' => $this->id_menu]);
 
         $html .= Html::endTag('div');
         if (isset($item['hasChildren']) && $item['hasChildren']) {
