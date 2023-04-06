@@ -122,12 +122,12 @@ class DropMenu extends Widget
     {
         $html = Html::beginTag('li', ['class' => 'dd-item', 'data-id' => $item['id']]);
         $html .= Html::beginTag('div', ['class' => 'dd-handle']);
-        $html .= Html::tag('button', '<i class="fa fa-arrows"></i>', ['class' => 'btn btn-sm btn-danger dd-handle-button', 'style' => 'float:left; margin-right:5px; padding:0px 6px;']);
+        $html .= Html::tag('button', '<i class="fa fa-arrows"></i>', ['class' => 'btn btn-sm btn-danger dd-handle-button', 'style' => 'float:left; margin-right: 5px; padding:0px 6px;']);
         $html .= Html::tag('span', $item['title']);
-        $html .= Html::tag('button', '<i class="fa fa-copy"></i>', ['class' => 'btn btn-sm btn-info btn-clone clone-item', 'name' => "clone-item", 'style' => 'float:right; margin-right:5px; padding:0px 6px;', 'data' => $item['id'], 'id_menu' => $this->id_menu]);
-        $html .= Html::tag('button', '<i class="fa fa-arrow-circle-right"></i>', ['class' => 'btn btn-sm btn-warning btn-move move-item', 'name' => "move-item", 'style' => 'float:right; margin-right:5px; padding:0px 6px;', 'data' => $item['id'], 'id_menu' => $this->id_menu]);
-        $html .= Html::tag('button', '<i class="fa fa-times"></i>', ['class' => 'btn btn-sm btn-danger btn-delete delete-item', 'name' => "delete-item", 'style' => 'float:right; margin-right:5px; padding:0px 6px;', 'data' => $item['id'], 'id_menu' => $this->id_menu]);
-        $html .= Html::tag('button', '<i class="fa fa-edit"></i>', ['class' => 'btn btn-sm btn-primary btn-edit edit-item', 'name' => "edit-item", 'style' => 'float:right; margin-right:5px; padding:0px 6px;', 'data' => $item['id'], 'id_menu' => $this->id_menu]);
+        $html .= Html::tag('button', '<i class="fa fa-copy"></i>', ['class' => 'btn btn-sm btn-info btn-clone clone-item', 'name' => "clone-item", 'style' => 'float:right; margin-right: 5px; padding:0px 6px;', 'data' => $item['id'], 'id_menu' => $this->id_menu]);
+        $html .= Html::tag('button', '<i class="fa fa-arrow-circle-right"></i>', ['class' => 'btn btn-sm btn-warning btn-move move-item', 'name' => "move-item", 'style' => 'float:right; margin-right: 5px; padding:0px 6px;', 'data' => $item['id'], 'id_menu' => $this->id_menu]);
+        $html .= Html::tag('button', '<i class="fa fa-times"></i>', ['class' => 'btn btn-sm btn-danger btn-delete delete-item', 'name' => "delete-item", 'style' => 'float:right; margin-right: 5px; padding:0px 6px;', 'data' => $item['id'], 'id_menu' => $this->id_menu]);
+        $html .= Html::tag('button', '<i class="fa fa-edit"></i>', ['class' => 'btn btn-sm btn-primary btn-edit edit-item', 'name' => "edit-item", 'style' => 'float:right; margin-right: 5px; padding:0px 6px;', 'data' => $item['id'], 'id_menu' => $this->id_menu]);
 
         $html .= Html::endTag('div');
         if (isset($item['hasChildren']) && $item['hasChildren']) {
