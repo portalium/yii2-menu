@@ -24,7 +24,10 @@ use portalium\menu\models\MenuItem;
         'pluginOptions' => [
             'depends' => ['module-list'],
             'placeholder' => Module::t('Select...'),
-            'url' => Url::to(['/menu/item/route-type'])
+            'url' => Url::to(['/menu/item/route-type']),
+            'paramsBase' => [
+                Yii::$app->request->csrfParam => Yii::$app->request->csrfToken,
+            ]
         ]
     ]);
 
@@ -33,7 +36,10 @@ use portalium\menu\models\MenuItem;
         'pluginOptions' => [
             'depends' => ['module-list', 'routeType-list'],
             'placeholder' => Module::t('Select...'),
-            'url' => Url::to(['/menu/item/route'])
+            'url' => Url::to(['/menu/item/route']),
+            'paramsBase' => [
+                Yii::$app->request->csrfParam => Yii::$app->request->csrfToken,
+            ]
         ]
     ]);
 
@@ -42,7 +48,10 @@ use portalium\menu\models\MenuItem;
         'pluginOptions' => [
             'depends' => ['module-list', 'routeType-list', 'route-list', ],
             'placeholder' => Module::t('Select...'),
-            'url' => Url::to(['/menu/item/model'])
+            'url' => Url::to(['/menu/item/model']),
+            'paramsBase' => [
+                Yii::$app->request->csrfParam => Yii::$app->request->csrfToken,
+            ]
         ],
         'pluginEvents' => [
             "depdrop:change" => "function(event, id, value) {
