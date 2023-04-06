@@ -459,6 +459,7 @@ $.fn.nestable = function (params) {
 };
 
 $(document).ready(function () {
+    disabledButton();
     var data;
     var updateOutput = function (e) {
     var list = e.length ? e : $(e.target),
@@ -521,7 +522,6 @@ $("#create-menu-item .create-menu-item").click(function (e) {
     url: form.attr("action"),
     data: data,
     success: function (response) {
-        
         $.pjax.reload({ container: "#nestable-pjax" }).done(function () {
         
 
@@ -564,16 +564,25 @@ $(document).on("click", ".edit-item", function (e) {
     var id_menu = $(this).attr("id_menu");
     var id = $(this).attr("data");
     $.pjax.reload({ container: "#nestable-pjax" }).done(function () {
-    $.pjax.reload({ container: "#nestable2-pjax", url: "?id_item=" + id + "&id_menu=" + id_menu, timeout: false })
-        .done(function () {
-            $("#drop-menu-page").show();
-            $("#spinner-div").hide();
-        });
-    
-    $("#expand-all").trigger("click");
-    
+        disabledButton();
+        $.pjax.reload({ container: "#nestable2-pjax", url: "?id_item=" + id + "&id_menu=" + id_menu, timeout: false })
+            .done(function () {
+                
+            });
+        $("#expand-all").trigger("click");
     });
 });
+
+function disabledButton() {
+    $("#drop-menu-form").hide();
+    $("#spinner-div-form").show();
+    $(".edit-item").attr("disabled", true);
+    $(".clone-item").attr("disabled", true);
+    $(".delete-item").attr("disabled", true);
+    $(".create-item").attr("disabled", true);
+    $(".move-item").attr("disabled", true);
+    $(".dd-handle-button").attr("disabled", true);
+}
 
 $(document).on("click", "#create-menu-item-button", function (e) {
     e.preventDefault();

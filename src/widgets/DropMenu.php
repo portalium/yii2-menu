@@ -30,8 +30,9 @@ class DropMenu extends Widget
 
     public function run()
     {
-        echo Html::beginTag('div', ['id'=> 'spinner-div', 'style' => 'display: none;']);
-            echo Html::tag('div', '', ['class' => 'spinner-border text-primary', 'role' => 'status']);
+        echo Html::beginTag('div', ['id'=> 'spinner-div-page', 'style' => 'display: none;', 'class' => 'row']);
+        echo Html::tag('div', '', ['class' => 'spinner-border text-primary col-2', 'role' => 'status']).
+        Html::tag('span', 'Loading...', ['class' => 'sr-only col-2', 'style' => 'margin-left: 0px; margin-top: 5px;']);
         echo Html::endTag('div');
         echo Html::beginTag('div', ['id' => 'drop-menu-page']);
             echo Html::beginTag('div', ['class' => 'cf nestable-lists']);
@@ -60,27 +61,33 @@ class DropMenu extends Widget
                         Pjax::end();
                     Panel::end();
                 echo Html::endTag('div');
-                Pjax::begin(['id' => 'nestable2-pjax']);
-                    echo Html::beginTag('div', ['class' => 'dd', 'id' => 'nestable2']);
+                echo Html::beginTag('div', ['id'=> 'spinner-div-form', 'style' => 'display: none;', 'class' => 'row']);
+                    echo Html::tag('div', '', ['class' => 'spinner-border text-primary col-2', 'role' => 'status']).
+                    Html::tag('span', 'Loading...', ['class' => 'sr-only col-2', 'style' => 'margin-left: 0px; margin-top: 5px;']);
+                echo Html::endTag('div');
+                    echo Html::beginTag('div', ['id' => 'drop-menu-form']);
+                        Pjax::begin(['id' => 'nestable2-pjax']);
+                            echo Html::beginTag('div', ['class' => 'dd', 'id' => 'nestable2']);
 
-                        $model = new MenuItem();
-                        if (Yii::$app->request->isGet) {
-                            $id_item = Yii::$app->request->get('id_item');
-                            if ($id_item) {
-                                $model = MenuItem::findOne($id_item);
-                                if (!$model) {
-                                    $model = new MenuItem();
+                                $model = new MenuItem();
+                                if (Yii::$app->request->isGet) {
+                                    $id_item = Yii::$app->request->get('id_item');
+                                    if ($id_item) {
+                                        $model = MenuItem::findOne($id_item);
+                                        if (!$model) {
+                                            $model = new MenuItem();
+                                        }
+                                    }
                                 }
-                            }
-                        }
-                        echo $this->render('/web/item/_form', [
-                            'model' => $model,
-                            'id_menu' => $this->id_menu,
-                            'menuModel' => $this->menuModel,
-                        ]);
+                                echo $this->render('/web/item/_form', [
+                                    'model' => $model,
+                                    'id_menu' => $this->id_menu,
+                                    'menuModel' => $this->menuModel,
+                                ]);
+                            echo Html::endTag('div');
+                        Pjax::end();
                     echo Html::endTag('div');
-                Pjax::end();
-            echo Html::endTag('div');
+                echo Html::endTag('div');
 
             echo Html::beginTag('textarea', ['id' => 'nestable-output', 'style' => 'display:none']);
             echo Html::endTag('textarea');
@@ -109,18 +116,6 @@ class DropMenu extends Widget
                 ]);
             Modal::end();
         Html::endTag('div');
-        Yii::$app->view->registerJs(
-            '
-                //if click edit-button
-                $(document).on("click", ".edit-item", function() {
-                    console.log("edit-item");
-                    //hide drop-menu-page
-                    $("#drop-menu-page").hide();
-                    //show spinner-div
-                    $("#spinner-div").show();
-                });
-            '
-        );
     }
 
     protected function renderItem($item)
