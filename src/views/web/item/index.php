@@ -4,6 +4,7 @@ use yii\helpers\Html;
 use portalium\menu\Module;
 use portalium\theme\widgets\Panel;
 use portalium\theme\widgets\GridView;
+use portalium\theme\widgets\ActionColumn;
 /* @var $this yii\web\View */
 /* @var $searchModel portalium\menu\models\MenuItemSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
@@ -40,7 +41,7 @@ $this->params['breadcrumbs'][] = $this->title;
             //'id_menu',
             //'date_create',
             //'date_update',
-            ['class' => 'yii\grid\ActionColumn'],
+            ['class' => ActionColumn::class],
         ],
     ]); ?>
     
