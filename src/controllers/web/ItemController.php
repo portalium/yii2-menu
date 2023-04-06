@@ -82,18 +82,24 @@ class ItemController extends Controller
         $model = new MenuItem();
         $model->style = '{"icon":"0xf0f6","color":"rgb(234, 153, 153)","iconSize":"24"}';
         if ($this->request->isPost) {
+            $newItem = true;
             if ($id_item != null) {
                 $model = MenuItem::findOne($id_item);
                 if($model == null){
                     $model = new MenuItem();
                     $model->style = '{"icon":"0xf0f6","color":"rgb(234, 153, 153)","iconSize":"24"}';
+                }else{
+                    $newItem = false;
                 }
             }
             if ($model->load($this->request->post())) {
                 $model->id_menu = $id_menu;
                 $id_parent = $this->request->post('MenuItem')['id_parent'];
-                $max = MenuItem::find()->max('sort');
-                $model->sort = $max + 1;
+                if($newItem){
+                    $max = MenuItem::find()->max('sort');
+                    $model->sort = $max + 1;
+                }
+                
                 if($model->save()){
                     if($id_parent != null && $id_parent != 0){
                         $itemChildModel = new ItemChild();
