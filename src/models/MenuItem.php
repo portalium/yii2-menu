@@ -308,14 +308,16 @@ class MenuItem extends \yii\db\ActiveRecord
 
     public static function sort($data)
     {
+        
         $data = json_decode($data['data'], true);
-
+        Yii::warning($data);
         //drop ıtemchild table
         foreach ($data as $item) {
             $model = MenuItem::findOne($item['id']);
             if ($model) {
                 ItemChild::deleteAll(['id_item' => $item['id']]);
             }
+            self::removeChildrenRecursive($item);
         }
         
         //[{"id":1},{"id":2,"children":[{"id":4}]},{"id":8},{"id":9},{"id":3},{"id":5},{"id":6},{"id":7}]
@@ -338,6 +340,19 @@ class MenuItem extends \yii\db\ActiveRecord
             }
         }
         return "success";
+    }
+
+    public static function removeChildrenRecursive($item)
+    {
+
+        if (isset($item['children'])) {
+            foreach ($item['children'] as $child) {
+                ItemChild::deleteAll(['id_item' => $item['id']]);
+                self::removeChildrenRecursive($child);
+            }
+        }else{
+            ItemChild::deleteAll(['id_item' => $item['id']]);
+        }
     }
 
     public static function sortChildren($children, $parent, $index)

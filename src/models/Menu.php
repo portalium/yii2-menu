@@ -110,11 +110,120 @@ class Menu extends \yii\db\ActiveRecord
                     'title' => isset($item->module) ? Yii::$app->getModule($item->module)->t($item->label) : Module::t($item->label),
                     'id' => $item->id_item,
                     'hasChildren' => $item->hasChildren(),
+                    'sort' => $item->sort,
                     'children' => MenuItem::getMenuTree($item->id_item)
                 ];
             }
         }
+
+        $result = self::jsonSortWithSortRecursive($result);
+        
         return $result;
+    }
+
+    public static function jsonSortWithSortRecursive($data){
+        /* [
+            [
+                'title' => 'Menü',
+                'id' => 1,
+                'hasChildren' => false,
+                'sort' => 0,
+                'children' => [],
+            ],
+            [
+                'title' => 'Language',
+                'id' => 6,
+                'hasChildren' => false,
+                'sort' => 1,
+                'children' => [],
+            ],
+            [
+                'title' => 'Users',
+                'id' => 2,
+                'hasChildren' => true,
+                'sort' => 2,
+                'children' => [
+                    3 => [
+                        'title' => 'Groups',
+                        'id' => 3,
+                        'sort' => 3,
+                        'hasChildren' => true,
+                        'children' => [
+                            4 => [
+                                'title' => 'Users',
+                                'id' => 4,
+                                'sort' => 5,
+                                'hasChildren' => true,
+                                'children' => [
+                                    8 => [
+                                        'title' => 'Permissions',
+                                        'id' => 8,
+                                        'sort' => 6,
+                                        'hasChildren' => false,
+                                    ],
+                                ],
+                            ],
+                            5 => [
+                                'title' => 'Settings',
+                                'id' => 5,
+                                'sort' => 4,
+                                'hasChildren' => false,
+                            ],
+                        ],
+                    ],
+                    9 => [
+                        'title' => 'Roles',
+                        'id' => 9,
+                        'sort' => 7,
+                        'hasChildren' => false,
+                    ],
+                ],
+            ],
+            [
+                'title' => 'Login',
+                'id' => 7,
+                'hasChildren' => false,
+                'sort' => 8,
+                'children' => [],
+            ],
+            [
+                'title' => 'deneme3',
+                'id' => 22,
+                'hasChildren' => false,
+                'sort' => 9,
+                'children' => [],
+            ],
+            [
+                'title' => 'Content',
+                'id' => 23,
+                'hasChildren' => true,
+                'sort' => 10,
+                'children' => [
+                    24 => [
+                        'title' => 'Categories',
+                        'id' => 24,
+                        'sort' => 11,
+                        'hasChildren' => false,
+                    ],
+                    25 => [
+                        'title' => 'Contents',
+                        'id' => 25,
+                        'sort' => 12,
+                        'hasChildren' => false,
+                    ],
+                ],
+            ],
+        ] */
+
+        foreach ($data as $key => $value) {
+            if (isset($value['children']) && is_array($value['children'])) {
+                $data[$key]['children'] = self::jsonSortWithSortRecursive($value['children']);
+            }
+        }
+        usort($data, function($a, $b) {
+            return $a['sort'] <=> $b['sort'];
+        });
+        return $data;
     }
 
     public function addItem($id_item, $addChildren = false, $id_parent = null)
