@@ -333,6 +333,8 @@ class MenuItem extends \yii\db\ActiveRecord
             
             if (isset($item['children'])) {
                 $index = self::sortChildren($item['children'],$item['id'], $index);
+            }else{
+                ItemChild::deleteAll(['id_item' => $item['id']]);
             }
         }
         return "success";
@@ -361,6 +363,8 @@ class MenuItem extends \yii\db\ActiveRecord
             $index++;
             if (isset($child['children'])) {
                 $index = self::sortChildren($child['children'], $child['id'], $index);
+            }else{
+                ItemChild::deleteAll(['id_item' => $child['id']]);
             }
         }
         return $index;
