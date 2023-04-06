@@ -173,7 +173,12 @@ class ItemController extends Controller
         if (Yii::$app->request->isAjax) {  
             $id_menu = Yii::$app->request->post('DynamicModel')['id_menu'];
             $id_item = Yii::$app->request->post('id_item');
-            $id_parent = Yii::$app->request->post('DynamicModel')['id_parent'];
+            try {
+                $id_parent = Yii::$app->request->post('DynamicModel')['id_parent'];
+            } catch (\Throwable $th) {
+                $id_parent = null;
+            }
+            
             
             $menuModel = Menu::findOne($id_menu);
             $menuModel->addItem($id_item, true, $id_parent); 
@@ -187,7 +192,11 @@ class ItemController extends Controller
         if (Yii::$app->request->isAjax) {
             $id_menu = Yii::$app->request->post('DynamicModel')['id_menu'];
             $id_item = Yii::$app->request->post('id_item');
-            $id_parent = Yii::$app->request->post('DynamicModel')['id_parent'];
+            try {
+                $id_parent = Yii::$app->request->post('DynamicModel')['id_parent'];
+            } catch (\Throwable $th) {
+                $id_parent = null;
+            }
             $menuModel = Menu::findOne($id_menu);
             if ($menuModel->addItem($id_item, true, $id_parent)) {
                 $item = MenuItem::findOne($id_item);

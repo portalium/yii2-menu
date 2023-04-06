@@ -26,16 +26,6 @@ use portalium\theme\widgets\ActiveForm;
                 'labelOptions' => ['style' => 'margin-top: 10px;'],
             ],
         ]);
-        /* echo $form->field($model, 'id_item')->dropDownList($menuItems, [
-            'prompt' => 'Select menu item',
-            'class' => 'form-control',
-            'options' => [
-                'prompt' => false,
-                'group' => function($item, $index, $label) {
-                    return '<optgroup label="' . $label . '">';
-                },
-            ],
-        ])->label('Move Item'); */
         echo $form->field($model, 'id_menu', ['options' => ['id' => 'menu-list-div']])->dropDownList($menuArray, ['id' => 'menu-list', 'prompt' => 'Select Menu'])->label('Menu');
 
         echo $form->field($model, 'id_parent', ['options' => ['id' => 'parent-list-div']])->widget(DepDrop::classname(), [
@@ -43,7 +33,10 @@ use portalium\theme\widgets\ActiveForm;
             'pluginOptions' => [
                 'depends' => ['menu-list'],
                 'placeholder' => Module::t('Select...'),
-                'url' => Url::to(['/menu/item/parent-list'])
+                'url' => Url::to(['/menu/item/parent-list']),
+                'paramsBase' => [
+                    Yii::$app->request->csrfParam => Yii::$app->request->csrfToken,
+                ]
             ]
         ])->label('Parent');
         ActiveForm::end();
