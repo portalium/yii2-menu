@@ -44,7 +44,10 @@ use portalium\theme\widgets\ActiveForm;
             'pluginOptions' => [
                 'depends' => ['menu-list-clone'],
                 'placeholder' => Module::t('Select...'),
-                'url' => Url::to(['/menu/item/parent-list'])
+                'url' => Url::to(['/menu/item/parent-list']),
+                'paramsBase' => [
+                    Yii::$app->request->csrfParam => Yii::$app->request->csrfToken,
+                ]
             ]
         ])->label('Parent');
         ActiveForm::end();
