@@ -83,7 +83,7 @@ class Nav extends Widget
                 $url = $this->getUrl($item);
                 $data = json_decode($item->data, true);
                 $itemTemp = ($item->type == MenuItem::TYPE['module'] && $data["data"]["routeType"] == "widget") ?
-                    $this->getIcon($item) . $data["data"]["route"]::widget() :
+                    $data["data"]["route"]::widget() :
                     [
                         'label' =>isset($item->module) ? $this->getIcon($item) . Yii::$app->getModule($item->module)->t($item->label) : $this->getIcon($item) . Module::t($item->label),
                         'url' => $url,
@@ -143,7 +143,7 @@ class Nav extends Widget
         $icon = isset($style['icon']) ? $style['icon'] : '';
         $color = isset($style['color']) ? $style['color'] : '';
         $size = isset($style['iconSize']) ? $style['iconSize'] : '';
-        return Html::tag('i', '', ['class' => $icon, 'style' => 'color:' . $color . '; margin-right: 5px; font-size:' . $size . 'px;']);
+        return Html::tag('i', '', ['class' => $icon, 'style' => 'color:' . $color . '; font-size:' . $size . 'px;']);
     }
 
     private function findModel($id)
