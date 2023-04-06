@@ -110,11 +110,28 @@ class Menu extends \yii\db\ActiveRecord
                     'title' => isset($item->module) ? Yii::$app->getModule($item->module)->t($item->label) : Module::t($item->label),
                     'id' => $item->id_item,
                     'hasChildren' => $item->hasChildren(),
+                    'sort' => $item->sort,
                     'children' => MenuItem::getMenuTree($item->id_item)
                 ];
             }
         }
+
+        $result = self::jsonSortWithSortRecursive($result);
+        
         return $result;
+    }
+
+    public static function jsonSortWithSortRecursive($data){
+
+        foreach ($data as $key => $value) {
+            if (isset($value['children']) && is_array($value['children'])) {
+                $data[$key]['children'] = self::jsonSortWithSortRecursive($value['children']);
+            }
+        }
+        usort($data, function($a, $b) {
+            return $a['sort'] <=> $b['sort'];
+        });
+        return $data;
     }
 
     public function addItem($id_item, $addChildren = false, $id_parent = null)
