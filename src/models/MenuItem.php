@@ -310,8 +310,7 @@ class MenuItem extends \yii\db\ActiveRecord
     {
         
         $data = json_decode($data['data'], true);
-        Yii::warning($data);
-        //drop ıtemchild table
+
         foreach ($data as $item) {
             $model = MenuItem::findOne($item['id']);
             if ($model) {
