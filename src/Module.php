@@ -5,6 +5,9 @@ namespace portalium\menu;
 class Module extends \portalium\base\Module
 {
     public static $tablePrefix = 'menu_';
+
+    public static $name = 'Menu';
+    
     public $apiRules = [
         [
             'class' => 'yii\rest\UrlRule',
