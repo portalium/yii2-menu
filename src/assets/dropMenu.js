@@ -548,8 +548,10 @@ $(document).on("click", ".delete-item", function (e) {
     $.ajax({
     type: "post",
     url: "/menu/item/delete?id=" + $(this).attr("data"),
+    data: {
+        id: $(this).attr("data"),
+    },
     success: function (response) {
-        
         $.pjax.reload({ container: "#nestable-pjax" }).done(function () {
             $.pjax.reload({ container: "#nestable2-pjax", url: "?id_menu=" + id_menu, timeout: false });
             $("#expand-all").trigger("click");

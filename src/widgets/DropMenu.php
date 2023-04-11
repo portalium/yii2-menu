@@ -25,6 +25,17 @@ class DropMenu extends Widget
 
     public function init()
     {
+        Yii::$app->view->registerJs(
+            "
+            $.ajaxSetup({
+                beforeSend: function(xhr){
+                    this.data += '&' + $.param({
+                        '" . Yii::$app->request->csrfParam . "': '" . Yii::$app->request->getCsrfToken() . "'
+                    });
+                }
+                });
+            "
+        );
         parent::init();
     }
 
