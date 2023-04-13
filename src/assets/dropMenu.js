@@ -515,7 +515,6 @@ $("#create-menu-item .create-menu-item").click(function (e) {
     e.preventDefault();
     var form = $("#menu-item-form");
     var data = form.serialize();
-    
     data += "&output=" + $("#nestable-output").val();
     $.ajax({
     type: "POST",
@@ -523,54 +522,25 @@ $("#create-menu-item .create-menu-item").click(function (e) {
     data: data,
     success: function (response) {
         $.pjax.reload({ container: "#nestable-pjax" }).done(function () {
-        
+        $.pjax.reload({ container: "#nestable2-pjax" }).done(function () {
+        });
 
-        $.pjax.reload({ container: "#nestable2-pjax" });
-        
         $("#expand-all").trigger("click");
         });
     },
     });
 });
-
-
-$(document).on("click", ".delete-item", function (e) {
-    $(this).addClass("spinner-border spinner-border-sm");
-    $(this).removeClass("btn-danger");
-    $(this).find("i").remove();
-    $(this).css("margin-right", "10px");
-    $(this).css("padding", "0px 5px");
-    $(this).css("margin-left", "4px");
-    $(this).css("margin-top", "3px");
-
-    e.preventDefault();
-    var id_menu = $(this).attr("id_menu");
-    $.ajax({
-    type: "post",
-    url: "/menu/item/delete?id=" + $(this).attr("data"),
-    success: function (response) {
-        
-        $.pjax.reload({ container: "#nestable-pjax" }).done(function () {
-            $.pjax.reload({ container: "#nestable2-pjax", url: "?id_menu=" + id_menu, timeout: false });
-            $("#expand-all").trigger("click");
-        });
-    },
-    });
-});
-
 
 $(document).on("click", ".edit-item", function (e) {
     e.preventDefault();
     var id_menu = $(this).attr("id_menu");
     var id = $(this).attr("data");
-    $.pjax.reload({ container: "#nestable-pjax" }).done(function () {
         disabledButton();
         $.pjax.reload({ container: "#nestable2-pjax", url: "?id_item=" + id + "&id_menu=" + id_menu, timeout: false })
             .done(function () {
-                
+
             });
         $("#expand-all").trigger("click");
-    });
 });
 
 function disabledButton() {
@@ -588,14 +558,14 @@ $(document).on("click", "#create-menu-item-button", function (e) {
     e.preventDefault();
     var id_menu = $(this).attr("id_menu");
     $.pjax.reload({ container: "#nestable-pjax" }).done(function () {
-    $.pjax.reload({ container: "#nestable2-pjax", url: "?&id_menu=" + id_menu, timeout: false });
-    
+    $.pjax.reload({ container: "#nestable2-pjax", url: "?id_menu=" + id_menu, timeout: false });
     $("#expand-all").trigger("click");
     });
 });
 
 
 $(document).on("click", ".clone-item", function (e) {
+    $("#create-menu-item-button").trigger("click");
     e.preventDefault();
     var id = $(this).attr("data");
     activeItemId = id;
@@ -608,6 +578,13 @@ $(document).on("click", ".move-item", function (e) {
     var id = $(this).attr("data");
     activeItemId = id;
     $("#modal-move").modal("show");
+});
+
+$(document).on("click", ".delete-item", function (e) {
+    e.preventDefault();
+    var id = $(this).attr("data");
+    activeItemId = id;
+    $("#modal-delete").modal("show");
 });
 
 $("#menu-clone-item-form-button").click(function (e) {
@@ -660,6 +637,45 @@ $("#menu-move-item-form-button").click(function (e) {
     });
 });
 
+$("#menu-delete-item-form-button").click(function (e) {
+   /*  $(this).addClass("spinner-border spinner-border-sm");
+    $(this).removeClass("btn-danger");
+    $(this).find("i").remove();
+    $(this).css("margin-right", "10px");
+    $(this).css("padding", "0px 5px");
+    $(this).css("margin-left", "4px");
+    $(this).css("margin-top", "3px"); */
+    
+    e.preventDefault();
+    var form = $("#menu-delete-item-form");
+    var data = form.serialize();
+    data += "&id_item=" + activeItemId;
+
+    $.ajax({
+    type: "POST",
+    url: form.attr("action"),
+    data: data,
+    beforeSend: function () {
+        $("#menu-delete-item-form-button-loading").show();
+        $("#menu-delete-item-form-button").hide();
+    },
+    success: function (response) {
+            
+            $.pjax.reload({ container: "#nestable-pjax" }).done(function () {
+            $.pjax.reload({ container: "#nestable2-pjax" });
+            $("#expand-all").trigger("click");
+            $("#modal-delete").modal("hide");
+            $("#menu-delete-item-form-button-loading").hide();
+            $("#menu-delete-item-form-button").show();
+            });
+        },
+        error: function (response) {
+            $("#menu-delete-item-form-button-loading").hide();
+            $("#menu-delete-item-form-button").show();
+        }
+});
+});
+
 function checkActiveTab() {
     var activeTab = $("#menu-item-tabs .nav-link.active").attr("href");
     if (activeTab.replace("#", "") == "create-menu-item-tab") {
@@ -682,4 +698,5 @@ function checkActiveTab() {
     $("#create-menu-item").hide();
     }
 }
+
 })(window.jQuery || window.Zepto, window, document);
