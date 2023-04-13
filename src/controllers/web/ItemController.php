@@ -102,10 +102,13 @@ class ItemController extends Controller
                 
                 if($model->save()){
                     if($id_parent != null && $id_parent != 0){
-                        $itemChildModel = new ItemChild();
-                        $itemChildModel->id_item = $id_parent;
-                        $itemChildModel->id_child = $model->id_item;
-                        $itemChildModel->save();
+                        $itemChildModel = ItemChild::findOne(['id_item' => $id_parent, 'id_child' => $model->id_item]);
+                        if($itemChildModel == null){
+                            $itemChildModel = new ItemChild();
+                            $itemChildModel->id_item = $id_parent;
+                            $itemChildModel->id_child = $model->id_item;
+                            $itemChildModel->save();
+                        }
                     }
                     return;
                 }
@@ -152,19 +155,35 @@ class ItemController extends Controller
      * @return \yii\web\Response
      * @throws NotFoundHttpException if the model cannot be found
      */
-    public function actionDelete($id)
+    public function actionDelete()
     {
-        if (!\Yii::$app->user->can('menuWebItemDelete', ['model' => $this->findModel($id)])) {
+        $id_item = Yii::$app->request->post('id_item');
+
+        if (!\Yii::$app->user->can('menuWebItemDelete', ['model' => $this->findModel($id_item)])) {
             throw new \yii\web\ForbiddenHttpException(Module::t('You are not allowed to access this page.'));
         }
-        $model = $this->findModel($id);
-        $this->findModel($id)->delete();
+        $model = $this->findModel($id_item);
+
+        $delete_type = Yii::$app->request->post('DynamicModel')['delete_type'];
+
+        switch ($delete_type) {
+            case 'delete':
+                $this->deleteItem($id_item);
+                break;
+            case 'delete-and-move-sub-items':
+                $id_parent = Yii::$app->request->post('DynamicModel')['id_parent'];
+                $id_menu = Yii::$app->request->post('DynamicModel')['id_menu'];
+                $this->deleteItem($id_item, $id_parent, $id_menu);
+                break;
+            default:
+                break;
+        }
+
         if (Yii::$app->request->isAjax) {
             return $this->asJson(['status' => 'success']);
         } else {
             return $this->redirect(['index', 'id_menu' => $model->id_menu]);
         }
-
     }
 
     public function actionClone()
@@ -208,6 +227,46 @@ class ItemController extends Controller
                 $item->delete();
                 return $this->asJson(['status' => 'success']);
             }
+        }
+    }
+
+    private function deleteItem($id_item, $id_parent = null, $id_menu = null)
+    {
+        $item = MenuItem::findOne($id_item);
+        if($item == null){
+            return;
+        }
+
+        if($id_parent == null){
+            try {
+                $item->deleteChildren();
+            } catch (Exception $e) {
+                Yii::error($e->getMessage());
+            }
+            $item->delete();
+        }else if ($id_parent != null){
+            $items = ItemChild::find()->where(['id_item' => $id_item])->all();
+            $targetItem = MenuItem::findOne($id_parent);
+            $menu = Menu::findOne($id_menu);
+            if($menu == null){
+                return;
+            }
+            if($targetItem == null){
+                foreach ($items as $key => $value) {
+                    $menu->addItem($value->id_child, true);
+                }
+            }else{
+                foreach ($items as $key => $value) {
+                    $targetItem->addItem($value->id_child, true);
+                }
+            }
+            
+            try {
+                $item->deleteChildren();
+            } catch (Exception $e) {
+                Yii::error($e->getMessage());
+            }
+            $item->delete();
         }
     }
 

@@ -127,8 +127,8 @@ $this->registerJs('
                     $(".create-item").attr("disabled", false);
                     $(".move-item").attr("disabled", false);
                     $(".dd-handle-button").attr("disabled", false); 
-                }, 1000);
-            }, 1000);
+                }, 1500);
+            }, 1500);
                 
 
         });
@@ -143,7 +143,7 @@ $this->registerJs('
             setTimeout(function(){
                 $("#routeType-list").val("' . $model->routeType . '");
                 $("#routeType-list").trigger("change");
-            }, 1000);
+            }, 1500);
         });
         
         $("#create-menu-item").click(function (e) {
@@ -161,17 +161,12 @@ $this->registerJs('
                     $("#spinner").show();
                 },
                 success: function (response) {
-                    //wait 1 second before reload pjax
-                    $.pjax.reload({container: "#nestable-pjax"});
-                    
-                    //sleep(1000);
-                    setTimeout(function () {
-                        $.pjax.reload({container: "#nestable2-pjax"});
-                        //trigger expand all button
+                $.pjax.reload({ container: "#nestable-pjax" }).done(function () {
+                    $.pjax.reload({ container: "#nestable2-pjax" }).done(function () {
                         $("#expand-all").trigger("click");
                         $("#spinner").hide();
-                    }, 1000);
-                    
+                    });
+                });
                 }
             });
         });

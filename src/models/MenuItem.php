@@ -33,6 +33,8 @@ class MenuItem extends \yii\db\ActiveRecord
     public $menuRoute;
     public $menuType;
     public $icon;
+    public $display;
+    public $childDisplay;
     public $color;
     public $iconSize;
     public $id_parent;
@@ -41,6 +43,12 @@ class MenuItem extends \yii\db\ActiveRecord
         'route' => '1',
         'module' => '2',
         'url' => '3',
+    ];
+
+    const TYPE_DISPLAY = [
+        'icon' => '1',
+        'text' => '2',
+        'icon-text' => '3',
     ];
 
     /**
@@ -75,9 +83,9 @@ class MenuItem extends \yii\db\ActiveRecord
             [['label', 'slug', 'style', 'id_menu', 'type'], 'required'],
             [['type', 'id_menu', 'sort', 'id_user'], 'integer'],
             [['data', 'module', 'routeType', 'route', 'model', 'url', 'name_auth', 'menuType'], 'string'],
-            [['date_create', 'date_update', 'parent', 'menuRoute', 'icon', 'color', 'iconSize'], 'safe'],
+            [['date_create', 'date_update', 'parent', 'menuRoute', 'icon', 'color', 'iconSize', 'display', 'childDisplay'], 'safe'],
             [['label', 'slug', 'style'], 'string', 'max' => 255],
-            [['style'], 'default', 'value' => '{"icon":"0xf0f6","color":"rgb(234, 153, 153)","iconSize":"24"}'],
+            [['style'], 'default', 'value' => '{"icon":"0xf0f6","color":"rgb(234, 153, 153)","iconSize":"24","display":"'.self::TYPE_DISPLAY['icon-text'].'","childDisplay":"'.self::TYPE_DISPLAY['icon-text'].'"}'],
         ];
     }
 
@@ -110,6 +118,8 @@ class MenuItem extends \yii\db\ActiveRecord
             'icon' => Module::t('Icon'),
             'color' => Module::t('Color'),
             'iconSize' => Module::t('Icon Size'),
+            'display' => Module::t('Only Icon'),
+            'child_display' => Module::t('Only Icon'),
         ];
     }
 
@@ -131,6 +141,25 @@ class MenuItem extends \yii\db\ActiveRecord
             '3' => 'Url',
         ];
     }
+    public static function getDisplays()
+    {
+
+        return [
+            'icon' => '1',
+            'text' => '2',
+            'icon-text' => '3',
+        ];
+    }
+    public static function getDisplayList()
+    {
+        return [
+            self::TYPE_DISPLAY['icon'] => Module::t('Only Icon'),
+            self::TYPE_DISPLAY['text'] => Module::t('Only Text'),
+            self::TYPE_DISPLAY['icon-text'] => Module::t('Icon and Text')
+            ];
+    }
+
+
 
     public static function getModuleList()
     {
@@ -139,7 +168,7 @@ class MenuItem extends \yii\db\ActiveRecord
         $list = [];
         foreach ($modules as $key => $module) {
             if (isset($module->menuItems)) {
-                $list[$key] = (isset($module::$description)) ? $module->t($module::$description) : $key;
+                $list[$key] = (isset($module::$name)) ? $module->t($module::$name) : $key;
             }
         }
         return $list;
@@ -258,6 +287,8 @@ class MenuItem extends \yii\db\ActiveRecord
         $json_style['icon'] = $this->icon;
         $json_style['color'] = $this->color;
         $json_style['iconSize'] = $this->iconSize;
+        $json_style['display'] = $this->display;
+        $json_style['childDisplay'] = $this->childDisplay;
         $this->style = json_encode($json_style);
         $this->id_user = 1;
         return parent::beforeSave($insert);
@@ -303,6 +334,8 @@ class MenuItem extends \yii\db\ActiveRecord
         $this->icon = $json_style['icon'];
         $this->color = $json_style['color'];
         $this->iconSize = $json_style['iconSize'];
+        $this->display = isset($json_style['display']) ? $json_style['display'] : false;
+        $this->childDisplay = isset($json_style['childDisplay']) ? $json_style['childDisplay'] : false;
         $this->id_parent = isset($this->getParent()->one()->id_item) ? $this->getParent()->one()->id_item : 0;
     }
 
@@ -456,5 +489,12 @@ class MenuItem extends \yii\db\ActiveRecord
                 $model->delete();
             }
         }
+    }
+
+    public function beforeDelete()
+    {
+        ItemChild::deleteAll(['id_item' => $this->id_item]);
+        ItemChild::deleteAll(['id_child' => $this->id_item]);
+        return parent::beforeDelete();
     }
 }

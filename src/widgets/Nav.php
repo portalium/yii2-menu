@@ -25,6 +25,11 @@ class Nav extends Widget
         if (!$this->model = self::findModel($this->id)) {
             throw new \yii\base\InvalidConfigException('Nav::$menu must be set.');
         }
+        Yii::$app->view->registerCss(
+            '
+            
+            '
+        );
     }
 
     public function run()
@@ -46,21 +51,25 @@ class Nav extends Widget
                     }else{
                         
                     $items[] = [
-                                'label' => isset($item->module) ? $this->getIcon($item) . Yii::$app->getModule($item->module)->t($item->label) : $this->getIcon($item) . Module::t($item->label),
+                                'label' => $this->generateLabel($item, false),
+                                'icon' => $this->getIcon($item),
                                 'url' => $url,
                                 'items' => $this->getChildItems($item->id_item),
                                 'visible' => (($item->name_auth != null || $item->name_auth != '') && $item->name_auth != 'guest') ? Yii::$app->user->can($item->name_auth) : ($item->name_auth == 'guest' ? true : false),
-                                'sort' => $item->sort
+                                'sort' => $item->sort,
+                                'display' => $item->display,
                             ];
                         }
                 } else {
                     $items[] =
                         [
-                            'label' => isset($item->module) ? $this->getIcon($item) . Yii::$app->getModule($item->module)->t($item->label) : $this->getIcon($item) . Module::t($item->label),
+                            'label' => $this->generateLabel($item, false),
+                            'icon' => $this->getIcon($item),
                             'url' => $url,
                             'items' => $this->getChildItems($item->id_item),
                             'visible' => (($item->name_auth != null || $item->name_auth != '') && $item->name_auth != 'guest') ? Yii::$app->user->can($item->name_auth) : ($item->name_auth == 'guest' ? true : false),
-                            'sort' => $item->sort
+                            'sort' => $item->sort,
+                            'display' => $item->display,
                         ];
                 }
             }
@@ -85,9 +94,11 @@ class Nav extends Widget
                 $itemTemp = ($item->type == MenuItem::TYPE['module'] && $data["data"]["routeType"] == "widget") ?
                     $data["data"]["route"]::widget() :
                     [
-                        'label' =>isset($item->module) ? $this->getIcon($item) . Yii::$app->getModule($item->module)->t($item->label) : $this->getIcon($item) . Module::t($item->label),
+                        'label' => $this->generateLabel($item, true),
+                        'icon' => $this->getIcon($item),
                         'url' => $url,
                         'visible' => (($item->name_auth != null || $item->name_auth != '') && $item->name_auth != 'guest') ? Yii::$app->user->can($item->name_auth) : ($item->name_auth == 'guest' ? true : false),
+                        'display' => $item->display,
                     ];
                 $list = $this->getChildItems($item->id_item);
                 if (!empty($list)) {
@@ -98,6 +109,31 @@ class Nav extends Widget
         }
 
         return $items;
+    }
+
+    private function generateLabel($item, $isChild = false)
+    {
+        $label = "";
+            if(isset($item->display)){
+                switch ($item->display) {
+                    case MenuItem::TYPE_DISPLAY['icon']:
+                        $label = '';
+                        break;
+                    case MenuItem::TYPE_DISPLAY['icon-text']:
+                        $label = isset($item->module) ? Yii::$app->getModule($item->module)->t($item->label) : Module::t($item->label);
+                        break;
+                    case MenuItem::TYPE_DISPLAY['text']:
+                        $label = isset($item->module) ? Yii::$app->getModule($item->module)->t($item->label) : Module::t($item->label);
+                        break;
+                    default:
+                        $label = isset($item->module) ? Yii::$app->getModule($item->module)->t($item->label) : Module::t($item->label);
+                        break;
+                }
+            }else{
+                $label = isset($item->module) ? Yii::$app->getModule($item->module)->t($item->label) : Module::t($item->label);
+            }
+
+        return $label;
     }
 
     public function getUrl($item)
@@ -143,7 +179,13 @@ class Nav extends Widget
         $icon = isset($style['icon']) ? $style['icon'] : '';
         $color = isset($style['color']) ? $style['color'] : '';
         $size = isset($style['iconSize']) ? $style['iconSize'] : '';
-        return Html::tag('i', '', ['class' => $icon, 'style' => 'color:' . $color . '; font-size:' . $size . 'px;']);
+        if (isset($item->display) && $item->display == MenuItem::TYPE_DISPLAY['text']) {
+            $icon = '';
+            $color = '';
+            $size = '';
+        }
+
+        return Html::tag('i', '', ['class' => 'fa '. $icon, 'style' => 'min-width:25px; color:' . $color . '; font-size:' . $size . 'px; ']);
     }
 
     private function findModel($id)
