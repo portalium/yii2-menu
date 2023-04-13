@@ -13,6 +13,11 @@ use portalium\theme\helpers\Html;
     ?>
     <?= $form->field($model, 'iconSize')->textInput(['maxlength' => true]) ?>
 
+    <?= $form->field($model, 'display')->radioList(\portalium\menu\models\MenuItem::getDisplayList()) ?>
+
+    <?= $form->field($model, 'childDisplay')->radioList(\portalium\menu\models\MenuItem::getDisplayList()) ?>
+
+
     <?= $form->field($model, 'color')->widget(ColorInput::className(), [
         'options' => ['placeholder' => Module::t('Select Color ...')],
         'pluginOptions' => [
