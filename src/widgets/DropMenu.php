@@ -25,17 +25,6 @@ class DropMenu extends Widget
 
     public function init()
     {
-        Yii::$app->view->registerJs(
-            "
-            $.ajaxSetup({
-                beforeSend: function(xhr){
-                    this.data += '&' + $.param({
-                        '" . Yii::$app->request->csrfParam . "': '" . Yii::$app->request->getCsrfToken() . "'
-                    });
-                }
-                });
-            "
-        );
         parent::init();
     }
 
@@ -72,7 +61,7 @@ class DropMenu extends Widget
                         Pjax::end();
                     Panel::end();
                 echo Html::endTag('div');
-                echo Html::beginTag('div', ['id'=> 'spinner-div-form', 'style' => 'display: none;', 'class' => 'row']);
+                echo Html::beginTag('div', ['id'=> 'spinner-div-form', 'style' => 'display: none;']);
                     echo Html::tag('div', '', ['class' => 'spinner-border text-primary col-2', 'role' => 'status']).
                     Html::tag('span', 'Loading...', ['class' => 'sr-only col-2', 'style' => 'margin-left: 0px; margin-top: 5px;']);
                 echo Html::endTag('div');
@@ -126,6 +115,21 @@ class DropMenu extends Widget
                     'model' => new DynamicModel(['id_item' => null, 'id_menu' => null, 'id_parent' => null]),
                 ]);
             Modal::end();
+
+            Modal::begin([
+                'id' => 'modal-delete',
+                'title' => Module::t('Delete Menu Item'),
+                'footer' => Html::button(Module::t('Cancel'), ['class' => 'btn btn-warning', 'data-bs-dismiss' => 'modal']).
+                    Html::button(Module::t('Delete'), ['class' => 'btn btn-danger', 'id' => 'menu-delete-item-form-button']).
+                    Html::button(Html::tag('span', '', ['class' => 'spinner-border spinner-border-sm', 'role' => 'status', 'aria-hidden' => 'true']).' '.Module::t('Loading...'), ['class' => 'btn btn-danger', 'id' => 'menu-delete-item-form-button-loading', 'style' => 'display: none;']),
+            ]);
+                echo $this->render('/web/item/_delete', [
+                    'id_menu' => $this->id_menu,
+                    'menuArray' => ArrayHelper::map(Menu::find()->all(), 'id_menu', 'name'),
+                    'model' => new DynamicModel(['id_item' => null, 'id_menu' => null, 'id_parent' => null, 'delete_type' => null]),
+                ]);
+            Modal::end();
+            
         Html::endTag('div');
     }
 
