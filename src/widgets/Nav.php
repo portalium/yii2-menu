@@ -44,12 +44,12 @@ class Nav extends Widget
                         if (property_exists($data["data"]["route"]::className(), 'icon')) {
                             $items[] = $data["data"]["route"]::widget([
                                 'icon' => $this->getIcon($item),
+                                'display' => $item->display,
                             ]);
                         } else {
                             $items[] = $data["data"]["route"]::widget();
                         }
                     }else{
-                        
                     $items[] = [
                                 'label' => $this->generateLabel($item, false),
                                 'icon' => $this->getIcon($item),
