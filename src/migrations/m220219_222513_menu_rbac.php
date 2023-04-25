@@ -1,7 +1,6 @@
 <?php
 
 use portalium\db\Migration;
-use portalium\menu\Module;
 
 
 class m220219_222513_menu_rbac extends Migration

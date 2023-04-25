@@ -3,7 +3,6 @@
 use portalium\menu\models\Menu;
 use portalium\menu\models\MenuItem;
 use portalium\db\Migration;
-use portalium\site\models\Form;
 
 class m010101_010102_menu_menu extends Migration
 {
