@@ -27,15 +27,6 @@ class m010101_010102_menu_menu extends Migration
             'id_user' => '1',
         ]);
 
-        $menuMain = Yii::$app->setting->getSetting('menu::main');
-        if($menuMain){
-            $menuMain->value = '1';
-        }
-        $menuSide = Yii::$app->setting->getSetting('menu::side');
-        if($menuSide){
-            $menuSide->value = '2';
-        }
-
         $id_menu = Menu::find()->where(['slug' => 'web-main-menu'])->one()->id_menu;
 
         $id_item = MenuItem::find()->where(['slug' => 'site'])->one();
