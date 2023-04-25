@@ -9,7 +9,7 @@ use portalium\theme\helpers\Html;
         if($menuModel->type == Menu::TYPE['mobile'])
             echo Html::a(Module::t('You can reach the number of the icon you will choose by clicking here.'), 'https://api.flutter.dev/flutter/material/Icons-class.html', ['target' => '_blank'], ['class' => 'control-label']) . '<br><br>';
         else if($menuModel->type == Menu::TYPE['web'])
-            echo Html::a(Module::t('You can reach the number of the icon you will choose by clicking here.'), 'https://fontawesome.com/v3/icons/', ['target' => '_blank'], ['class' => 'control-label']) . '<br><br>';
+            echo Html::a(Module::t('You can reach the number of the icon you will choose by clicking here.'), 'https://fontawesome.com/v4/icons/', ['target' => '_blank'], ['class' => 'control-label']) . '<br><br>';
     ?>
     <?= $form->field($model, 'iconSize')->textInput(['maxlength' => true]) ?>
 
