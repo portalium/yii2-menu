@@ -1,9 +1,7 @@
 <?php
 
-use yii\db\Schema;
 use portalium\db\Migration;
 use portalium\menu\Module;
-use portalium\user\Module as UserModule;
 
 class m220218_222705_menu_item_child extends Migration
 {
