@@ -145,9 +145,9 @@ class MenuItem extends \yii\db\ActiveRecord
     {
 
         return [
-            'icon' => '1',
-            'text' => '2',
-            'icon-text' => '3',
+            '1' => 'icon',
+            '2' => 'text',
+            '3' => 'icon-text',
         ];
     }
     public static function getDisplayList()
