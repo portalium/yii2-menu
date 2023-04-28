@@ -44,7 +44,7 @@ class Nav extends Widget
                         if (property_exists($data["data"]["route"]::className(), 'icon')) {
                             $items[] = $data["data"]["route"]::widget([
                                 'icon' => $this->getIcon($item),
-                                'display' => $item->display,
+                                'display' => ($item->display != '') ? MenuItem::TYPE_DISPLAY['icon'] : $item->display,
                             ]);
                         } else {
                             $items[] = $data["data"]["route"]::widget();
@@ -57,7 +57,7 @@ class Nav extends Widget
                                 'items' => $this->getChildItems($item->id_item),
                                 'visible' => (($item->name_auth != null || $item->name_auth != '') && $item->name_auth != 'guest') ? Yii::$app->user->can($item->name_auth) : ($item->name_auth == 'guest' ? true : false),
                                 'sort' => $item->sort,
-                                'display' => $item->display,
+                                'displayType' => MenuItem::getDisplays()[($item->display != 0 && $item->display != '')? $item->display : MenuItem::TYPE_DISPLAY['text']],
                             ];
                         }
                 } else {
@@ -69,7 +69,7 @@ class Nav extends Widget
                             'items' => $this->getChildItems($item->id_item),
                             'visible' => (($item->name_auth != null || $item->name_auth != '') && $item->name_auth != 'guest') ? Yii::$app->user->can($item->name_auth) : ($item->name_auth == 'guest' ? true : false),
                             'sort' => $item->sort,
-                            'display' => $item->display,
+                            'displayType' => MenuItem::getDisplays()[($item->display != 0 && $item->display != '') != 0 ? $item->display : MenuItem::TYPE_DISPLAY['text']],
                         ];
                 }
             }
@@ -98,7 +98,7 @@ class Nav extends Widget
                         'icon' => $this->getIcon($item),
                         'url' => $url,
                         'visible' => (($item->name_auth != null || $item->name_auth != '') && $item->name_auth != 'guest') ? Yii::$app->user->can($item->name_auth) : ($item->name_auth == 'guest' ? true : false),
-                        'display' => $item->display,
+                        'displayType' => MenuItem::getDisplays()[($item->display != 0 && $item->display != '') != 0 ? $item->display : MenuItem::TYPE_DISPLAY['text']],
                     ];
                 $list = $this->getChildItems($item->id_item);
                 if (!empty($list)) {

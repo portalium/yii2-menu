@@ -118,8 +118,8 @@ class MenuItem extends \yii\db\ActiveRecord
             'icon' => Module::t('Icon'),
             'color' => Module::t('Color'),
             'iconSize' => Module::t('Icon Size'),
-            'display' => Module::t('Only Icon'),
-            'child_display' => Module::t('Only Icon'),
+            'display' => Module::t('Display'),
+            'child_display' => Module::t('Child Display'),
         ];
     }
 
@@ -145,9 +145,9 @@ class MenuItem extends \yii\db\ActiveRecord
     {
 
         return [
-            'icon' => '1',
-            'text' => '2',
-            'icon-text' => '3',
+            '1' => 'icon',
+            '2' => 'text',
+            '3' => 'icon-text',
         ];
     }
     public static function getDisplayList()
