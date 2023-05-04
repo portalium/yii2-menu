@@ -69,6 +69,6 @@ class m010101_010102_menu_menu extends Migration
 
     public function down()
     {
-        $this->dropTable('site_setting');
+        
     }
 }
