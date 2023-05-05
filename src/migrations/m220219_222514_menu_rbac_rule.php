@@ -11,7 +11,7 @@ class m220219_222514_menu_rbac_rule extends Migration
         $auth = Yii::$app->authManager;
         $rule = new OwnRule();
         $auth->add($rule);
-        $role = Yii::$app->setting->getValue('default::role');
+        $role = Yii::$app->setting->getValue('site::admin_role');
         $admin = (isset($role) && $role != '') ? $auth->getRole($role) : $auth->getRole('admin');
         $permissionsName = [
             'menuApiDefaultViewOwn',
