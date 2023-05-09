@@ -13,6 +13,7 @@ use yii\behaviors\TimestampBehavior;
  * @property string $name
  * @property string $slug
  * @property int $type
+ * @property int $direction
  * @property string $date_create
  * @property string $date_update
  */
@@ -21,6 +22,11 @@ class Menu extends \yii\db\ActiveRecord
     const TYPE = [
         'web' => '1',
         'mobile' => '2'
+    ];
+
+    const DIRECTION = [
+        'vertical' => '1',
+        'horizontal' => '2'
     ];
 
     /**
@@ -80,6 +86,7 @@ class Menu extends \yii\db\ActiveRecord
             'name' => Module::t('Name'),
             'slug' => Module::t('Slug'),
             'type' => Module::t('Type'),
+            'direction' => Module::t('Direction'),
             'id_user' => Module::t('User ID'),
             'date_create' => Module::t('Date Created'),
             'date_update' => Module::t('Date Updated'),
@@ -91,6 +98,14 @@ class Menu extends \yii\db\ActiveRecord
         return [
             '1' => Module::t('Web'),
             '2' => Module::t('Mobile')
+        ];
+    }
+
+    public static function getDirections()
+    {
+        return [
+            '1' => Module::t('Vertical'),
+            '2' => Module::t('Horizontal')
         ];
     }
 
