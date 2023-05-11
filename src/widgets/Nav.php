@@ -2,16 +2,20 @@
 
 namespace portalium\menu\widgets;
 
+use portalium\bootstrap5\BootstrapAsset;
 use Yii;
+use yii\base\InvalidConfigException;
 use yii\base\Widget;
+use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
 use yii\web\NotFoundHttpException;
 use portalium\menu\Module;
 use portalium\menu\models\Menu;
 use portalium\menu\models\MenuItem;
-use portalium\theme\widgets\Nav as BaseNav;
 
-class Nav extends Widget
+use function PHPSTORM_META\type;
+
+class Nav extends \portalium\bootstrap5\Nav
 {
     public $model;
     public $navbar;
@@ -25,14 +29,9 @@ class Nav extends Widget
         if (!$this->model = self::findModel($this->id)) {
             throw new \yii\base\InvalidConfigException('Nav::$menu must be set.');
         }
-        Yii::$app->view->registerCss(
-            '
-            
-            '
-        );
     }
 
-    public function run()
+    public function run(): string
     {
         $items = [];
         foreach ($this->model->items as $item) {
@@ -41,12 +40,13 @@ class Nav extends Widget
                 $data = json_decode($item->data, true);
                 if ($item->type == MenuItem::TYPE['module']) {
                     if ($data["data"]["routeType"] == "widget"){
-                        if (property_exists($data["data"]["route"]::className(), 'icon')) {
+                        if (property_exists($data["data"]["route"]::className(), 'icon')) {                            
                             $items[] = $data["data"]["route"]::widget([
                                 'icon' => $this->getIcon($item),
                                 'display' => ($item->display != '') ? MenuItem::TYPE_DISPLAY['icon'] : $item->display,
                             ]);
                         } else {
+                            Yii::warning('Widget ' . $data["data"]["route"] . ' does not have icon property');
                             $items[] = $data["data"]["route"]::widget();
                         }
                     }else{
@@ -76,11 +76,12 @@ class Nav extends Widget
         }
 
         $items = $this->sortItems($items);
-        return BaseNav::widget([
-            'items' => $items,
-            'options' => $this->options,
-            'encodeLabels' => false,
-        ]);
+        $this->items = $items;
+        //$this->encodeLabels = false;
+        
+        //BootstrapAsset::register($this->getView());
+
+        return $this->renderItems();
     }
 
     public function getChildItems($id_parent)
@@ -195,5 +196,69 @@ class Nav extends Widget
         }
 
         throw new NotFoundHttpException(Module::t('The requested menu does not exist.'));
+    }
+
+    public function renderItem($item): string
+    {
+
+        if (is_string($item)) {
+            return Html::decode($item);
+        }
+        if (!isset($item['label'])) {
+            throw new InvalidConfigException("The 'label' option is required.");
+        }
+        $encodeLabel = $item['encode'] ?? $this->encodeLabels;
+        $label = $encodeLabel ? Html::encode($item['label']) : $item['label'];
+
+        $options = ArrayHelper::getValue($item, 'options', []);
+        $items = ArrayHelper::getValue($item, 'items');
+        $url = ArrayHelper::getValue($item, 'url', '#');
+        $linkOptions = ArrayHelper::getValue($item, 'linkOptions', []);
+        $disabled = ArrayHelper::getValue($item, 'disabled', false);
+        $active = $this->isItemActive($item);
+
+        if (empty($items)) {
+            $items = '';
+            Html::addCssClass($options, ['widget' => 'nav-item  me-3 me-lg-0']);
+            Html::addCssClass($linkOptions, ['widget' => 'nav-link']);
+        } else {
+            $linkOptions['data']['bs-toggle'] = 'dropdown';
+            $linkOptions['role'] = 'button';
+            $linkOptions['aria']['expanded'] = 'false';
+            Html::addCssClass($options, ['widget' => 'dropdown nav-item']);
+            Html::addCssClass($linkOptions, ['widget' => 'dropdown-toggle nav-link']);
+            if (is_array($items)) {
+                $items = $this->isChildActive($items, $active);
+                $items = $this->renderDropdown($items, $item);
+            }
+        }
+
+        if ($disabled) {
+            ArrayHelper::setValue($linkOptions, 'tabindex', '-1');
+            ArrayHelper::setValue($linkOptions, 'aria.disabled', 'true');
+            Html::addCssClass($linkOptions, ['disable' => 'disabled']);
+        } elseif ($this->activateItems && $active) {
+            Html::addCssClass($linkOptions, ['activate' => 'active']);
+        }
+        if (isset($item['displayType']))
+            $options['data-bs-type'] = $item['displayType'];
+
+        if (!isset($item['icon']))
+            return Html::tag('li', Html::a($label, $url, $linkOptions) . $items, $options);
+        else
+            return Html::tag('li', Html::a($item['icon'].$label, $url, $linkOptions) . $items, $options);
+    }
+
+    public function renderItems(): string
+    {
+        $items = [];
+        foreach ($this->items as $item) {
+            if (isset($item['visible']) && !$item['visible']) {
+                continue;
+            }
+            $items[] = $this->renderItem($item);
+        }
+
+        return Html::tag('ul', implode("\n", $items), $this->options);
     }
 }
