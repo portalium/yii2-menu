@@ -30,6 +30,7 @@ class Nav extends Widget
             
             '
         );
+        $this->options['direction'] = Menu::getDirection($this->model->direction);
     }
 
     public function run()
