@@ -46,7 +46,6 @@ class Nav extends \portalium\bootstrap5\Nav
                                 'display' => ($item->display != '') ? MenuItem::TYPE_DISPLAY['icon'] : $item->display,
                             ]);
                         } else {
-                            Yii::warning('Widget ' . $data["data"]["route"] . ' does not have icon property');
                             $items[] = $data["data"]["route"]::widget();
                         }
                     }else{
