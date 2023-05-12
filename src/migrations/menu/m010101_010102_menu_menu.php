@@ -15,6 +15,7 @@ class m010101_010102_menu_menu extends Migration
             'name' => 'Web Main Menu',
             'slug' => 'web-main-menu',
             'type' => Menu::TYPE['web'],
+            'direction' => Menu::DIRECTION['vertical'], 
             'id_user' => '1',
         ]);
 
@@ -23,6 +24,7 @@ class m010101_010102_menu_menu extends Migration
             'name' => 'Web Side Menu',
             'slug' => 'web-side-menu',
             'type' => Menu::TYPE['web'],
+            'direction' => Menu::DIRECTION['vertical'],
             'id_user' => '1',
         ]);
 

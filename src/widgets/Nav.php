@@ -29,6 +29,7 @@ class Nav extends \portalium\bootstrap5\Nav
         if (!$this->model = self::findModel($this->id)) {
             throw new \yii\base\InvalidConfigException('Nav::$menu must be set.');
         }
+        $this->options['direction'] = Menu::getDirection($this->model->direction);
     }
 
     public function run(): string

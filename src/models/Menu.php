@@ -69,8 +69,8 @@ class Menu extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['name', 'slug', 'type'], 'required'],
-            [['type', 'id_user'], 'integer'],
+            [['name', 'slug', 'type', 'direction'], 'required'],
+            [['type', 'id_user', 'direction'], 'integer'],
             [['date_create', 'date_update'], 'safe'],
             [['name', 'slug'], 'string', 'max' => 255]
         ];
@@ -96,17 +96,23 @@ class Menu extends \yii\db\ActiveRecord
     public static function getTypes()
     {
         return [
-            '1' => Module::t('Web'),
-            '2' => Module::t('Mobile')
+            self::TYPE['web'] => Module::t('Web'),
+            self::TYPE['mobile'] => Module::t('Mobile')
         ];
     }
 
     public static function getDirections()
     {
         return [
-            '1' => Module::t('Vertical'),
-            '2' => Module::t('Horizontal')
+            self::DIRECTION['vertical'] => Module::t('Vertical'),
+            self::DIRECTION['horizontal'] => Module::t('Horizontal')
         ];
+    }
+
+    public static function getDirection($direction)
+    {
+        $directions = [self::DIRECTION['vertical'] => "vertical", self::DIRECTION['horizontal'] => "horizontal"];
+        return $directions[$direction]; 
     }
 
     public function getItems()
