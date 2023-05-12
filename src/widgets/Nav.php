@@ -219,7 +219,7 @@ class Nav extends \portalium\bootstrap5\Nav
 
         if (empty($items)) {
             $items = '';
-            Html::addCssClass($options, ['widget' => 'nav-item  me-3 me-lg-0']);
+            Html::addCssClass($options, ['widget' => 'nav-item me-lg-0']);
             Html::addCssClass($linkOptions, ['widget' => 'nav-link']);
         } else {
             $linkOptions['data']['bs-toggle'] = 'dropdown';
@@ -244,9 +244,9 @@ class Nav extends \portalium\bootstrap5\Nav
             $options['data-bs-type'] = $item['displayType'];
 
         if (!isset($item['icon']))
-            return Html::tag('li', Html::a($label, $url, $linkOptions) . $items, $options);
+            return Html::tag('li', Html::a('<span>'.$label.'</span>', $url, $linkOptions) . $items, $options);
         else
-            return Html::tag('li', Html::a($item['icon'].$label, $url, $linkOptions) . $items, $options);
+            return Html::tag('li', Html::a($item['icon'].'<span>'.$label.'</span>', $url, $linkOptions) . $items, $options);
     }
 
     public function renderItems(): string
