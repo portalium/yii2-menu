@@ -13,6 +13,7 @@ use yii\behaviors\TimestampBehavior;
  * @property string $name
  * @property string $slug
  * @property int $type
+ * @property int $direction
  * @property string $date_create
  * @property string $date_update
  */
@@ -21,6 +22,11 @@ class Menu extends \yii\db\ActiveRecord
     const TYPE = [
         'web' => '1',
         'mobile' => '2'
+    ];
+
+    const DIRECTION = [
+        'vertical' => '1',
+        'horizontal' => '2'
     ];
 
     /**
@@ -63,8 +69,8 @@ class Menu extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['name', 'slug', 'type'], 'required'],
-            [['type', 'id_user'], 'integer'],
+            [['name', 'slug', 'type', 'direction'], 'required'],
+            [['type', 'id_user', 'direction'], 'integer'],
             [['date_create', 'date_update'], 'safe'],
             [['name', 'slug'], 'string', 'max' => 255]
         ];
@@ -80,6 +86,7 @@ class Menu extends \yii\db\ActiveRecord
             'name' => Module::t('Name'),
             'slug' => Module::t('Slug'),
             'type' => Module::t('Type'),
+            'direction' => Module::t('Direction'),
             'id_user' => Module::t('User ID'),
             'date_create' => Module::t('Date Created'),
             'date_update' => Module::t('Date Updated'),
@@ -89,9 +96,23 @@ class Menu extends \yii\db\ActiveRecord
     public static function getTypes()
     {
         return [
-            '1' => Module::t('Web'),
-            '2' => Module::t('Mobile')
+            self::TYPE['web'] => Module::t('Web'),
+            self::TYPE['mobile'] => Module::t('Mobile')
         ];
+    }
+
+    public static function getDirections()
+    {
+        return [
+            self::DIRECTION['vertical'] => Module::t('Vertical'),
+            self::DIRECTION['horizontal'] => Module::t('Horizontal')
+        ];
+    }
+
+    public static function getDirection($direction)
+    {
+        $directions = [self::DIRECTION['vertical'] => "vertical", self::DIRECTION['horizontal'] => "horizontal"];
+        return $directions[$direction]; 
     }
 
     public function getItems()

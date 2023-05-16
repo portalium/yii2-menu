@@ -29,6 +29,8 @@ use portalium\theme\widgets\Panel;
 
     <?= $form->field($model, 'type')->dropDownList(Menu::getTypes()) ?>
 
+    <?= $form->field($model, 'direction')->dropDownList(Menu::getDirections()) ?>
+
     <?php Panel::end() ?>
 
     <?php ActiveForm::end(); ?>

@@ -6,7 +6,7 @@ use yii\web\AssetBundle;
 
 class DropMenuAsset extends AssetBundle
 {
-    public $sourcePath = '@vendor/portalium/portalium-menu/src/assets/';
+    public $sourcePath = '@vendor/portalium/yii2-menu/src/assets/';
 
     public $depends = [
         'portalium\theme\bundles\AppAsset'
