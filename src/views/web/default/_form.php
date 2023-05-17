@@ -18,7 +18,9 @@ use portalium\theme\widgets\Panel;
         'title' => ($model->isNewRecord) ? Module::t('Create Menu') : Module::t('Update Menu'),
         'actions' => [
             'header' => [
-                Html::submitButton(Module::t('Save'), ['class' => 'btn btn-success'])
+            ],
+            'footer' => [
+                Html::submitButton(Module::t( 'Save'), ['class' => 'btn btn-success']),
             ]
         ]
     ]) ?>

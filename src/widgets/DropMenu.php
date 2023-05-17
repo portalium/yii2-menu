@@ -130,7 +130,7 @@ class DropMenu extends Widget
                 ]);
             Modal::end();
             
-        Html::endTag('div');
+        echo Html::endTag('div');
     }
 
     protected function renderItem($item)
