@@ -35,6 +35,7 @@ class MenuItem extends \yii\db\ActiveRecord
     public $icon;
     public $display;
     public $childDisplay;
+    public $placement;
     public $color;
     public $iconSize;
     public $id_parent;
@@ -49,6 +50,11 @@ class MenuItem extends \yii\db\ActiveRecord
         'icon' => '1',
         'text' => '2',
         'icon-text' => '3',
+    ];
+
+    const LABEL_PLACEMENT = [
+        'side-by-side' => '1',
+        'top-to-bottom' => '2'
     ];
 
     /**
@@ -83,7 +89,7 @@ class MenuItem extends \yii\db\ActiveRecord
             [['label', 'slug', 'style', 'id_menu', 'type'], 'required'],
             [['type', 'id_menu', 'sort', 'id_user'], 'integer'],
             [['data', 'module', 'routeType', 'route', 'model', 'url', 'name_auth', 'menuType'], 'string'],
-            [['date_create', 'date_update', 'parent', 'menuRoute', 'icon', 'color', 'iconSize', 'display', 'childDisplay'], 'safe'],
+            [['date_create', 'date_update', 'parent', 'menuRoute', 'icon', 'color', 'iconSize', 'display', 'childDisplay', 'placement'], 'safe'],
             [['label', 'slug', 'style'], 'string', 'max' => 255],
             [['style'], 'default', 'value' => '{"icon":"0xf0f6","color":"rgb(234, 153, 153)","iconSize":"24","display":"'.self::TYPE_DISPLAY['icon-text'].'","childDisplay":"'.self::TYPE_DISPLAY['icon-text'].'"}'],
         ];
@@ -150,6 +156,15 @@ class MenuItem extends \yii\db\ActiveRecord
             '3' => 'icon-text',
         ];
     }
+    
+    public static function getPlacements()
+    {
+
+        return [
+            '1' => 'side-by-side',
+            '2' => 'top-to-bottom',
+        ];
+    }
     public static function getDisplayList()
     {
         return [
@@ -159,7 +174,13 @@ class MenuItem extends \yii\db\ActiveRecord
             ];
     }
 
-
+    public static function getPlacementList()
+    {
+        return [
+            self::LABEL_PLACEMENT['side-by-side'] => Module::t('Side By Side'),
+            self::LABEL_PLACEMENT['top-to-bottom'] => Module::t('Top To Bottom'),
+            ];
+    }
 
     public static function getModuleList()
     {
@@ -289,6 +310,7 @@ class MenuItem extends \yii\db\ActiveRecord
         $json_style['iconSize'] = $this->iconSize;
         $json_style['display'] = $this->display;
         $json_style['childDisplay'] = $this->childDisplay;
+        $json_style['placement'] = $this->placement;
         $this->style = json_encode($json_style);
         $this->id_user = 1;
         return parent::beforeSave($insert);
@@ -336,6 +358,7 @@ class MenuItem extends \yii\db\ActiveRecord
         $this->iconSize = $json_style['iconSize'];
         $this->display = isset($json_style['display']) ? $json_style['display'] : false;
         $this->childDisplay = isset($json_style['childDisplay']) ? $json_style['childDisplay'] : false;
+        $this->placement = isset($json_style['placement']) ? $json_style['placement'] : self::LABEL_PLACEMENT['side-by-side'];
         $this->id_parent = isset($this->getParent()->one()->id_item) ? $this->getParent()->one()->id_item : 0;
     }
 

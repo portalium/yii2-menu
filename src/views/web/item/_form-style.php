@@ -17,6 +17,8 @@ use portalium\theme\helpers\Html;
 
     <?= $form->field($model, 'childDisplay')->radioList(\portalium\menu\models\MenuItem::getDisplayList()) ?>
 
+    <?= $form->field($model, 'placement')->radioList(\portalium\menu\models\MenuItem::getPlacementList()) ?>
+
 
     <?= $form->field($model, 'color')->widget(ColorInput::className(), [
         'options' => ['placeholder' => Module::t('Select Color ...')],
