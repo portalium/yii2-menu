@@ -184,8 +184,8 @@ class Nav extends \portalium\bootstrap5\Nav
             $icon = '';
             $color = '';
             $size = '';
+            return '';
         }
-
         return Html::tag('i', '', ['class' => 'fa '. $icon, 'style' => 'min-width:25px; color:' . $color . '; font-size:' . $size . 'px; ']);
     }
 
