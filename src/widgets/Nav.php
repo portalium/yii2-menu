@@ -55,9 +55,10 @@ class Nav extends \portalium\bootstrap5\Nav
                                 'icon' => $this->getIcon($item),
                                 'url' => $url,
                                 'items' => $this->getChildItems($item->id_item),
-                                'visible' => (($item->name_auth != null || $item->name_auth != '') && $item->name_auth != 'guest') ? Yii::$app->user->can($item->name_auth, ['id_module'=> $item->module]) : ($item->name_auth == 'guest' ? true : false),
+                                'visible' => (($item->name_auth != null || $item->name_auth != '') && $item->name_auth != 'guest') ? Yii::$app->user->can($item->name_auth, ['id_module' => $item->module ?? null]) : ($item->name_auth == 'guest' ? true : false),
                                 'sort' => $item->sort,
                                 'displayType' => MenuItem::getDisplays()[($item->display != 0 && $item->display != '')? $item->display : MenuItem::TYPE_DISPLAY['text']],
+                                'placement' => MenuItem::getPlacements()[($item->placement != 0 && $item->placement != '') != 0 ? $item->placement : MenuItem::LABEL_PLACEMENT['side-by-side']],
                             ];
                         }
                 } else {
@@ -67,9 +68,10 @@ class Nav extends \portalium\bootstrap5\Nav
                             'icon' => $this->getIcon($item),
                             'url' => $url,
                             'items' => $this->getChildItems($item->id_item),
-                            'visible' => (($item->name_auth != null || $item->name_auth != '') && $item->name_auth != 'guest') ? Yii::$app->user->can($item->name_auth, ['id_module'=> $item->module]) : ($item->name_auth == 'guest' ? true : false),
+                            'visible' => (($item->name_auth != null || $item->name_auth != '') && $item->name_auth != 'guest') ? Yii::$app->user->can($item->name_auth, ['id_module' => $item->module ?? null]) : ($item->name_auth == 'guest' ? true : false),
                             'sort' => $item->sort,
                             'displayType' => MenuItem::getDisplays()[($item->display != 0 && $item->display != '') != 0 ? $item->display : MenuItem::TYPE_DISPLAY['text']],
+                            'placement' => MenuItem::getPlacements()[($item->display != 0 && $item->display != '') != 0 ? $item->display : MenuItem::LABEL_PLACEMENT['side-by-side']],
                         ];
                 }
             }
@@ -98,8 +100,9 @@ class Nav extends \portalium\bootstrap5\Nav
                         'label' => $this->generateLabel($item, true),
                         'icon' => $this->getIcon($item),
                         'url' => $url,
-                        'visible' => (($item->name_auth != null || $item->name_auth != '') && $item->name_auth != 'guest') ? Yii::$app->user->can($item->name_auth, ['id_module'=> $item->module]) : ($item->name_auth == 'guest' ? true : false),
+                        'visible' => (($item->name_auth != null || $item->name_auth != '') && $item->name_auth != 'guest') ? Yii::$app->user->can($item->name_auth, ['id_module' => $item->module ?? null]) : ($item->name_auth == 'guest' ? true : false),
                         'displayType' => MenuItem::getDisplays()[($item->display != 0 && $item->display != '') != 0 ? $item->display : MenuItem::TYPE_DISPLAY['text']],
+                        'placement' => MenuItem::getPlacements()[($item->display != 0 && $item->display != '') != 0 ? $item->display : MenuItem::LABEL_PLACEMENT['side-by-side']],
                     ];
                 $list = $this->getChildItems($item->id_item);
                 if (!empty($list)) {
@@ -242,6 +245,9 @@ class Nav extends \portalium\bootstrap5\Nav
         }
         if (isset($item['displayType']))
             $options['data-bs-type'] = $item['displayType'];
+
+        if (isset($item['placement']))
+            $options['data-bs-placement'] = $item['placement'];
 
         if (!isset($item['icon']))
             return Html::tag('li', Html::a('<span>'.$label.'</span>', $url, $linkOptions) . $items, $options);
