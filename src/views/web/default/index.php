@@ -42,7 +42,7 @@ $this->params['breadcrumbs'][] = $this->title;
                         return Html::a(
                             Html::tag('i', '', ['class' => 'fa fa-thin fa-bars']), 
                             Url::toRoute(['/menu/item/index', 'id_menu' => $model->id_menu], ['title' => Module::t('Items')]),
-                            ['class' => 'btn btn-primary btn-xs', 'style' => 'padding: 2px 9px 2px 9px;'] 
+                            ['class' => 'btn btn-primary btn-xs', 'style' => 'padding: 2px 9px 2px 9px; display: inline-block;'] 
                         );
                     }
                 ]]
