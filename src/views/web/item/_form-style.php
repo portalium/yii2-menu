@@ -15,9 +15,9 @@ use portalium\theme\helpers\Html;
 
     <?= $form->field($model, 'display')->radioList(\portalium\menu\models\MenuItem::getDisplayList()) ?>
 
-    <?= $form->field($model, 'childDisplay')->radioList(\portalium\menu\models\MenuItem::getDisplayList()) ?>
+    <?= $form->field($model, 'childDisplay')->radioList(\portalium\menu\models\MenuItem::getDisplayList())->label(Module::t('Child Display')) ?>
 
-    <?= $form->field($model, 'placement')->radioList(\portalium\menu\models\MenuItem::getPlacementList()) ?>
+    <?= $form->field($model, 'placement')->radioList(\portalium\menu\models\MenuItem::getPlacementList())->label(Module::t('Placement')) ?>
 
 
     <?= $form->field($model, 'color')->widget(ColorInput::className(), [

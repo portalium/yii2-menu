@@ -446,7 +446,7 @@ class MenuItem extends \yii\db\ActiveRecord
         $copyItem = new MenuItem();
         $copyItem->attributes = $item->attributes;
         $copyItem->id_item = null;
-        $copyItem->id_user = 1;
+        $copyItem->id_user = Yii::$app->user->id;
         $copyItem->id_menu = $this->id_menu;
         $copyItem->loadData();
         $copyItem->save();

@@ -166,16 +166,16 @@ class Menu extends \yii\db\ActiveRecord
             $copyItem->data = $item->data;
             $copyItem->loadData();
             $copyItem->save();
+            if ($addChildren) {
+                foreach ($item->children as $child) {
+                    $copyItem->addItem($child->id_child, $addChildren);
+                }
+            }
             if ($id_parent != null || $id_parent != 0){
                 $itemChild = new ItemChild();
                 $itemChild->id_item = $id_parent;
                 $itemChild->id_child = $copyItem->id_item;
                 $itemChild->save();
-            }
-            if ($addChildren) {
-                foreach ($item->children as $child) {
-                    $copyItem->addItem($child->id_child, $addChildren);
-                }
             }
         } catch (\Exception $e) {
             return false;
