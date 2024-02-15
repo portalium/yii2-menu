@@ -25,11 +25,12 @@ class Nav extends \portalium\bootstrap5\Nav
     public function init()
     {
         parent::init();
-        
+
         if (!$this->model = self::findModel($this->id)) {
             throw new \yii\base\InvalidConfigException('Nav::$menu must be set.');
         }
-        $this->options['direction'] = Menu::getDirection($this->model->direction);
+        // $this->options['direction'] = Menu::getDirection($this->model->direction);
+        $this->options['class'] .= ' ' . Menu::getDirection($this->model->direction);
     }
 
     public function run(): string
@@ -40,27 +41,31 @@ class Nav extends \portalium\bootstrap5\Nav
                 $url = $this->getUrl($item);
                 $data = json_decode($item->data, true);
                 if ($item->type == MenuItem::TYPE['module']) {
-                    if ($data["data"]["routeType"] == "widget"){
-                        if (property_exists($data["data"]["route"]::className(), 'icon')) {                            
-                            $items[] = $data["data"]["route"]::widget([
-                                'icon' => $this->getIcon($item),
-                                'display' => ($item->display != '') ? MenuItem::TYPE_DISPLAY['icon'] : $item->display,
-                            ]);
+                    if ($data["data"]["routeType"] == "widget") {
+                        if (property_exists($data["data"]["route"]::className(), 'icon')) {
+                            $visible = (($item->name_auth != null || $item->name_auth != '') && $item->name_auth != 'guest') ? (Yii::$app->user->can($item->name_auth, ['id_module' => $item->module ?? null]) || Yii::$app->workspace->can($item->module ?? null, $item->name_auth) || Yii::$app->workspace->can($item->module ?? null, $item->name_auth . 'Own')) : ($item->name_auth == 'guest' || $item->name_auth == '' ? true : false);
+                            if ($visible)
+                                $items[] = $data["data"]["route"]::widget([
+                                    'icon' => $this->getIcon($item),
+                                    'display' => ($item->display != '') ? MenuItem::TYPE_DISPLAY['icon'] : $item->display,
+                                ]);
                         } else {
+                            $visible = (($item->name_auth != null || $item->name_auth != '') && $item->name_auth != 'guest') ? (Yii::$app->user->can($item->name_auth, ['id_module' => $item->module ?? null]) || Yii::$app->workspace->can($item->module ?? null, $item->name_auth) || Yii::$app->workspace->can($item->module ?? null, $item->name_auth . 'Own')) : ($item->name_auth == 'guest' || $item->name_auth == '' ? true : false);
+                            if ($visible)
                             $items[] = $data["data"]["route"]::widget();
                         }
-                    }else{
-                    $items[] = [
-                                'label' => $this->generateLabel($item, false),
-                                'icon' => $this->getIcon($item),
-                                'url' => $url,
-                                'items' => $this->getChildItems($item->id_item),
-                                'visible' => (($item->name_auth != null || $item->name_auth != '') && $item->name_auth != 'guest') ? Yii::$app->user->can($item->name_auth, ['id_module' => $item->module ?? null]) : ($item->name_auth == 'guest' ? true : false),
-                                'sort' => $item->sort,
-                                'displayType' => MenuItem::getDisplays()[($item->display != 0 && $item->display != '')? $item->display : MenuItem::TYPE_DISPLAY['text']],
-                                'placement' => MenuItem::getPlacements()[($item->placement != 0 && $item->placement != '') != 0 ? $item->placement : MenuItem::LABEL_PLACEMENT['side-by-side']],
-                            ];
-                        }
+                    } else {
+                        $items[] = [
+                            'label' => $this->generateLabel($item, false),
+                            'icon' => $this->getIcon($item),
+                            'url' => $url,
+                            'items' => $this->getChildItems($item->id_item),
+                            'visible' => (($item->name_auth != null || $item->name_auth != '') && $item->name_auth != 'guest') ? (Yii::$app->user->can($item->name_auth, ['id_module' => $item->module ?? null]) || Yii::$app->workspace->can($item->module ?? null, $item->name_auth) || Yii::$app->workspace->can($item->module ?? null, $item->name_auth . 'Own')) : ($item->name_auth == 'guest' || $item->name_auth == '' ? true : false),
+                            'sort' => $item->sort,
+                            'displayType' => MenuItem::getDisplays()[($item->display != 0 && $item->display != '') ? $item->display : MenuItem::TYPE_DISPLAY['text']],
+                            'placement' => MenuItem::getPlacements()[($item->placement != 0 && $item->placement != '') != 0 ? $item->placement : MenuItem::LABEL_PLACEMENT['side-by-side']],
+                        ];
+                    }
                 } else {
                     $items[] =
                         [
@@ -68,7 +73,7 @@ class Nav extends \portalium\bootstrap5\Nav
                             'icon' => $this->getIcon($item),
                             'url' => $url,
                             'items' => $this->getChildItems($item->id_item),
-                            'visible' => (($item->name_auth != null || $item->name_auth != '') && $item->name_auth != 'guest') ? Yii::$app->user->can($item->name_auth, ['id_module' => $item->module ?? null]) : ($item->name_auth == 'guest' ? true : false),
+                            'visible' => (($item->name_auth != null || $item->name_auth != '') && $item->name_auth != 'guest') ? (Yii::$app->user->can($item->name_auth, ['id_module' => $item->module ?? null]) || Yii::$app->workspace->can($item->module ?? null, $item->name_auth) || Yii::$app->workspace->can($item->module ?? null, $item->name_auth . 'Own')) : ($item->name_auth == 'guest' || $item->name_auth == '' ? true : false),
                             'sort' => $item->sort,
                             'displayType' => MenuItem::getDisplays()[($item->display != 0 && $item->display != '') != 0 ? $item->display : MenuItem::TYPE_DISPLAY['text']],
                             'placement' => MenuItem::getPlacements()[($item->placement != 0 && $item->placement != '') != 0 ? $item->placement : MenuItem::LABEL_PLACEMENT['side-by-side']],
@@ -80,7 +85,7 @@ class Nav extends \portalium\bootstrap5\Nav
         $items = $this->sortItems($items);
         $this->items = $items;
         //$this->encodeLabels = false;
-        
+
         //BootstrapAsset::register($this->getView());
 
         return $this->renderItems();
@@ -91,8 +96,9 @@ class Nav extends \portalium\bootstrap5\Nav
         $items = [];
         foreach ($this->model->items as $item) {
             if (isset($item->parent) && $item->parent->id_item == $id_parent) {
-
                 $url = $this->getUrl($item);
+                $visible = (($item->name_auth != null || $item->name_auth != '') && $item->name_auth != 'guest') ? (Yii::$app->user->can($item->name_auth, ['id_module' => $item->module ?? null]) || Yii::$app->workspace->can($item->module ?? null, $item->name_auth) || Yii::$app->workspace->can($item->module ?? null, $item->name_auth . 'Own')) : ($item->name_auth == 'guest' || $item->name_auth == '' ? true : false);
+                
                 $data = json_decode($item->data, true);
                 $itemTemp = ($item->type == MenuItem::TYPE['module'] && $data["data"]["routeType"] == "widget") ?
                     $data["data"]["route"]::widget() :
@@ -100,10 +106,11 @@ class Nav extends \portalium\bootstrap5\Nav
                         'label' => $this->generateLabel($item, true),
                         'icon' => $this->getIcon($item),
                         'url' => $url,
-                        'visible' => (($item->name_auth != null || $item->name_auth != '') && $item->name_auth != 'guest') ? Yii::$app->user->can($item->name_auth, ['id_module' => $item->module ?? null]) : ($item->name_auth == 'guest' ? true : false),
+                        'visible' => (($item->name_auth != null || $item->name_auth != '') && $item->name_auth != 'guest') ? (Yii::$app->user->can($item->name_auth, ['id_module' => $item->module ?? null]) || Yii::$app->workspace->can($item->module ?? null, $item->name_auth) || Yii::$app->workspace->can($item->module ?? null, $item->name_auth . 'Own')) : ($item->name_auth == 'guest' || $item->name_auth == '' ? true : false),
                         'displayType' => MenuItem::getDisplays()[($item->display != 0 && $item->display != '') != 0 ? $item->display : MenuItem::TYPE_DISPLAY['text']],
                         'placement' => MenuItem::getPlacements()[($item->placement != 0 && $item->placement != '') != 0 ? $item->placement : MenuItem::LABEL_PLACEMENT['side-by-side']],
                     ];
+                
                 $list = $this->getChildItems($item->id_item);
                 if (!empty($list)) {
                     $itemTemp['items'] = $list;
@@ -118,24 +125,24 @@ class Nav extends \portalium\bootstrap5\Nav
     private function generateLabel($item, $isChild = false)
     {
         $label = "";
-            if(isset($item->display)){
-                switch ($item->display) {
-                    case MenuItem::TYPE_DISPLAY['icon']:
-                        $label = '';
-                        break;
-                    case MenuItem::TYPE_DISPLAY['icon-text']:
-                        $label = isset($item->module) ? Yii::$app->getModule($item->module)->t($item->label) : Module::t($item->label);
-                        break;
-                    case MenuItem::TYPE_DISPLAY['text']:
-                        $label = isset($item->module) ? Yii::$app->getModule($item->module)->t($item->label) : Module::t($item->label);
-                        break;
-                    default:
-                        $label = isset($item->module) ? Yii::$app->getModule($item->module)->t($item->label) : Module::t($item->label);
-                        break;
-                }
-            }else{
-                $label = isset($item->module) ? Yii::$app->getModule($item->module)->t($item->label) : Module::t($item->label);
+        if (isset($item->display)) {
+            switch ($item->display) {
+                case MenuItem::TYPE_DISPLAY['icon']:
+                    $label = '';
+                    break;
+                case MenuItem::TYPE_DISPLAY['icon-text']:
+                    $label = isset($item->module) ? Yii::$app->getModule($item->module)->t($item->label) : Module::t($item->label);
+                    break;
+                case MenuItem::TYPE_DISPLAY['text']:
+                    $label = isset($item->module) ? Yii::$app->getModule($item->module)->t($item->label) : Module::t($item->label);
+                    break;
+                default:
+                    $label = isset($item->module) ? Yii::$app->getModule($item->module)->t($item->label) : Module::t($item->label);
+                    break;
             }
+        } else {
+            $label = isset($item->module) ? Yii::$app->getModule($item->module)->t($item->label) : Module::t($item->label);
+        }
 
         return $label;
     }
@@ -152,13 +159,13 @@ class Nav extends \portalium\bootstrap5\Nav
             } elseif ($item['data']['routeType'] == 'action') {
                 $url = [$item['data']['route']];
             }
-        } else if($item->type == MenuItem::TYPE['route']) {
+        } else if ($item->type == MenuItem::TYPE['route']) {
             $item = json_decode($item->data, true);
             $url = [$item['data']['route']];
-        } else if($item->type == MenuItem::TYPE['url']) {
+        } else if ($item->type == MenuItem::TYPE['url']) {
             $item = json_decode($item->data, true);
             $url = $item['data']['url'];
-        }else{
+        } else {
             $url = $item->url;
         }
         return $url;
@@ -189,7 +196,7 @@ class Nav extends \portalium\bootstrap5\Nav
             $size = '';
             return '';
         }
-        return Html::tag('i', '', ['class' => 'fa '. $icon, 'style' => 'min-width:25px; color:' . $color . '; font-size:' . $size . 'px; ']);
+        return Html::tag('i', '', ['class' => 'fa ' . $icon, 'style' => 'min-width:25px; color:' . $color . '; font-size:' . $size . 'px; ']);
     }
 
     private function findModel($id)
@@ -250,9 +257,9 @@ class Nav extends \portalium\bootstrap5\Nav
             $options['data-bs-placement'] = $item['placement'];
 
         if (!isset($item['icon']))
-            return Html::tag('li', Html::a('<span>'.$label.'</span>', $url, $linkOptions) . $items, $options);
+            return Html::tag('li', Html::a('<span>' . $label . '</span>', $url, $linkOptions) . $items, $options);
         else
-            return Html::tag('li', Html::a($item['icon'].'<span>'.$label.'</span>', $url, $linkOptions) . $items, $options);
+            return Html::tag('li', Html::a($item['icon'] . '<span>' . $label . '</span>', $url, $linkOptions) . $items, $options);
     }
 
     public function renderItems(): string

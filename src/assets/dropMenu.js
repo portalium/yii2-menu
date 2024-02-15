@@ -604,9 +604,11 @@ $("#menu-clone-item-form-button").click(function (e) {
         
 
         $.pjax.reload({ container: "#nestable2-pjax" });
+        window.location.reload();
         
         $("#expand-all").trigger("click");
         $("#modal-clone").modal("hide");
+        // refresh page
         });
     },
     });
