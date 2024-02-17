@@ -47,6 +47,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     }
                 ]]
         ],
+        'layout' => '{items}{summary}{pagesizer}{pager}',
     ]); ?>
 
     <?php Panel::end() ?>

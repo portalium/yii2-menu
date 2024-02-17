@@ -5,7 +5,7 @@ use portalium\menu\Module;
 /* @var $this yii\web\View */
 /* @var $model portalium\menu\models\Menu */
 
-$this->title = Yii::$app->setting->getValue('app::title') . Module::t('Update Menu: {name}', [
+$this->title = Module::t('Update Menu: {name}', [
     'name' => $model->name,
 ]);
 $this->params['breadcrumbs'][] = ['label' => Module::t('Menus'), 'url' => ['index']];
