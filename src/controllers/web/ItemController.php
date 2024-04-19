@@ -388,6 +388,17 @@ class ItemController extends Controller
         }
     }
 
+    public function actionSort()
+    {
+        if (!\Yii::$app->user->can('menuWebItemSort')) {
+            throw new \yii\web\ForbiddenHttpException(Module::t('You are not allowed to access this page.'));
+        }
+        Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+        $data = Yii::$app->request->post();
+        MenuItem::sort($data);
+        return "success";
+    }
+
     /**
      * Finds the MenuItem model based on its primary key value.
      * If the model is not found, a 404 HTTP exception will be thrown.
