@@ -488,10 +488,11 @@ $(document).ready(function () {
     var target = $(e.target),
         action = target.data("action");
     $.ajax({
-        url: "/api/menu/item/sort",
+        url: "/menu/item/sort",
         type: "POST",
         data: {
         data: data,
+        "_csrf-web": document.querySelector('meta[name="csrf-token"]').getAttribute("content"),
         },
         success: function (data) {
         window.location.reload();

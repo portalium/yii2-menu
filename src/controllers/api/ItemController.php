@@ -21,22 +21,4 @@ class ItemController extends RestActiveController
         ];
         return $actions;
     }
-
-    public function behaviors()
-    {
-        $behaviors = parent::behaviors();
-        $behaviors['authenticator'] = [
-            'class' => \yii\filters\auth\HttpBearerAuth::class,
-            'except' => ['sort'],
-        ];
-        return $behaviors;
-    }
-
-    public function actionSort()
-    {
-        $data = Yii::$app->request->post();
-        MenuItem::sort($data);
-        return "success";
-    }
-
 }
