@@ -54,7 +54,6 @@ function Plugin(element, options) {
 Plugin.prototype = {
     init: function () {
     var list = this;
-
     list.reset();
 
     list.el.data("nestable-group", this.options.group);
@@ -62,6 +61,7 @@ Plugin.prototype = {
     list.placeEl = $('<div class="' + list.options.placeClass + '"/>');
 
     $.each(this.el.find(list.options.itemNodeName), function (k, el) {
+        
         list.setParent($(el));
     });
 
@@ -79,7 +79,6 @@ Plugin.prototype = {
         list.expandItem(item);
         }
     });
-
     var onStartEvent = function (e) {
         var handle = $(e.target);
         if (!handle.hasClass(list.options.handleButtonClass)) {
@@ -153,6 +152,9 @@ Plugin.prototype = {
     serialise: function () {
     return this.serialize();
     },
+
+
+
 
     reset: function () {
     this.mouse = {
@@ -609,7 +611,6 @@ $("#menu-clone-item-form-button").click(function (e) {
         
         $("#expand-all").trigger("click");
         $("#modal-clone").modal("hide");
-        // refresh page
         });
     },
     });
@@ -703,3 +704,5 @@ function checkActiveTab() {
 }
 
 })(window.jQuery || window.Zepto, window, document);
+
+

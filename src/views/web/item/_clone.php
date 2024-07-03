@@ -12,6 +12,8 @@ use portalium\theme\widgets\ActiveForm;
 /* @var $form yii\widgets\ActiveForm */
 ?>
 
+/* Menu öğesi formu oluşturur. */
+
 <div class="menu-item-form">
 
     <?php 
