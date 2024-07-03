@@ -54,7 +54,7 @@ class m010101_010102_menu_menu extends Migration
         $id_item = MenuItem::find()->where(['slug' => 'site'])->one()->id_item;
 
         $this->batchInsert('menu_item', ['id_item', 'label', 'slug', 'type', 'style', 'data', 'sort', 'id_menu', 'name_auth', 'id_user', 'date_create', 'date_update'], [
-            [null, 'Menü', 'menu-parent', '2', '{"icon":"","color":"","iconSize":"","display":false,"childDisplay":false}', '{"data":{"module":"menu","routeType":"action","route":"\\/menu\\/default\\/index","model":"","menuRoute":null,"menuType":"web"}}', '3', $id_menu, 'menuWebDefaultIndex', 1, '2022-06-13 15:28:07', '2022-06-13 15:28:07'],
+            [null, 'Menü', 'menu-parent', '2', '{"icon":"","color":"","iconSize":"","display":"","childDisplay":false}', '{"data":{"module":"menu","routeType":"action","route":"\\/menu\\/default\\/index","model":"","menuRoute":null,"menuType":"web"}}', '3', $id_menu, 'menuWebDefaultIndex', 1, '2022-06-13 15:28:07', '2022-06-13 15:28:07'],
         ]);
 
         $ids = $this->db->createCommand('SELECT id_item FROM menu_item WHERE slug in ("menu-parent")')->queryColumn();

@@ -54,7 +54,7 @@ function Plugin(element, options) {
 Plugin.prototype = {
     init: function () {
     var list = this;
-
+    // listeyi resetler
     list.reset();
 
     list.el.data("nestable-group", this.options.group);
@@ -62,6 +62,7 @@ Plugin.prototype = {
     list.placeEl = $('<div class="' + list.options.placeClass + '"/>');
 
     $.each(this.el.find(list.options.itemNodeName), function (k, el) {
+        // set parent --> bir ögenin üst ögesini belirler
         list.setParent($(el));
     });
 
@@ -79,7 +80,6 @@ Plugin.prototype = {
         list.expandItem(item);
         }
     });
-
     var onStartEvent = function (e) {
         var handle = $(e.target);
         if (!handle.hasClass(list.options.handleButtonClass)) {
@@ -153,6 +153,9 @@ Plugin.prototype = {
     serialise: function () {
     return this.serialize();
     },
+
+
+
 
     reset: function () {
     this.mouse = {
@@ -482,6 +485,7 @@ $(document).ready(function () {
     
     updateOutput($("#nestable").data("output", $("#nestable-output")));
 
+    //! menu-item'ların yerini değiştikten sonra basılan save butonu fonk.
     $("#save-sort").on("click", function (e) {
     var target = $(e.target),
         action = target.data("action");
@@ -702,3 +706,5 @@ function checkActiveTab() {
 }
 
 })(window.jQuery || window.Zepto, window, document);
+
+

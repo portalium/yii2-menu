@@ -86,7 +86,7 @@ class MenuItem extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['label', 'slug', 'style', 'id_menu', 'type'], 'required'],
+            [['label', 'slug', 'style', 'id_menu', 'type','url'], 'required'],
             [['type', 'id_menu', 'sort', 'id_user'], 'integer'],
             [['data', 'module', 'routeType', 'route', 'model', 'url', 'name_auth', 'menuType'], 'string'],
             [['date_create', 'date_update', 'parent', 'menuRoute', 'icon', 'color', 'iconSize', 'display', 'childDisplay', 'placement'], 'safe'],

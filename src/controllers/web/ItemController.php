@@ -400,7 +400,6 @@ class ItemController extends Controller
         if (($model = MenuItem::findOne(['id_item' => $id_item])) !== null) {
             return $model;
         }
-
         throw new NotFoundHttpException(Module::t('The requested page does not exist.'));
     }
 }

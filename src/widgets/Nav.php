@@ -149,7 +149,7 @@ class Nav extends \portalium\bootstrap5\Nav
 
     public function getUrl($item)
     {
-        $url = "";
+        $url = "#";
         if ($item->type == MenuItem::TYPE['module']) {
             $item = json_decode($item->data, true);
             if ($item['data']['routeType'] == 'model') {
@@ -223,9 +223,23 @@ class Nav extends \portalium\bootstrap5\Nav
         $options = ArrayHelper::getValue($item, 'options', []);
         $items = ArrayHelper::getValue($item, 'items');
         $url = ArrayHelper::getValue($item, 'url', '#');
+
+        if($item['url']==null){
+            throw new InvalidConfigException("The 'url' option is required.");
+        }
+    
         $linkOptions = ArrayHelper::getValue($item, 'linkOptions', []);
         $disabled = ArrayHelper::getValue($item, 'disabled', false);
+        Yii::warning($item);
         $active = $this->isItemActive($item);
+        try {
+            //code...
+        } catch (\Throwable $th) {
+            //throw $th;
+            Yii::warning($item);
+            var_dump($item);
+            //exit;
+        }
 
         if (empty($items)) {
             $items = '';
