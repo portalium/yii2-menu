@@ -232,14 +232,6 @@ class Nav extends \portalium\bootstrap5\Nav
         $disabled = ArrayHelper::getValue($item, 'disabled', false);
         Yii::warning($item);
         $active = $this->isItemActive($item);
-        try {
-            //code...
-        } catch (\Throwable $th) {
-            //throw $th;
-            Yii::warning($item);
-            var_dump($item);
-            //exit;
-        }
 
         if (empty($items)) {
             $items = '';
