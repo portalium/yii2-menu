@@ -48,7 +48,6 @@ class DropMenu extends Widget
                                 Html::tag('button', Module::t(''), ['type' => 'button', 'class' => 'fa fa-plus btn btn-sm btn-success', 'id' => 'create-menu-item-button', 'style' => '', 'id_menu' => $this->id_menu]),
                             ],
                             'footer' => [
-                                //! save butonu menu item'ların yerini değiştirdikten sonra basılan save butonu
                                 Html::tag('button', Module::t('Save'), ['type' => 'button', 'class' => 'btn btn-success', 'data-action' => 'save-sort', 'id' => 'save-sort']),
                             ]
                         ]

@@ -54,7 +54,6 @@ function Plugin(element, options) {
 Plugin.prototype = {
     init: function () {
     var list = this;
-    // listeyi resetler
     list.reset();
 
     list.el.data("nestable-group", this.options.group);
@@ -62,7 +61,7 @@ Plugin.prototype = {
     list.placeEl = $('<div class="' + list.options.placeClass + '"/>');
 
     $.each(this.el.find(list.options.itemNodeName), function (k, el) {
-        // set parent --> bir ögenin üst ögesini belirler
+        
         list.setParent($(el));
     });
 
@@ -485,7 +484,6 @@ $(document).ready(function () {
     
     updateOutput($("#nestable").data("output", $("#nestable-output")));
 
-    //! menu-item'ların yerini değiştikten sonra basılan save butonu fonk.
     $("#save-sort").on("click", function (e) {
     var target = $(e.target),
         action = target.data("action");
@@ -612,7 +610,6 @@ $("#menu-clone-item-form-button").click(function (e) {
         
         $("#expand-all").trigger("click");
         $("#modal-clone").modal("hide");
-        // refresh page
         });
     },
     });
