@@ -68,3 +68,13 @@ use portalium\menu\models\MenuItem;
     echo $form->field($model, 'name_auth', ['options' => ['id' => 'name-auth-input-div']])->dropDownList(MenuItem::getAuthList(), ['id' => 'name-auth-input', 'prompt' => Module::t('Disabled'), "options" => ['role' => ['disabled' => true], 'permission' => ['disabled' => true]]]);
 
     ?>
+
+<?php
+$this->registerJs('
+    $(document).ajaxSend(function(event, jqxhr, settings) {
+        if (settings.type == "POST") {
+            settings.data = settings.data + "&' . Yii::$app->request->csrfParam . '=' . Yii::$app->request->csrfToken . '";
+        }
+    });
+');
+?>

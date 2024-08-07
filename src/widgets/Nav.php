@@ -230,7 +230,6 @@ class Nav extends \portalium\bootstrap5\Nav
     
         $linkOptions = ArrayHelper::getValue($item, 'linkOptions', []);
         $disabled = ArrayHelper::getValue($item, 'disabled', false);
-        Yii::warning($item);
         $active = $this->isItemActive($item);
 
         if (empty($items)) {
