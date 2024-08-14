@@ -91,6 +91,7 @@ class DefaultController extends Controller
 
         if ($this->request->isPost) {
             if ($model->load($this->request->post()) && $model->save()) {
+                Yii::$app->session->setFlash('success', Module::t('Menu has been created.'));
                 return $this->redirect(['view', 'id' => $model->id_menu]);
             }
         } else {
@@ -117,6 +118,7 @@ class DefaultController extends Controller
         $model = $this->findModel($id);
 
         if ($this->request->isPost && $model->load($this->request->post()) && $model->save()) {
+            Yii::$app->session->setFlash('success', Module::t('Menu has been updated.'));
             return $this->redirect(['view', 'id' => $model->id_menu]);
         }
 
@@ -137,7 +139,14 @@ class DefaultController extends Controller
         if (!\Yii::$app->user->can('menuWebDefaultDelete', ['model' => $this->findModel($id)])) {
             throw new \yii\web\ForbiddenHttpException(Module::t('You are not allowed to access this page.'));
         }
-        $this->findModel($id)->delete();
+
+        $model = $this->findModel($id);
+        
+        if ($model->delete()) {
+            Yii::$app->session->setFlash('success', Module::t('Menu has been deleted.'));
+        } else {
+            Yii::$app->session->setFlash('error', Module::t('Failed to delete the menu.'));
+        }
 
         return $this->redirect(['index']);
     }
