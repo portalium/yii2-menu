@@ -195,7 +195,7 @@ Plugin.prototype = {
     collapseItem: function (li) {
     var lists = li.children(this.options.listNodeName);
     if (lists.length) {
-        li.addClass(this.options.collapsedClass);
+        //li.addClass(this.options.collapsedClass);
         li.children('[data-action="collapse"]').hide();
         li.children('[data-action="expand"]').show();
         li.children(this.options.listNodeName).hide();
