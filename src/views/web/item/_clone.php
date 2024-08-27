@@ -12,6 +12,8 @@ use portalium\theme\widgets\ActiveForm;
 /* @var $form yii\widgets\ActiveForm */
 ?>
 
+/* Menu öğesi formu oluşturur. */
+
 <div class="menu-item-form">
 
     <?php 
@@ -56,5 +58,11 @@ use portalium\theme\widgets\ActiveForm;
 </div>
 
 <?php
-
+$this->registerJs('
+    $(document).ajaxSend(function(event, jqxhr, settings) {
+        if (settings.type == "POST") {
+            settings.data = settings.data + "&' . Yii::$app->request->csrfParam . '=' . Yii::$app->request->csrfToken . '";
+        }
+    });
+');
 ?>

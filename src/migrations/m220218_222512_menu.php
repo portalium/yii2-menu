@@ -19,6 +19,7 @@ class m220218_222512_menu extends Migration
                 'slug'=> $this->string(255)->notNull(),
                 'type'=> $this->integer(11)->notNull(),
                 'direction'=> $this->integer(11)->notNull()->defaultValue(1),
+                'placement'=> $this->integer(11)->notNull()->defaultValue(1),
                 'id_user' => $this->integer(11)->notNull(),
                 'date_create'=> $this->datetime()->notNull()->defaultExpression("CURRENT_TIMESTAMP"),
                 'date_update'=> $this->datetime()->notNull()->defaultExpression("CURRENT_TIMESTAMP"),

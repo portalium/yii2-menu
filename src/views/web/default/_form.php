@@ -32,6 +32,8 @@ use portalium\theme\widgets\Panel;
     <?= $form->field($model, 'type')->dropDownList(Menu::getTypes()) ?>
 
     <?= $form->field($model, 'direction')->dropDownList(Menu::getDirections()) ?>
+    
+    <?= $form->field($model, 'placement')->dropDownList(Menu::getPlacements()) ?>
 
     <?php Panel::end() ?>
 
