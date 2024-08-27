@@ -38,7 +38,7 @@ class m010101_010102_menu_menu extends Migration
                 'label' => 'Site',
                 'slug' => 'site',
                 'type' => '3',
-                'style' => '{"icon":"fa-cog","color":"","iconSize":"","display":"1","childDisplay":"3"}',
+                'style' => '{"icon":"fa-cog","color":"","iconSize":"","display":"3","childDisplay":"3"}',
                 'data' => '{"data":{"url":"#"}}',
                 'sort' => '1',
                 'id_menu' => $id_menu,

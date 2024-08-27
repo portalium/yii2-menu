@@ -49,6 +49,7 @@ class Nav extends \portalium\bootstrap5\Nav
                             if ($visible) {
                                 if (!($item->placement != 0 && $item->placement != '') || $item['placement'] == MenuItem::LABEL_PLACEMENT["default"]) {
                                     $item['placement'] = $this->model['placement'];
+
                                 }
                                 $items[] = $data["data"]["route"]::widget([
                                     'icon' => $this->getIcon($item),
@@ -256,7 +257,7 @@ class Nav extends \portalium\bootstrap5\Nav
             $linkOptions['data']['bs-toggle'] = 'dropdown';
             $linkOptions['role'] = 'button';
             $linkOptions['aria']['expanded'] = 'false';
-            Html::addCssClass($linkOptions, ['widget' => 'nav-link']);
+            //Html::addCssClass($linkOptions, ['widget' => 'nav-link']);
             Html::addCssClass($options, ['widget' => 'dropdown nav-item']);
             Html::addCssClass($linkOptions, ['widget' => 'dropdown-toggle nav-link']);
             if (is_array($items)) {
