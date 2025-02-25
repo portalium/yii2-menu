@@ -99,11 +99,16 @@ class ItemController extends Controller
                     $max = MenuItem::find()->max('sort');
                     $model->sort = $max + 1;
                 }
-                
-                if($model->save()){
-                    if($id_parent != null && $id_parent != 0){
-                        $itemChildModel = ItemChild::findOne(['id_item' => $id_parent, 'id_child' => $model->id_item]);
-                        if($itemChildModel == null){
+                if($model->save())
+                {
+                    if($id_parent != null && $id_parent != 0)
+                    {
+                        $itemChildModel = ItemChild::findOne(['id_child' => $model->id_item]);
+
+                        if ($itemChildModel !== null) {
+                            $itemChildModel->id_item = $id_parent;
+                            $itemChildModel->save();
+                        } else {
                             $itemChildModel = new ItemChild();
                             $itemChildModel->id_item = $id_parent;
                             $itemChildModel->id_child = $model->id_item;
@@ -113,7 +118,9 @@ class ItemController extends Controller
                     return;
                 }
             }
-        } else {
+        }
+        else
+        {
             $model->loadDefaultValues();
         }
         $menuModel = Menu::findOne($id_menu);
@@ -123,6 +130,7 @@ class ItemController extends Controller
             'menuModel' => $menuModel,
         ]);
     }
+
 
     /**
      * Updates an existing MenuItem model.
@@ -137,8 +145,9 @@ class ItemController extends Controller
             throw new \yii\web\ForbiddenHttpException(Module::t('You are not allowed to access this page.'));
         }
         $model = $this->findModel($id);
-        
-        if ($this->request->isPost && $model->load($this->request->post()) && $model->save()) {
+
+        if ($this->request->isPost && $model->load($this->request->post()) && $model->save())
+        {
             return $this->redirect(['index', 'id_menu' => $model->id_menu]);
         }
 
