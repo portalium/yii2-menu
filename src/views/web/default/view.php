@@ -7,16 +7,15 @@ use portalium\theme\widgets\Panel;
 /* @var $this yii\web\View */
 /* @var $model portalium\menu\models\Menu */
 
-$fullTitle = $model->name;
-$shortTitle = mb_strimwidth($fullTitle, 0, 30, '...');
 
-$this->title = $shortTitle;
+
+$this->title = mb_strimwidth($model->name, 0, 30, '...');
 
 
 $this->params['breadcrumbs'][] = ['label' => Module::t('Menu'), 'url' => ['index']];
 $this->params['breadcrumbs'][] = [
-    'label' => Html::tag('span', $shortTitle, [
-        'title' => $fullTitle,
+    'label' => Html::tag('span', mb_strimwidth($model->name, 0, 30, '...'), [
+        'title' => $model->name,
         'style' => 'cursor: pointer;',
     ]),
     'encode' => false,
