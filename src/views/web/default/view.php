@@ -42,8 +42,14 @@ $this->params['breadcrumbs'][] = [
         'model' => $model,
         'attributes' => [
             'id_menu',
-            'name',
-            'slug',
+            [
+                'attribute' => 'name',
+                'contentOptions' => ['style' => 'overflow-wrap: anywhere;'],
+            ],
+            [
+                'attribute' => 'slug',
+                'contentOptions' => ['style' => 'overflow-wrap: anywhere;'],
+            ],
             'date_create',
             'date_update',
         ],
