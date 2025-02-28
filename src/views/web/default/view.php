@@ -1,15 +1,25 @@
 <?php
 
 use yii\helpers\Html;
-use yii\widgets\DetailView;
+use portalium\theme\widgets\DetailView;
 use portalium\menu\Module;
 use portalium\theme\widgets\Panel;
 /* @var $this yii\web\View */
 /* @var $model portalium\menu\models\Menu */
 
-$this->title = $model->name;
+
+
+$this->title = mb_strimwidth($model->name, 0, 30, '...');
+
+
 $this->params['breadcrumbs'][] = ['label' => Module::t('Menu'), 'url' => ['index']];
-$this->params['breadcrumbs'][] = $this->title;
+$this->params['breadcrumbs'][] = [
+    'label' => Html::tag('span', mb_strimwidth($model->name, 0, 30, '...'), [
+        'title' => $model->name,
+        'style' => 'cursor: pointer;',
+    ]),
+    'encode' => false,
+];
 \yii\web\YiiAsset::register($this);
 ?>
 <div class="menu-view">
@@ -32,8 +42,14 @@ $this->params['breadcrumbs'][] = $this->title;
         'model' => $model,
         'attributes' => [
             'id_menu',
-            'name',
-            'slug',
+            [
+                'attribute' => 'name',
+                'contentOptions' => ['style' => 'overflow-wrap: anywhere;'],
+            ],
+            [
+                'attribute' => 'slug',
+                'contentOptions' => ['style' => 'overflow-wrap: anywhere;'],
+            ],
             'date_create',
             'date_update',
         ],
