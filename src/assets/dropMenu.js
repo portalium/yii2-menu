@@ -613,6 +613,12 @@ $("#menu-clone-item-form-button").click(function (e) {
         $("#modal-clone").modal("hide");
         });
     },
+    error: function (jqxhr, textStatus, errorThrown) {
+        if (jqxhr.status === 403) {
+            alert("You are not allowed to access this page.");
+            $("#modal-clone").modal("hide");
+        }
+    }
     });
 });
 
@@ -638,6 +644,12 @@ $("#menu-move-item-form-button").click(function (e) {
         $("#modal-move").modal("hide");
         });
     },
+    error: function (jqxhr, textStatus, errorThrown) {
+        if (jqxhr.status === 403) {
+            alert("You are not allowed to access this page.");
+            $("#modal-move").modal("hide");
+        }
+    }
     });
 });
 
@@ -702,7 +714,6 @@ function checkActiveTab() {
     $("#create-menu-item").hide();
     }
 }
-
 })(window.jQuery || window.Zepto, window, document);
 
 
