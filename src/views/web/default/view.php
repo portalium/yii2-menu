@@ -8,7 +8,7 @@ use portalium\theme\widgets\Panel;
 /* @var $model portalium\menu\models\Menu */
 
 $this->title = $model->name;
-$this->params['breadcrumbs'][] = ['label' => Module::t('Menu'), 'url' => ['index']];
+$this->params['breadcrumbs'][] = ['label' => Module::t('Menus'), 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 \yii\web\YiiAsset::register($this);
 ?>

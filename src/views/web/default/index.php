@@ -18,7 +18,7 @@ $this->params['breadcrumbs'][] = $this->title;
     <?php Panel::begin([
         'title' => Module::t('Menus'),
         'actions' => [
-            Html::a(Module::t(''), ['create'], ['class' => 'fa fa-plus btn btn-success']),
+            Html::a('', ['create'], ['class' => 'fa fa-plus btn btn-success', 'title' => Module::t('Create Menu')]),
         ],
     ]) ?>
 
@@ -28,21 +28,21 @@ $this->params['breadcrumbs'][] = $this->title;
         'dataProvider' => $dataProvider,
         'filterModel' => $searchModel,
         'columns' => [
-            ['class' => 'yii\grid\SerialColumn'],
+            ['class' => 'portalium\grid\SerialColumn'],
 
             //'id_menu',
             'name',
             'slug',
             'date_create',
             'date_update',
-            ['class' => ActionColumn::class,
+            ['class' => ActionColumn::class, 'header' => Module::t('Actions'),
                 'template' => "{view} {update} {delete} {items} ",
                 'buttons' => [
                     'items' => function ($url, $model) {
                         return Html::a(
-                            Html::tag('i', '', ['class' => 'fa fa-thin fa-bars']), 
+                            Html::tag('i', '', ['class' => 'fa fa-thin fa-bars']),
                             Url::toRoute(['/menu/item/index', 'id_menu' => $model->id_menu], ['title' => Module::t('Items')]),
-                            ['class' => 'btn btn-primary btn-xs', 'style' => 'padding: 2px 9px 2px 9px; display: inline-block;'] 
+                            ['class' => 'btn btn-primary btn-xs', 'style' => 'padding: 2px 9px 2px 9px; display: inline-block;', 'title' => Module::t('Edit')]
                         );
                     }
                 ]]

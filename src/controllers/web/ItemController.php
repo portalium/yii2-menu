@@ -99,16 +99,25 @@ class ItemController extends Controller
                     $max = MenuItem::find()->max('sort');
                     $model->sort = $max + 1;
                 }
-                
-                if($model->save()){
-                    if($id_parent != null && $id_parent != 0){
-                        $itemChildModel = ItemChild::findOne(['id_item' => $id_parent, 'id_child' => $model->id_item]);
-                        if($itemChildModel == null){
-                            $itemChildModel = new ItemChild();
+                $itemChildModel = ItemChild::findOne(['id_child' => $model->id_item]);
+
+                if($model->save())
+                {
+                    if ($id_parent)
+                    {
+                        if ($itemChildModel)
+                        {
                             $itemChildModel->id_item = $id_parent;
-                            $itemChildModel->id_child = $model->id_item;
-                            $itemChildModel->save();
                         }
+                        else
+                        {
+                            $itemChildModel = new ItemChild(['id_item' => $id_parent, 'id_child' => $model->id_item]);
+                        }
+                        $itemChildModel->save();
+                    }
+                    elseif ($itemChildModel)
+                    {
+                        $itemChildModel->delete();
                     }
                     return;
                 }
