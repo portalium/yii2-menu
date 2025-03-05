@@ -8,7 +8,7 @@ class m220219_222513_menu_rbac extends Migration
     public function up()
     {
         $auth = Yii::$app->authManager;
-    
+
         $role = Yii::$app->setting->getValue('site::admin_role');
         $admin = (isset($role) && $role != '') ? $auth->getRole($role) : $auth->getRole('admin');
 
@@ -61,7 +61,7 @@ class m220219_222513_menu_rbac extends Migration
         $menuWebDefaultDelete->description = 'Menu Web Default Delete';
         $auth->add($menuWebDefaultDelete);
         $auth->addChild($admin, $menuWebDefaultDelete);
-        
+
         $menuWebItemIndex = $auth->createPermission('menuWebItemIndex');
         $menuWebItemIndex->description = 'Menu Web ItemIndex item';
         $auth->add($menuWebItemIndex);
@@ -106,6 +106,16 @@ class m220219_222513_menu_rbac extends Migration
         $menuWebItemSort->description = 'Menu Web ItemModel item';
         $auth->add($menuWebItemSort);
         $auth->addChild($admin, $menuWebItemSort);
+
+        $menuWebItemClone = $auth->createPermission('menuWebItemClone');
+        $menuWebItemClone->description = 'Menu Web Item Clone';
+        $auth->add($menuWebItemClone);
+        $auth->addChild($admin, $menuWebItemClone);
+
+        $menuWebItemMove = $auth->createPermission('menuWebItemMove');
+        $menuWebItemMove->description = 'Menu Web Item Move';
+        $auth->add($menuWebItemMove);
+        $auth->addChild($admin, $menuWebItemMove);
     }
 
     public function down()
@@ -131,6 +141,7 @@ class m220219_222513_menu_rbac extends Migration
         $auth->remove($auth->getPermission('menuWebItemRoute'));
         $auth->remove($auth->getPermission('menuWebItemModel'));
         $auth->remove($auth->getPermission('menuWebItemSort'));
-
+        $auth->remove($auth->getPermission('menuWebItemClone'));
+        $auth->remove($auth->getPermission('menuWebItemMove'));
     }
 }

@@ -131,3 +131,8 @@ dd-handle-button
 .dd3-handle:hover { background: #ddd; }
 
 .dd-handle-button i{ margin-top: 3px; }
+
+
+.btn:disabled {
+    background-color: white !important;
+}
