@@ -388,19 +388,85 @@ class ItemController extends Controller
             throw new \yii\web\ForbiddenHttpException(Module::t('You are not allowed to access this page.'));
         }
         $out = [];
-        if($this->request->isPost){
+
+        if ($this->request->isPost) {
             $request = $this->request->post('depdrop_parents');
-            $id_menu = $request[0];
-            if($id_menu == null || $id_menu == ''){
-                return $this->asJson(['output' => [], 'selected' => '']);
+            $id_menu = isset($request[0]) ? $request[0] : null;
+
+            if ($id_menu == null || $id_menu == '') {
+                return json_encode(['output' => [], 'selected' => '']);
             }
+
             $menu = Menu::findOne($id_menu);
-            $menuItems = $menu->getItems()->asArray()->all();
-            $out[] = ['id' => 0, 'name' => Module::t('Root')];
-            foreach ($menuItems as $key => $item) {
-                $out[] = ['id' => $item['id_item'], 'name' => $item['label']];
+            $menuItems = $menu->getItems()->orderBy(['sort' => SORT_ASC, 'id_item' => SORT_ASC])->asArray()->all();
+
+
+            $menuRelations = ItemChild::find()->asArray()->all();
+
+
+            $menuTree = [];
+            foreach ($menuRelations as $relation) {
+                $menuTree[$relation['id_item']][] = $relation['id_child'];
             }
-            return json_encode(['output' => $out, 'selected' => '']);
+
+
+            $sortedItems = [];
+            foreach ($menuItems as $item) {
+                $sortedItems[$item['id_item']] = $item;
+            }
+
+            $rootParents = array_diff(array_keys($sortedItems), array_column($menuRelations, 'id_child'));
+
+            $out[] = ['id' => 0, 'name' => Module::t('Root')];
+
+            function buildParentChildTree($parentId, $sortedItems, $menuTree, $depth = 0, $forMove = false)
+            {
+                $result = [];
+                if (isset($menuTree[$parentId])) {
+
+                    usort($menuTree[$parentId], function ($a, $b) use ($sortedItems) {
+                        return ($sortedItems[$a]['sort'] ?? 0) - ($sortedItems[$b]['sort'] ?? 0);
+                    });
+
+                    foreach ($menuTree[$parentId] as $childId) {
+                        if (isset($sortedItems[$childId])) {
+                            $childItem = $sortedItems[$childId];
+
+                            $indentation = ($depth > 0 && $forMove) ? str_repeat('- ', $depth) : '';
+
+                            $result[] = ['id' => $childItem['id_item'], 'name' => $indentation . $childItem['label']];
+                            $result = array_merge($result, buildParentChildTree($childItem['id_item'], $sortedItems, $menuTree, $depth + 1, $forMove));
+                        }
+                    }
+                }
+                return $result;
+            }
+
+            $menuHierarchicalList = [];
+            foreach ($rootParents as $parentId) {
+                if (isset($sortedItems[$parentId])) {
+                    $parentItem = $sortedItems[$parentId];
+
+                    $menuHierarchicalList[] = ['id' => $parentItem['id_item'], 'name' => $parentItem['label']];
+                    $menuHierarchicalList = array_merge($menuHierarchicalList, buildParentChildTree($parentItem['id_item'], $sortedItems, $menuTree, 1, false));
+                }
+            }
+
+            $moveHierarchicalList = [];
+            foreach ($rootParents as $parentId) {
+                if (isset($sortedItems[$parentId])) {
+                    $parentItem = $sortedItems[$parentId];
+
+                    $moveHierarchicalList[] = ['id' => $parentItem['id_item'], 'name' => $parentItem['label']];
+                    $moveHierarchicalList = array_merge($moveHierarchicalList, buildParentChildTree($parentItem['id_item'], $sortedItems, $menuTree, 1, true));
+                }
+            }
+
+            return json_encode([
+                'output' => $moveHierarchicalList,
+                'menu_output' => $menuHierarchicalList,
+                'selected' => ''
+            ]);
         }
     }
 
