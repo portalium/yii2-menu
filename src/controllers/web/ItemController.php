@@ -384,6 +384,9 @@ class ItemController extends Controller
     }
 
     public function actionParentList(){
+        if (!\Yii::$app->user->can('menuWebParentList')) {
+            throw new \yii\web\ForbiddenHttpException(Module::t('You are not allowed to access this page.'));
+        }
         $out = [];
         if($this->request->isPost){
             $request = $this->request->post('depdrop_parents');
