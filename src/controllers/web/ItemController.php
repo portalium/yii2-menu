@@ -197,7 +197,9 @@ class ItemController extends Controller
 
     public function actionClone()
     {
-        
+        if (!\Yii::$app->user->can('menuWebItemClone')) {
+            throw new \yii\web\ForbiddenHttpException(Module::t('You are not allowed to access this page.'));
+        }
         if (Yii::$app->request->isAjax) {  
             $id_menu = Yii::$app->request->post('DynamicModel')['id_menu'];
             $id_item = Yii::$app->request->post('id_item');
@@ -216,7 +218,9 @@ class ItemController extends Controller
 
     public function actionMove()
     {
-        
+        if (!\Yii::$app->user->can('menuWebItemMove')) {
+            throw new \yii\web\ForbiddenHttpException(Module::t('You are not allowed to access this page.'));
+        }
         if (Yii::$app->request->isAjax) {
             $id_menu = Yii::$app->request->post('DynamicModel')['id_menu'];
             $id_item = Yii::$app->request->post('id_item');
