@@ -99,28 +99,30 @@ class ItemController extends Controller
                     $max = MenuItem::find()->max('sort');
                     $model->sort = $max + 1;
                 }
+                $itemChildModel = ItemChild::findOne(['id_child' => $model->id_item]);
+
                 if($model->save())
                 {
-                    if($id_parent != null && $id_parent != 0)
+                    if ($id_parent)
                     {
-                        $itemChildModel = ItemChild::findOne(['id_child' => $model->id_item]);
-
-                        if ($itemChildModel !== null) {
+                        if ($itemChildModel)
+                        {
                             $itemChildModel->id_item = $id_parent;
-                            $itemChildModel->save();
-                        } else {
-                            $itemChildModel = new ItemChild();
-                            $itemChildModel->id_item = $id_parent;
-                            $itemChildModel->id_child = $model->id_item;
-                            $itemChildModel->save();
                         }
+                        else
+                        {
+                            $itemChildModel = new ItemChild(['id_item' => $id_parent, 'id_child' => $model->id_item]);
+                        }
+                        $itemChildModel->save();
+                    }
+                    elseif ($itemChildModel)
+                    {
+                        $itemChildModel->delete();
                     }
                     return;
                 }
             }
-        }
-        else
-        {
+        } else {
             $model->loadDefaultValues();
         }
         $menuModel = Menu::findOne($id_menu);
@@ -130,7 +132,6 @@ class ItemController extends Controller
             'menuModel' => $menuModel,
         ]);
     }
-
 
     /**
      * Updates an existing MenuItem model.
@@ -145,9 +146,8 @@ class ItemController extends Controller
             throw new \yii\web\ForbiddenHttpException(Module::t('You are not allowed to access this page.'));
         }
         $model = $this->findModel($id);
-
-        if ($this->request->isPost && $model->load($this->request->post()) && $model->save())
-        {
+        
+        if ($this->request->isPost && $model->load($this->request->post()) && $model->save()) {
             return $this->redirect(['index', 'id_menu' => $model->id_menu]);
         }
 
@@ -200,7 +200,7 @@ class ItemController extends Controller
         if (!\Yii::$app->user->can('menuWebItemClone')) {
             throw new \yii\web\ForbiddenHttpException(Module::t('You are not allowed to access this page.'));
         }
-        if (Yii::$app->request->isAjax) {
+        if (Yii::$app->request->isAjax) {  
             $id_menu = Yii::$app->request->post('DynamicModel')['id_menu'];
             $id_item = Yii::$app->request->post('id_item');
             try {
@@ -221,47 +221,26 @@ class ItemController extends Controller
         if (!\Yii::$app->user->can('menuWebItemMove')) {
             throw new \yii\web\ForbiddenHttpException(Module::t('You are not allowed to access this page.'));
         }
-
         if (Yii::$app->request->isAjax) {
             $id_menu = Yii::$app->request->post('DynamicModel')['id_menu'];
             $id_item = Yii::$app->request->post('id_item');
-
             try {
                 $id_parent = Yii::$app->request->post('DynamicModel')['id_parent'];
             } catch (\Throwable $th) {
                 $id_parent = null;
             }
-
             $menuModel = Menu::findOne($id_menu);
-            if (!$menuModel) {
-                return $this->asJson(['status' => 'error', 'message' => 'Menu not found.']);
-            }
-
-
-            $existingRelation = ItemChild::find()->where(['id_child' => $id_item])->one();
-
-
-            if ($existingRelation) {
-                $existingRelation->delete();
-            }
-
-
-            if ($id_parent !== null && $id_parent != 0) {
-                $newRelation = new ItemChild();
-                $newRelation->id_item = $id_parent;
-                $newRelation->id_child = $id_item;
-
-                if (!$newRelation->save()) {
-                    return $this->asJson(['status' => 'error', 'message' => 'Failed to move item.']);
+            if ($menuModel->addItem($id_item, true, $id_parent)) {
+                $item = MenuItem::findOne($id_item);
+                try {
+                    $item->deleteChildren();
+                } catch (Exception $e) {
+                    Yii::error($e->getMessage());
                 }
                 $item->delete();
                 return $this->asJson(['status' => 'success']);
             }
-
-            return $this->asJson(['status' => 'success']);
         }
-
-        return $this->asJson(['status' => 'error', 'message' => 'Invalid request.']);
     }
 
     private function deleteItem($id_item, $id_parent = null, $id_menu = null)
@@ -405,6 +384,9 @@ class ItemController extends Controller
     }
 
     public function actionParentList(){
+        if (!\Yii::$app->user->can('menuWebParentList')) {
+            throw new \yii\web\ForbiddenHttpException(Module::t('You are not allowed to access this page.'));
+        }
         $out = [];
 
         if ($this->request->isPost) {
