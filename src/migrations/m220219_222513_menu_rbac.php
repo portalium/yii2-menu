@@ -116,6 +116,11 @@ class m220219_222513_menu_rbac extends Migration
         $menuWebItemMove->description = 'Menu Web Item Move';
         $auth->add($menuWebItemMove);
         $auth->addChild($admin, $menuWebItemMove);
+
+        $menuWebParentList = $auth->createPermission('menuWebParentList');
+        $menuWebParentList->description = 'Menu Web Parent List';
+        $auth->add($menuWebParentList);
+        $auth->addChild($admin, $menuWebParentList);
     }
 
     public function down()
@@ -143,5 +148,6 @@ class m220219_222513_menu_rbac extends Migration
         $auth->remove($auth->getPermission('menuWebItemSort'));
         $auth->remove($auth->getPermission('menuWebItemClone'));
         $auth->remove($auth->getPermission('menuWebItemMove'));
+        $auth->remove($auth->getPermission('menuWebParentList'));
     }
 }
