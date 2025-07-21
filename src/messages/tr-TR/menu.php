@@ -1,13 +1,16 @@
 <?php
 return [
     'The requested page does not exist.' => 'İstenen sayfa bulunamadı.',
-    'Save' => 'Kaydet',
+    'Save' => 'Kaydet', 
     'Search' => 'Ara',
     'Reset' => 'Sıfırla',
     'Create Menu' => 'Menü Oluştur',
     'Menus' => 'Menüler',
     'Items' => 'Öğeler',
     'Menu' => 'Menü',
+    'Contents' => 'İçerikler',
+    'Categories' => 'Kategoriler',
+    'Storage' => 'Depolama',
     'Update Menu: {name}' => 'Menü Güncelle: {name}',
     'Update' => 'Güncelle',
     'Delete' => 'Sil',
