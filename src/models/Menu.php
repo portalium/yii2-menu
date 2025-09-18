@@ -112,7 +112,7 @@ class Menu extends \yii\db\ActiveRecord
     public static function getDirection($direction)
     {
         $directions = [self::DIRECTION['vertical'] => "vertical", self::DIRECTION['horizontal'] => "horizontal"];
-        return $directions[$direction]; 
+        return $directions[$direction];
     }
 
     public function getItems()
@@ -138,18 +138,19 @@ class Menu extends \yii\db\ActiveRecord
         }
 
         $result = self::jsonSortWithSortRecursive($result);
-        
+
         return $result;
     }
 
-    public static function jsonSortWithSortRecursive($data){
+    public static function jsonSortWithSortRecursive($data)
+    {
 
         foreach ($data as $key => $value) {
             if (isset($value['children']) && is_array($value['children'])) {
                 $data[$key]['children'] = self::jsonSortWithSortRecursive($value['children']);
             }
         }
-        usort($data, function($a, $b) {
+        usort($data, function ($a, $b) {
             return $a['sort'] <=> $b['sort'];
         });
         return $data;
@@ -171,7 +172,7 @@ class Menu extends \yii\db\ActiveRecord
                     $copyItem->addItem($child->id_child, $addChildren);
                 }
             }
-            if ($id_parent != null || $id_parent != 0){
+            if ($id_parent != null || $id_parent != 0) {
                 $itemChild = new ItemChild();
                 $itemChild->id_item = $id_parent;
                 $itemChild->id_child = $copyItem->id_item;

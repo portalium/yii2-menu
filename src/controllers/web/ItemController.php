@@ -99,7 +99,6 @@ class ItemController extends Controller
                     $max = MenuItem::find()->max('sort');
                     $model->sort = $max + 1;
                 }
-                
                 if($model->save()){
                     if($id_parent != null && $id_parent != 0){
                         $itemChildModel = ItemChild::findOne(['id_item' => $id_parent, 'id_child' => $model->id_item]);
@@ -111,6 +110,8 @@ class ItemController extends Controller
                         }
                     }
                     return;
+                } else {
+                    Yii::warning($model->getErrors(), 'menu');
                 }
             }
         } else {
