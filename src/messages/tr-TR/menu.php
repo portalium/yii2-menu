@@ -67,7 +67,4 @@ return [
     'Route' => 'Yönlendirme',
     'Access' => 'Erişim',
     'Select Color ...' => 'Renk Seçiniz ...',
-    'Contents' => 'İçerikler',
-    'Categories' => 'Kategoriler',
-    'Storage' => 'Depolama',
 ];

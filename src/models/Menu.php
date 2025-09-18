@@ -14,7 +14,6 @@ use yii\behaviors\TimestampBehavior;
  * @property string $slug
  * @property int $type
  * @property int $direction
- * @property int $placement
  * @property string $date_create
  * @property string $date_update
  */
@@ -29,11 +28,6 @@ class Menu extends \yii\db\ActiveRecord
         'vertical' => '1',
         'horizontal' => '2'
     ];
-    const LABEL_PLACEMENT = [
-        'side-by-side' => '1',
-        'top-to-bottom' => '2'
-    ];
-
 
     /**
      * {@inheritdoc}
@@ -75,9 +69,9 @@ class Menu extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['name', 'slug', 'type', 'direction','placement',], 'required'],
-            [['type', 'id_user', 'direction',], 'integer'],
-            [['date_create', 'date_update', ], 'safe'],
+            [['name', 'slug', 'type', 'direction'], 'required'],
+            [['type', 'id_user', 'direction'], 'integer'],
+            [['date_create', 'date_update'], 'safe'],
             [['name', 'slug'], 'string', 'max' => 255]
         ];
     }
@@ -93,7 +87,6 @@ class Menu extends \yii\db\ActiveRecord
             'slug' => Module::t('Slug'),
             'type' => Module::t('Type'),
             'direction' => Module::t('Direction'),
-            'placement'=> Module::t('Placement'),
             'id_user' => Module::t('User ID'),
             'date_create' => Module::t('Date Created'),
             'date_update' => Module::t('Date Updated'),
@@ -107,14 +100,7 @@ class Menu extends \yii\db\ActiveRecord
             self::TYPE['mobile'] => Module::t('Mobile')
         ];
     }
-    public static function getPlacements()
-    {
 
-        return [
-            '1' => 'side-by-side',
-            '2' => 'top-to-bottom',
-        ];
-    }
     public static function getDirections()
     {
         return [
@@ -126,7 +112,7 @@ class Menu extends \yii\db\ActiveRecord
     public static function getDirection($direction)
     {
         $directions = [self::DIRECTION['vertical'] => "vertical", self::DIRECTION['horizontal'] => "horizontal"];
-        return $directions[$direction]; 
+        return $directions[$direction];
     }
 
     public function getItems()
@@ -152,18 +138,19 @@ class Menu extends \yii\db\ActiveRecord
         }
 
         $result = self::jsonSortWithSortRecursive($result);
-        
+
         return $result;
     }
 
-    public static function jsonSortWithSortRecursive($data){
+    public static function jsonSortWithSortRecursive($data)
+    {
 
         foreach ($data as $key => $value) {
             if (isset($value['children']) && is_array($value['children'])) {
                 $data[$key]['children'] = self::jsonSortWithSortRecursive($value['children']);
             }
         }
-        usort($data, function($a, $b) {
+        usort($data, function ($a, $b) {
             return $a['sort'] <=> $b['sort'];
         });
         return $data;
@@ -185,7 +172,7 @@ class Menu extends \yii\db\ActiveRecord
                     $copyItem->addItem($child->id_child, $addChildren);
                 }
             }
-            if ($id_parent != null || $id_parent != 0){
+            if ($id_parent != null || $id_parent != 0) {
                 $itemChild = new ItemChild();
                 $itemChild->id_item = $id_parent;
                 $itemChild->id_child = $copyItem->id_item;
