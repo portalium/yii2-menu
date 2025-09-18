@@ -84,6 +84,11 @@ return [
     'Delete Type' => 'Silme Türü',
     'Cancel' => 'Kapat',
     'Clone' => 'Kopyala',
-    'Move' => 'Taşı'
+    'Move' => 'Taşı',
+    'Stock' => 'Stok',
+    'Inventory' => 'Envanter',
+    'Brand' => 'Marka',
+    'Category' => 'Kategori',
+    'Product' => 'Ürün',
 
 ];
