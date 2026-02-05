@@ -276,3 +276,7 @@ dd-handle dd-handle-button .dd-item,
 .dd-handle-button i {
   margin-top: 3px;
 }
+
+.btn:disabled {
+    background-color: white !important;
+}

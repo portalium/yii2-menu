@@ -1,12 +1,14 @@
 <?php
 
 use portalium\menu\Module;
+use portalium\menu\models\Menu;
 /* @var $this yii\web\View */
 /* @var $model portalium\menu\models\MenuItem */
 
-$this->title = Module::t('Create Menu Item');
-$this->params['breadcrumbs'][] = ['label' => Module::t('Menu Items'), 'url' => ['index', 'id_menu' => $id_menu]];
-$this->params['breadcrumbs'][] = $this->title;
+$id_menu = Yii::$app->request->get('id_menu');
+$this->title = Menu::findOne($id_menu)->name;
+$this->params['breadcrumbs'][] = ['label' => Module::t('Menus'), 'url' => ['default/index']];
+$this->params['breadcrumbs'][] = ['label' => Menu::findOne($id_menu)->name];
 ?>
 <style>
     #droppable { width: 150px; height: 150px; padding: 0.5em; float: left; margin: 10px; }

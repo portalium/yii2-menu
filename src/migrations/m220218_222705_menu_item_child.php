@@ -21,6 +21,11 @@ class m220218_222705_menu_item_child extends Migration
             $tableOptions
         );
 
+        $this->addPrimaryKey(
+            '{{%pk-' . Module::$tablePrefix . 'item_child}}',
+            '{{%' . Module::$tablePrefix . 'item_child}}',
+            ['id_item', 'id_child']
+        );
         // creates index for column `id_item`
         $this->createIndex(
             '{{%idx-' . Module::$tablePrefix . 'item_child-id_item}}',

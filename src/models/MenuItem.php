@@ -93,7 +93,11 @@ class MenuItem extends \yii\db\ActiveRecord
             [['date_create', 'date_update', 'parent', 'menuRoute', 'icon', 'color', 'iconSize', 'display', 'childDisplay', 'placement',], 'safe'],
             [['label', 'slug', 'style'], 'string', 'max' => 255],
             //[['style'], 'default', 'value' => '{"icon":"0xf0f6","color":"rgb(234, 153, 153)","iconSize":"24","display":,'.self::TYPE_DISPLAY['icon-text'].'","childDisplay":","'.self::TYPE_DISPLAY['icon-text'].'"}'],
-            [['style'], 'default', 'value' => '{"icon":"0xf0f6","color":"rgb(234, 153, 153)","iconSize":"24","display":'.self::TYPE_DISPLAY['icon-text'].',"childDisplay":'.self::TYPE_DISPLAY['icon-text'].',"placement":'.self::LABEL_PLACEMENT['default'].'}']
+            [['style'], 'default', 'value' => '{"icon":"0xf0f6","color":"rgb(234, 153, 153)","iconSize":"24","display":'.self::TYPE_DISPLAY['icon-text'].',"childDisplay":'.self::TYPE_DISPLAY['icon-text'].',"placement":'.self::LABEL_PLACEMENT['default'].'}'],
+            [['url'], 'required', 'when' => function($model) {
+                return $model->type != MenuItem::TYPE['module'];
+            }]
+
         ];
     }
 

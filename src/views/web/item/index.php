@@ -8,7 +8,8 @@ use portalium\theme\widgets\ActionColumn;
 /* @var $this yii\web\View */
 /* @var $searchModel portalium\menu\models\MenuItemSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
-if (isset($name)) {
+
+if (isset($id_menu)) {
     $this->title = Module::t('{name} Items',
         ['name' => $name]);
 } else {
@@ -22,7 +23,7 @@ $this->params['breadcrumbs'][] = $this->title;
     <?php Panel::begin([
         'title' => Module::t('Items'),
         'actions' => [
-            Html::a(Module::t(''), ['/menu/item/create', 'id_menu' => (isset($id_menu)) ? $id_menu : null], ['class' => 'fa fa-plus btn btn-success']),
+            Html::a(Module::t(''), ['/menu/item/create', 'id_menu' => (isset($id_menu)) ? $id_menu : null], ['class' => 'fa fa-plus btn btn-success', 'title' => Module::t('Create Menu Item')]),
         ],
     ]) ?>
 

@@ -3,6 +3,7 @@
 namespace portalium\menu\controllers\web;
 
 use portalium\menu\models\Menu;
+use portalium\menu\models\MenuItem;
 use portalium\menu\models\MenuSearch;
 use portalium\web\Controller;
 use yii\web\NotFoundHttpException;
@@ -141,6 +142,12 @@ class DefaultController extends Controller
         }
 
         $model = $this->findModel($id);
+
+        $items = MenuItem::findAll(['id_menu' => $id]);
+        foreach ($items as $item) {
+            $item->deleteChildren();
+            $item->delete();
+        }
 
         if ($model->delete()) {
             Yii::$app->session->setFlash('success', Module::t('Menu has been deleted.'));

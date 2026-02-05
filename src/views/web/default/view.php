@@ -1,14 +1,14 @@
 <?php
 
 use yii\helpers\Html;
-use yii\widgets\DetailView;
+use portalium\widgets\DetailView;
 use portalium\menu\Module;
 use portalium\theme\widgets\Panel;
 /* @var $this yii\web\View */
 /* @var $model portalium\menu\models\Menu */
 
 $this->title = $model->name;
-$this->params['breadcrumbs'][] = ['label' => Module::t('Menu'), 'url' => ['index']];
+$this->params['breadcrumbs'][] = ['label' => Module::t('Menus'), 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 \yii\web\YiiAsset::register($this);
 ?>

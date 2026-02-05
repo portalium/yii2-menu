@@ -614,6 +614,13 @@
                 });
             },
         });
+    },
+    error: function (jqxhr, textStatus, errorThrown) {
+        if (jqxhr.status === 403) {
+            alert("You are not allowed to access this page.");
+            $("#modal-clone").modal("hide");
+        }
+    }
     });
 
     $("#menu-move-item-form-button").click(function (e) {
@@ -639,6 +646,13 @@
                 });
             },
         });
+    },
+    error: function (jqxhr, textStatus, errorThrown) {
+        if (jqxhr.status === 403) {
+            alert("You are not allowed to access this page.");
+            $("#modal-move").modal("hide");
+        }
+    }
     });
 
     $("#menu-delete-item-form-button").click(function (e) {
@@ -702,7 +716,7 @@
             $("#create-menu-item").hide();
         }
     }
-
+}
 })(window.jQuery || window.Zepto, window, document);
 
 
