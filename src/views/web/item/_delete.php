@@ -28,10 +28,9 @@ use portalium\theme\widgets\ActiveForm;
         ],
     ]);
 
-    echo $form->field($model, 'delete_type')->dropDownList(['delete' => 'Delete With All Sub Items', 'delete-and-move-sub-items' => 'Delete And Move Sub Items'], ['id' => 'delete-type', 'class' => 'form-control', 'style' => 'width: 100%;']);
-
+    echo $form->field($model, 'delete_type')->dropDownList(['delete' => Module::t('Delete With All Sub Items'), 'delete-and-move-sub-items' => Module::t('Delete And Move Sub Items')], ['id' => 'delete-type','class' => 'form-control', 'style' => 'width: 100%;'])->label(Module::t('Delete Type'));
     echo \portalium\theme\widgets\Html::beginTag('div', ['id' => 'delete-and-move-sub-items-div', 'style' => 'display: none;']);
-    echo $form->field($model, 'id_menu', ['options' => ['id' => 'menu-list-delete-div']])->dropDownList($menuArray, ['id' => 'menu-list-delete', 'prompt' => 'Select Menu'])->label('Menu');
+    echo $form->field($model, 'id_menu', ['options' => ['id' => 'menu-list-delete-div']])->dropDownList($menuArray, ['id' => 'menu-list-delete', 'prompt' => Module::t('Select Menu')])->label('Menu');
 
     echo $form->field($model, 'id_parent', ['options' => ['id' => 'parent-list-delete-div']])->widget(DepDrop::classname(), [
         'options' => ['id' => 'parent-list-delete'],

@@ -23,13 +23,17 @@ class DropMenu extends Widget
     public $id_menu;
     public $menuModel;
 
+
     public function init()
     {
+
         parent::init();
     }
 
     public function run()
     {
+        $id = Yii::$app->request->get('id_menu');
+        $name = Menu::findOne($id)->name;
         echo Html::beginTag('div', ['id'=> 'spinner-div-page', 'style' => 'display: none;', 'class' => 'row']);
         echo Html::tag('div', '', ['class' => 'spinner-border text-primary col-2', 'role' => 'status']).
         Html::tag('span', 'Loading...', ['class' => 'sr-only col-2', 'style' => 'margin-left: 0px; margin-top: 5px;']);
@@ -39,13 +43,13 @@ class DropMenu extends Widget
                 echo Html::beginTag('div', ['class' => 'dd', 'id' => 'nestable', 'style' => 'padding-right: 20px;']);
                     DropMenuAsset::register($this->getView());
                     Panel::begin([
-                        'title' =>Module::t('Menu'),
+                        'title' => $name . " " .Module::t('Items'),
                         'actions' => [
                             'header' => [
                                 
                                 Html::tag('button', Module::t(''), ['type' => 'button', 'data-action' => 'expand-all', 'class' => 'fa fa-expand btn btn-sm btn-primary', 'id' => 'expand-all']),
                                 Html::tag('button', Module::t(''), ['type' => 'button', 'data-action' => 'collapse-all', 'class' => 'fa fa-compress btn btn-sm btn-primary', 'id' => 'collapse-all']),
-                                Html::tag('button', Module::t(''), ['type' => 'button', 'class' => 'fa fa-plus btn btn-sm btn-success', 'id' => 'create-menu-item-button', 'style' => '', 'id_menu' => $this->id_menu]),
+                                Html::tag('button', Module::t(''), ['type' => 'button', 'class' => 'fa fa-plus btn btn-sm btn-success', 'title' => Module::t('Create Menu'), 'id' => 'create-menu-item-button', 'style' => '', 'id_menu' => $this->id_menu]),
                             ],
                             'footer' => [
                                 Html::tag('button', Module::t('Save'), ['type' => 'button', 'class' => 'btn btn-success', 'data-action' => 'save-sort', 'id' => 'save-sort']),
@@ -139,10 +143,10 @@ class DropMenu extends Widget
         $html .= Html::beginTag('div', ['class' => 'dd-handle']);
         $html .= Html::tag('button', '<i class="fa fa-arrows"></i>', ['class' => 'btn btn-sm btn-danger dd-handle-button', 'style' => 'float:left; margin-right: 5px; padding:0px 6px;']);
         $html .= Html::tag('span', $item['title']);
-        $html .= Html::tag('button', '<i class="fa fa-copy"></i>', ['class' => 'btn btn-sm btn-info btn-clone clone-item', 'name' => "clone-item", 'style' => 'float:right; margin-right: 5px; padding:0px 6px;', 'data' => $item['id'], 'id_menu' => $this->id_menu]);
-        $html .= Html::tag('button', '<i class="fa fa-arrow-circle-right"></i>', ['class' => 'btn btn-sm btn-warning btn-move move-item', 'name' => "move-item", 'style' => 'float:right; margin-right: 5px; padding:0px 6px;', 'data' => $item['id'], 'id_menu' => $this->id_menu]);
-        $html .= Html::tag('button', '<i class="fa fa-times"></i>', ['class' => 'btn btn-sm btn-danger btn-delete delete-item', 'name' => "delete-item", 'style' => 'float:right; margin-right: 5px; padding:0px 6px;', 'data' => $item['id'], 'id_menu' => $this->id_menu]);
-        $html .= Html::tag('button', '<i class="fa fa-edit"></i>', ['class' => 'btn btn-sm btn-primary btn-edit edit-item', 'name' => "edit-item", 'style' => 'float:right; margin-right: 5px; padding:0px 6px;', 'data' => $item['id'], 'id_menu' => $this->id_menu]);
+        $html .= Html::tag('button', '<i class="fa fa-copy"></i>', ['class' => 'btn btn-sm btn-info btn-clone clone-item', 'title' => Module::t('Clone') , 'name' => "clone-item", 'style' => 'float:right; margin-right: 5px; padding:0px 6px;', 'data' => $item['id'], 'id_menu' => $this->id_menu]);
+        $html .= Html::tag('button', '<i class="fa fa-arrow-circle-right"></i>', ['class' => 'btn btn-sm btn-warning btn-move move-item','title' => Module::t('Move') ,'name' => "move-item", 'style' => 'float:right; margin-right: 5px; padding:0px 6px;', 'data' => $item['id'], 'id_menu' => $this->id_menu]);
+        $html .= Html::tag('button', '<i class="fa fa-times"></i>', ['class' => 'btn btn-sm btn-danger btn-delete delete-item', 'title' => Module::t('Delete') ,'name' => "delete-item", 'style' => 'float:right; margin-right: 5px; padding:0px 6px;', 'data' => $item['id'], 'id_menu' => $this->id_menu]);
+        $html .= Html::tag('button', '<i class="fa fa-edit"></i>', ['class' => 'btn btn-sm btn-primary btn-edit edit-item', 'title' => Module::t('Edit') ,'name' => "edit-item", 'style' => 'float:right; margin-right: 5px; padding:0px 6px;', 'data' => $item['id'], 'id_menu' => $this->id_menu]);
 
         $html .= Html::endTag('div');
         if (isset($item['hasChildren']) && $item['hasChildren']) {

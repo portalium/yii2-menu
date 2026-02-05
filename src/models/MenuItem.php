@@ -4,7 +4,6 @@ namespace portalium\menu\models;
 
 use Yii;
 use portalium\menu\Module;
-use portalium\menu\Module\Yii2;
 use portalium\menu\models\ItemChild;
 use yii\behaviors\TimestampBehavior;
 
@@ -88,13 +87,17 @@ class MenuItem extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['label', 'slug', 'style', 'id_menu', 'type','url'], 'required'],
+            [['label', 'slug', 'style', 'id_menu', 'type'], 'required'],
             [['type', 'id_menu', 'sort', 'id_user',], 'integer'],
             [['data', 'module', 'routeType', 'route', 'model', 'url', 'name_auth', 'menuType'], 'string'],
             [['date_create', 'date_update', 'parent', 'menuRoute', 'icon', 'color', 'iconSize', 'display', 'childDisplay', 'placement',], 'safe'],
             [['label', 'slug', 'style'], 'string', 'max' => 255],
             //[['style'], 'default', 'value' => '{"icon":"0xf0f6","color":"rgb(234, 153, 153)","iconSize":"24","display":,'.self::TYPE_DISPLAY['icon-text'].'","childDisplay":","'.self::TYPE_DISPLAY['icon-text'].'"}'],
-            [['style'], 'default', 'value' => '{"icon":"0xf0f6","color":"rgb(234, 153, 153)","iconSize":"24","display":'.self::TYPE_DISPLAY['icon-text'].',"childDisplay":'.self::TYPE_DISPLAY['icon-text'].',"placement":'.self::LABEL_PLACEMENT['default'].'}']
+            [['style'], 'default', 'value' => '{"icon":"0xf0f6","color":"rgb(234, 153, 153)","iconSize":"24","display":'.self::TYPE_DISPLAY['icon-text'].',"childDisplay":'.self::TYPE_DISPLAY['icon-text'].',"placement":'.self::LABEL_PLACEMENT['default'].'}'],
+            [['url'], 'required', 'when' => function($model) {
+                return $model->type != MenuItem::TYPE['module'];
+            }]
+
         ];
     }
 
@@ -167,7 +170,6 @@ class MenuItem extends \yii\db\ActiveRecord
         return [
             '1' => 'side-by-side',
             '2' => 'top-to-bottom',
-            '3' => 'default',
         ];
     }
     public static function getDisplayList()
@@ -362,9 +364,9 @@ class MenuItem extends \yii\db\ActiveRecord
         $this->icon = $json_style['icon'];
         $this->color = $json_style['color'];
         $this->iconSize = $json_style['iconSize'];
-        $this->display = isset($json_style['display']) ? $json_style['display'] : self::TYPE_DISPLAY['icon-text'];
+        $this->display = isset($json_style['display']) ? $json_style['display'] : false;
         $this->childDisplay = isset($json_style['childDisplay']) ? $json_style['childDisplay'] : false;
-        $this->placement = isset($json_style['placement']) ? $json_style['placement'] : self::LABEL_PLACEMENT['default'];
+        $this->placement = isset($json_style['placement']) ? $json_style['placement'] : self::LABEL_PLACEMENT['side-by-side'];
         $this->id_parent = isset($this->getParent()->one()->id_item) ? $this->getParent()->one()->id_item : 0;
     }
 

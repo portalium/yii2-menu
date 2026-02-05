@@ -12,11 +12,9 @@ use portalium\theme\widgets\ActiveForm;
 /* @var $form yii\widgets\ActiveForm */
 ?>
 
-/* Menu öğesi formu oluşturur. */
-
 <div class="menu-item-form">
 
-    <?php 
+    <?php
         $form = ActiveForm::begin([
             'id' => 'menu-clone-item-form',
             'options' => ['style' => 'padding-top: 10px;'],
@@ -39,7 +37,7 @@ use portalium\theme\widgets\ActiveForm;
                 },
             ],
         ])->label('clone Item'); */
-        echo $form->field($model, 'id_menu', ['options' => ['id' => 'menu-list-clone-div']])->dropDownList($menuArray, ['id' => 'menu-list-clone', 'prompt' => 'Select Menu'])->label('Menu');
+        echo $form->field($model, 'id_menu', ['options' => ['id' => 'menu-list-clone-div']])->dropDownList($menuArray, ['id' => 'menu-list-clone', 'prompt' => Module::t('Select Menu')])->label(Module::t('Menu'));
 
         echo $form->field($model, 'id_parent', ['options' => ['id' => 'parent-list-clone-div']])->widget(DepDrop::classname(), [
             'options' => ['id' => 'parent-list-clone'],
@@ -51,7 +49,7 @@ use portalium\theme\widgets\ActiveForm;
                     Yii::$app->request->csrfParam => Yii::$app->request->csrfToken,
                 ]
             ]
-        ])->label('Parent');
+            ])->label(Module::t('Parent'));
         ActiveForm::end();
     ?>
 

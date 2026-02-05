@@ -23,7 +23,10 @@ class ItemChild extends \yii\db\ActiveRecord
     {
         return '{{%' . Module::$tablePrefix . 'item_child}}';
     }
-
+    public static function primaryKey()
+    {
+        return ['id_item', 'id_child']; 
+    }
     /**
      * {@inheritdoc}
      */
