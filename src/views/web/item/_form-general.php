@@ -6,6 +6,7 @@ use portalium\menu\Module;
 use yii\web\NotFoundHttpException;
 use portalium\base\Exception;
 use kartik\depdrop\DepDrop;
+use kartik\select2\Select2;
 use portalium\menu\models\MenuItem;
 
 ?>
@@ -65,7 +66,17 @@ use portalium\menu\models\MenuItem;
     echo $form->field($model, 'url', ['options' => ['id' => 'url-input-div']])->textInput(['rows' => 6])->label(Module::t('URL'));
 
 
-    echo $form->field($model, 'name_auth', ['options' => ['id' => 'name-auth-input-div']])->dropDownList(MenuItem::getAuthList(), ['id' => 'name-auth-input', 'prompt' => Module::t('Disabled'), "options" => ['role' => ['disabled' => true], 'permission' => ['disabled' => true]]]);
+    echo $form->field($model, 'name_auth', ['options' => ['id' => 'name-auth-input-div']])->widget(Select2::classname(), [
+        'data' => MenuItem::getAuthList(),
+        'options' => [
+            'id' => 'name-auth-input',
+            'placeholder' => Module::t('Disabled'),
+        ],
+        'pluginOptions' => [
+            'allowClear' => true,
+            'width' => '100%'
+        ]
+    ]);
 
     ?>
 
@@ -77,4 +88,11 @@ $this->registerJs('
         }
     });
 ');
+$this->registerCss(
+    <<<CSS
+    #name-auth-input-div .selection {
+        width: 100% !important;
+    }
+CSS
+);
 ?>

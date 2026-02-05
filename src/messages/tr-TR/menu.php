@@ -6,7 +6,7 @@ return [
     'Reset' => 'Sıfırla',
     'Create Menu' => 'Menü Oluştur',
     'Menus' => 'Menüler',
-    'Items' => 'Öğeleri',
+    'Items' => 'Öğeler',
     'Menu' => 'Menü',
     'Update Menu: {name}' => 'Menü Güncelle: {name}',
     'Update' => 'Güncelle',

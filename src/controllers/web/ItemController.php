@@ -120,6 +120,8 @@ class ItemController extends Controller
                         $itemChildModel->delete();
                     }
                     return;
+                } else {
+                    Yii::warning($model->getErrors(), 'menu');
                 }
             }
         } else {

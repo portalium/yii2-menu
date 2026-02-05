@@ -4,7 +4,6 @@ namespace portalium\menu\models;
 
 use Yii;
 use portalium\menu\Module;
-use portalium\menu\Module\Yii2;
 use portalium\menu\models\ItemChild;
 use yii\behaviors\TimestampBehavior;
 
@@ -171,7 +170,6 @@ class MenuItem extends \yii\db\ActiveRecord
         return [
             '1' => 'side-by-side',
             '2' => 'top-to-bottom',
-            '3' => 'default',
         ];
     }
     public static function getDisplayList()
@@ -366,9 +364,9 @@ class MenuItem extends \yii\db\ActiveRecord
         $this->icon = $json_style['icon'];
         $this->color = $json_style['color'];
         $this->iconSize = $json_style['iconSize'];
-        $this->display = isset($json_style['display']) ? $json_style['display'] : self::TYPE_DISPLAY['icon-text'];
+        $this->display = isset($json_style['display']) ? $json_style['display'] : false;
         $this->childDisplay = isset($json_style['childDisplay']) ? $json_style['childDisplay'] : false;
-        $this->placement = isset($json_style['placement']) ? $json_style['placement'] : self::LABEL_PLACEMENT['default'];
+        $this->placement = isset($json_style['placement']) ? $json_style['placement'] : self::LABEL_PLACEMENT['side-by-side'];
         $this->id_parent = isset($this->getParent()->one()->id_item) ? $this->getParent()->one()->id_item : 0;
     }
 
