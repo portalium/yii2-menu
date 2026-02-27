@@ -58,9 +58,6 @@ class MenuItem extends \yii\db\ActiveRecord
         'default' =>'3',
     ];
 
-    /**
-     * {@inheritdoc}
-     */
     public function behaviors()
     {
         return [
@@ -73,17 +70,11 @@ class MenuItem extends \yii\db\ActiveRecord
         ];
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public static function tableName()
     {
         return '{{%' . Module::$tablePrefix . 'item}}';
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function rules()
     {
         return [
@@ -92,18 +83,13 @@ class MenuItem extends \yii\db\ActiveRecord
             [['data', 'module', 'routeType', 'route', 'model', 'url', 'name_auth', 'menuType'], 'string'],
             [['date_create', 'date_update', 'parent', 'menuRoute', 'icon', 'color', 'iconSize', 'display', 'childDisplay', 'placement',], 'safe'],
             [['label', 'slug', 'style'], 'string', 'max' => 255],
-            //[['style'], 'default', 'value' => '{"icon":"0xf0f6","color":"rgb(234, 153, 153)","iconSize":"24","display":,'.self::TYPE_DISPLAY['icon-text'].'","childDisplay":","'.self::TYPE_DISPLAY['icon-text'].'"}'],
             [['style'], 'default', 'value' => '{"icon":"0xf0f6","color":"rgb(234, 153, 153)","iconSize":"24","display":'.self::TYPE_DISPLAY['icon-text'].',"childDisplay":'.self::TYPE_DISPLAY['icon-text'].',"placement":'.self::LABEL_PLACEMENT['default'].'}'],
             [['url'], 'required', 'when' => function($model) {
                 return $model->type != MenuItem::TYPE['module'];
             }]
-
         ];
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function attributeLabels()
     {
         return [
@@ -147,16 +133,15 @@ class MenuItem extends \yii\db\ActiveRecord
 
     public static function getTypes()
     {
-
         return [
             '1' => 'Route',
             '2' => 'Module',
             '3' => 'Url',
         ];
     }
+
     public static function getDisplays()
     {
-
         return [
             '1' => 'icon',
             '2' => 'text',
@@ -166,12 +151,12 @@ class MenuItem extends \yii\db\ActiveRecord
     
     public static function getPlacements()
     {
-
         return [
             '1' => 'side-by-side',
             '2' => 'top-to-bottom',
         ];
     }
+
     public static function getDisplayList()
     {
         return [
@@ -190,14 +175,31 @@ class MenuItem extends \yii\db\ActiveRecord
             ];
     }
 
+   
     public static function getModuleList()
     {
-        //yii app all modules
         $modules = Yii::$app->getModules();
         $list = [];
-        foreach ($modules as $key => $module) {
-            if (isset($module->menuItems)) {
-                $list[$key] = (isset($module::$name)) ? $module->t($module::$name) : $key;
+        foreach ($modules as $key => $config) {
+            $className = null;
+            if (is_string($config)) {
+                $className = $config;
+            } elseif (is_array($config) && isset($config['class'])) {
+                $className = $config['class'];
+            } elseif (is_object($config)) {
+                $className = get_class($config);
+            }
+
+            if ($className && class_exists($className)) {
+                try {
+                    //Use method_exists to verify capability without triggering the Module::init() lifecycle
+                    if (method_exists($className, 'getMenuItems')) {
+                        $name = property_exists($className, 'name') ? $className::$name : $key;
+                        $list[$key] = $name;
+                    }
+                } catch (\Throwable $t) {
+                    continue;
+                }
             }
         }
         return $list;
@@ -223,32 +225,46 @@ class MenuItem extends \yii\db\ActiveRecord
         return $this->hasOne(Menu::class, ['id_menu' => 'id_menu']);
     }
 
+    
     public static function getParents($id_menu)
     {
         $parents = self::find()->where(['id_menu' => $id_menu])->all();
         $list = [];
         $list['0'] = Module::t('Root Menu');
+        
         foreach ($parents as $parent) {
-            //if(!isset($parent->parent))
-                $list[$parent->id_item] = isset($parent->module) ? Yii::$app->getModule($parent->module)->t($parent->label) : Module::t($parent->label);
+            // Direct call to Yii::t() prevents Yii::$app->getModule() from triggering expensive boot sequences.
+            
+            if (!empty($parent->module)) {
+                $list[$parent->id_item] = Yii::t($parent->module, $parent->label);
+            } else {
+                $list[$parent->id_item] = Module::t($parent->label);
+            }
         }
         
         return $list;
     }
 
-    //get children of menu item
+    
     public static function getMenuTree($id_item)
     {
         $model = self::findOne($id_item);
         $children = $model->children;
-
         $list = [];
 
         foreach ($children as $child) {
             try {
+                $moduleName = $child->child->module;
+                $label = $child->child->label;
+                
+                $title = Module::t($label);
+                if (!empty($moduleName)) {
+                    $title = Yii::t($moduleName, $label);
+                }
+
                 if ($child->child->hasChildren()) {
                     $list[$child->child->id_item] = [
-                        'title' => isset($child->child->module) ? Yii::$app->getModule($child->child->module)->t($child->child->label) : Module::t($child->child->label),
+                        'title' => $title,
                         'id' => $child->child->id_item,
                         'sort' => $child->child->sort,
                         'hasChildren' => true,
@@ -256,7 +272,7 @@ class MenuItem extends \yii\db\ActiveRecord
                     ];
                 } else {
                     $list[$child->child->id_item] = [
-                        'title' => isset($child->child->module) ? Yii::$app->getModule($child->child->module)->t($child->child->label) : Module::t($child->child->label),
+                        'title' => $title,
                         'id' => $child->child->id_item,
                         'sort' => $child->child->sort,
                         'hasChildren' => false,
@@ -264,9 +280,7 @@ class MenuItem extends \yii\db\ActiveRecord
                 }
             } catch (\Throwable $th) {
             }
-            
         }
-
         return $list;
     }
 
@@ -274,7 +288,6 @@ class MenuItem extends \yii\db\ActiveRecord
     {
         $auth = Yii::$app->authManager;
         $list = [];
-        //add divider disable
         $list['role'] = 'Role';
         foreach ($auth->getRoles() as $key => $role) {
             $list[$key] = $role->description;
@@ -284,8 +297,6 @@ class MenuItem extends \yii\db\ActiveRecord
         foreach ($auth->getPermissions() as $key => $permission) {
             $list[$key] = $permission->description;
         }
-
-        
 
         return $list;
     }
@@ -340,7 +351,6 @@ class MenuItem extends \yii\db\ActiveRecord
 
     public function afterFind()
     {
-        
         $this->loadData();
         return parent::afterFind();
     }
@@ -372,7 +382,6 @@ class MenuItem extends \yii\db\ActiveRecord
 
     public static function sort($data)
     {
-        
         $data = json_decode($data['data'], true);
 
         foreach ($data as $item) {
@@ -383,7 +392,6 @@ class MenuItem extends \yii\db\ActiveRecord
             self::removeChildrenRecursive($item);
         }
         
-        //[{"id":1},{"id":2,"children":[{"id":4}]},{"id":8},{"id":9},{"id":3},{"id":5},{"id":6},{"id":7}]
         $index = 0;
         foreach ($data as $item) {
             $model = MenuItem::findOne($item['id']);
@@ -407,7 +415,6 @@ class MenuItem extends \yii\db\ActiveRecord
 
     public static function removeChildrenRecursive($item)
     {
-
         if (isset($item['children'])) {
             foreach ($item['children'] as $child) {
                 ItemChild::deleteAll(['id_item' => $item['id']]);
@@ -475,7 +482,6 @@ class MenuItem extends \yii\db\ActiveRecord
         }        
     }
 
-    // 
     public function getChildrenArray($id_menu)
     {
         $items = MenuItem::find()->where(['id_menu' => $id_menu])->orderBy('sort')->all();

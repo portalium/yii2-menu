@@ -59,7 +59,6 @@ use portalium\theme\widgets\Tabs;
     ?>
     <?php Tabs::end() ?>
     
-
     <?php Panel::end() ?>
 
     <?php ActiveForm::end(); ?>
@@ -67,119 +66,140 @@ use portalium\theme\widgets\Tabs;
 </div>
 
 <?php
+$this->registerJs("
+    /**
+     * UI Visibility Manager:
+     * Controls the display of form sections (Module, URL, Route) based on the selected menu type.
+     */
+    function toggleDivs() {
+        var typeVal = $('#type').val();
+        var routeTypeVal = $('#routeType-list').val();
 
-$this->registerJs('
-        $(document).ready(function(){
-            $("#type").trigger("change");
-            $("#model-list-div").hide();
-        });
+        $('#module-list-div, #routeType-list-div, #route-list-div, #url-input-div, #model-list-div').hide();
 
-        $("#type").change(function(){
-            if($(this).val() == ' . MenuItem::TYPE["module"] . '){
-                $("#module-list-div").show();
-                $("#routeType-list-div").hide();
-                $("#route-list-div").hide();
-                $("#url-input-div").hide();
+        if (typeVal == " . MenuItem::TYPE['module'] . ") {
+            $('#module-list-div').show();
+            if ($('#module-list').val()) $('#routeType-list-div').show();
+        } else if (typeVal == " . MenuItem::TYPE['route'] . " || typeVal == " . MenuItem::TYPE['url'] . ") {
+            $('#url-input-div').show();
+        }
+
+        if (routeTypeVal == 'model') {
+            $('#model-list-div, #route-list-div').show();
+        } else if (routeTypeVal == 'widget' || routeTypeVal == 'action' || routeTypeVal == 'route') {
+            $('#route-list-div').show();
+        }
+    }
+
+    /**
+     * Change Listeners:
+     * Trigger visibility updates on manual user interactions.
+     */
+    $(document).on('change', '#type, #module-list, #routeType-list, #route-list', function() {
+        toggleDivs();
+    });
+
+    /**
+     * Async Initial Load:
+     * Populates dependent dropdowns sequentially using async/await to ensure data integrity
+     * without blocking the main UI thread during page load.
+     */
+    async function loadFormData() {
+        var moduleName = '" . $model->module . "';
+        var routeType = '" . $model->routeType . "';
+        var route = '" . str_replace('\\', '\\\\', $model->route ? $model->route : '') . "';
+        var modelName = '" . $model->model . "';
+
+        if (!moduleName) {
+            toggleDivs();
+            $('#drop-menu-form').show();
+            $('#spinner-div-form').hide();
+            $('.edit-item, .clone-item, .delete-item, .create-item, .move-item, .dd-handle-button').attr('disabled', false);
+            return;
+        }
+
+        disabledButton();
+        toggleDivs();
+
+        try {
+            // Fetch dependent dropdown data sequentially using async/await to prevent race conditions.
+            let types = await $.post('/menu/item/route-type', { moduleName: moduleName });
+            fillSelect('#routeType-list', types, routeType);
+
+            if (routeType) {
+                let routes = await $.post('/menu/item/route', { moduleName: moduleName, type: routeType });
+                fillSelect('#route-list', routes, route);
             }
-            else if($(this).val() == ' . MenuItem::TYPE["route"] . '){
-                $("#module-list-div").hide();
-                $("#routeType-list-div").hide();
-                $("#route-list-div").hide();
-                $("#url-input-div").show();
-            } else if($(this).val() == ' . MenuItem::TYPE["url"] . '){
-                $("#module-list-div").hide();
-                $("#routeType-list-div").hide();
-                $("#route-list-div").hide();
-                $("#url-input-div").show();
+
+            if (routeType === 'model' && route) {
+                let models = await $.post('/menu/item/model', { moduleName: moduleName, type: routeType, route: route });
+                fillSelect('#model-list', models, modelName);
             }
+        } catch (err) {
+            console.error('Initial load failed during async data fetching:', err);
+        } finally {
+            // Re-enable UI components and synchronize final visibility state.
+            $('#drop-menu-form').show();
+            $('#spinner-div-form').hide();
+            $('.edit-item, .clone-item, .delete-item, .create-item, .move-item, .dd-handle-button').attr('disabled', false);
+            toggleDivs();
+        }
+    }
 
-            $("#model-list-div").hide();
-            $("#module-list").trigger("change");
-        });
+    /**
+     * Select Population Helper:
+     * Utility function to clear, populate, and optionally select a value in a dropdown.
+     */
+    function fillSelect(selector, data, selected) {
+        let \$el = $(selector);
+        \$el.empty().append(new Option('" . Module::t('Select...') . "', ''));
+        if (data && data.length > 0) {
+            data.forEach(item => \$el.append(new Option(item.name, item.id)));
+            \$el.prop('disabled', false);
+        }
+        if (selected) {
+            \$el.val(selected);
+        }
+    }
 
-        $("#routeType-list").change(function(){
-            if($(this).val() == "routes"){
-                $("#model-list-div").hide();
-            }else if($(this).val() == "models"){
-                $("#model-list-div").show();
-            }else if($(this).val() == "action"){
-                $("#model-list-div").hide();
-            }
-            if($(this).val() == "widget"){
-                $("#model-list-div").hide();
-                $("#route-list-div").show();
-            }else if($(this).val() == "model"){
-                $("#model-list-div").show();
-                $("#route-list-div").show();
-            }else if($(this).val() == "action"){
-                $("#model-list-div").hide();
-                $("#route-list-div").show();
-            }
-            setTimeout(function(){
-                $("#route-list").val("' . str_replace('\\', '\\\\', $model->route ? $model->route : '') . '");
-                setTimeout(function(){
-                    $("#model-list").val("' . $model->model . '");
-                    $("#drop-menu-form").show();
-                    $("#spinner-div-form").hide();
-                    $(".edit-item").attr("disabled", false);
-                    $(".clone-item").attr("disabled", false);
-                    $(".delete-item").attr("disabled", false);
-                    $(".create-item").attr("disabled", false);
-                    $(".move-item").attr("disabled", false);
-                    $(".dd-handle-button").attr("disabled", false); 
-                }, 1500);
-            }, 1500);
-                
+    // Initialize the form data as soon as the view is rendered.
+    loadFormData();
 
-        });
-
-
-        $("#module-list").change(function(){
-            if ($("#type").val() == ' . MenuItem::TYPE["module"] . ' && $(this).val() != ""){
-                $("#routeType-list-div").show();
-            }else{
-                $("#routeType-list-div").hide();
-            }
-            setTimeout(function(){
-                $("#routeType-list").val("' . $model->routeType . '");
-                $("#routeType-list").trigger("change");
-            }, 1500);
-        });
+    /**
+     * Form Submission Handler:
+     * Manages AJAX submission and chains Pjax reloads to maintain nestable tree consistency.
+     */
+    $(document).off('click', '#create-menu-item').on('click', '#create-menu-item', function (e) {
+        disabledButton();
+        e.preventDefault();
+        var form = $('#menu-item-form');
+        var data = form.serialize() + '&output=' + $('#nestable-output').val();
         
-        $("#create-menu-item").click(function (e) {
-            disabledButton();
-            e.preventDefault();
-            var form = $("#menu-item-form");
-            var data = form.serialize();
-            // data insert output
-            data += "&output=" + $("#nestable-output").val();
-            $.ajax({
-                type: "POST",
-                url: form.attr("action"),
-                data: data,
-                beforeSend: function () {
-                    $("#spinner").show();
-                },
-                success: function (response) {
-                $.pjax.reload({ container: "#nestable-pjax" }).done(function () {
-                    $.pjax.reload({ container: "#nestable2-pjax" }).done(function () {
-                        $("#expand-all").trigger("click");
-                        $("#spinner").hide();
+        $.ajax({
+            type: 'POST',
+            url: form.attr('action'),
+            data: data,
+            beforeSend: function () { $('#spinner').show(); },
+            success: function (response) {
+                // Refresh both nestable Pjax containers and trigger expand-all for a consistent user experience.
+                $.pjax.reload({ container: '#nestable-pjax' }).done(function () {
+                    $.pjax.reload({ container: '#nestable2-pjax' }).done(function () {
+                        $('#expand-all').trigger('click');
+                        $('#spinner').hide();
                     });
                 });
-                }
-            });
+            }
         });
-        function disabledButton() {
-            $("#drop-menu-form").hide();
-            $("#spinner-div-form").show();
-            $(".edit-item").attr("disabled", true);
-            $(".clone-item").attr("disabled", true);
-            $(".delete-item").attr("disabled", true);
-            $(".create-item").attr("disabled", true);
-            $(".move-item").attr("disabled", true);
-            $(".dd-handle-button").attr("disabled", true);
-        }
-    ');
+    });
 
+    /**
+     * UI Locker:
+     * Disables interactive elements and shows spinners to prevent race conditions during AJAX operations.
+     */
+    function disabledButton() {
+        $('#drop-menu-form').hide();
+        $('#spinner-div-form').show();
+        $('.edit-item, .clone-item, .delete-item, .create-item, .move-item, .dd-handle-button').attr('disabled', true);
+    }
+");
 ?>
