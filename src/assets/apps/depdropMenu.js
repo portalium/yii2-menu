@@ -1,11 +1,14 @@
 /**
- * Menu Item Cascade Dropdown Handler
- * Menü Öğesi Kademeli Açılır Liste Yöneticisi
- * * Location: /src/assets/apps/custom/
+ * Menu Item Cascading Dropdown Handler:
+ * Manages the asynchronous dependency logic between Module, Type, Route, and Model dropdowns.
+ * Location: /src/assets/apps/custom/
  */
 $(document).ready(function () {
     
-    // Maps the HTML IDs to a local object for easier access
+    /**
+     * DOM Selector Configuration:
+     * Maps the specific HTML element IDs to a centralized configuration object.
+     */
     const selectors = {
         module: '#module-list',
         type: '#routeType-list',
@@ -13,47 +16,58 @@ $(document).ready(function () {
         model: '#model-list'
     };
 
-    
-    // Tracks request IDs to prevent "Race Conditions" and stores active AJAX objects
+    /**
+     * Request State Management:
+     * Tracks asynchronous request IDs to mitigate "Race Conditions" and maintains
+     * active AJAX references for request cancellation (abort).
+     */
     const state = {
         requests: { type: 0, route: 0, model: 0 },
         activeReqs: { type: null, route: null, model: null }
     };
 
-   
-    // Status and prompt messages for different dropdown states
+    /**
+     * Localized Status Messages:
+     * Defines the prompt and status labels for various dropdown states.
+     */
     const messages = {
         type: { default: 'Tip Seçin', wait: 'Önce Modül Seçin', load: 'Yükleniyor...' },
         route: { default: 'Rota Seçin', wait: 'Önce Tip Seçin', load: 'Yükleniyor...' },
         model: { default: 'Model Seçin', wait: 'Önce Rota Seçin', load: 'Yükleniyor...' }
     };
 
-   
+    /**
+     * UI Manipulation Helpers:
+     * Abstracted functions for updating the DOM state of the dropdown elements.
+     */
     const ui = {
-        // Disables the dropdown and shows a placeholder message
+        // Disables the dropdown and displays a contextual placeholder message.
         lock: (key, msg) => {
             $(selectors[key]).empty().append(`<option value="">${msg}</option>`).prop('disabled', true);
         },
         
-        // Dropdown'ı temizler ve sunucudan gelen yeni verilerle doldurur
+        // Populates the dropdown with server-side data and restores interactive state.
         fill: (key, data) => {
             const $el = $(selectors[key]);
             $el.empty().append(`<option value="">${messages[key].default}</option>`);
             if (data && data.length > 0) {
-                // Use new Option() for cleaner DOM insertion
+                // Efficient DOM insertion using the native Option constructor.
                 data.forEach(item => $el.append(new Option(item.name, item.id)));
                 $el.prop('disabled', false);
             }
         }
     };
 
-    
-    // Handles all server requests, security tokens, and race condition logic
+    /**
+     * Asynchronous Data Fetcher:
+     * Handles the server-side request lifecycle, including CSRF token injection,
+     * stale request cancellation, and sequence validation.
+     */
     const fetchData = (key, url, payload, onSuccess) => {
-        // Increment request ID for this specific dropdown
+        // Increment the request sequence ID for the specific dropdown target.
         const currentId = ++state.requests[key];
 
-        // Abort previous unfinished request for the same dropdown
+        // Abort any existing pending request for the same target to optimize network load.
         if (state.activeReqs[key]) state.activeReqs[key].abort();
 
         ui.lock(key, messages[key].load);
@@ -61,26 +75,27 @@ $(document).ready(function () {
         state.activeReqs[key] = $.ajax({
             url: url,
             type: 'POST',
-            // Merges payload with CSRF token for security
+            // Injects security tokens required by the Portalium framework.
             data: { ...payload, [yii.getCsrfParam()]: yii.getCsrfToken() },
             success: (data) => {
-                // Only process the data if it's the latest request
+                // Only execute the callback if this response matches the most recent request sequence.
                 if (currentId === state.requests[key]) {
                     onSuccess(data);
                 }
             },
             error: (xhr) => {
-                // Ignore "abort" errors, handle real connection issues
+                // Silently ignore manual cancellations, handle genuine connectivity errors.
                 if (xhr.statusText !== 'abort') {
-                    ui.lock(key, 'Hata oluştu!');
+                    ui.lock(key, 'Bağlantı hatası oluştu!');
                 }
             }
         });
     };
 
-
-
-    // Triggered when Module changes
+    /**
+     * Hierarchical Trigger - Module Change:
+     * Cascades updates down to the Type, Route, and Model dropdowns.
+     */
     $(document).on('change', selectors.module, function () {
         const moduleName = $(this).val();
 
@@ -95,7 +110,10 @@ $(document).ready(function () {
         fetchData('type', '/menu/item/route-type', { moduleName }, (data) => ui.fill('type', data));
     });
 
-    // Triggered when Type changes
+    /**
+     * Hierarchical Trigger - Type Change:
+     * Refreshes the Route list and resets the dependent Model dropdown.
+     */
     $(document).on('change', selectors.type, function () {
         const type = $(this).val();
         const module = $(selectors.module).val();
@@ -110,13 +128,16 @@ $(document).ready(function () {
         fetchData('route', '/menu/item/route', { module, type }, (data) => ui.fill('route', data));
     });
 
-    // Triggered when Route changes 
+    /**
+     * Hierarchical Trigger - Route Change:
+     * Conditional fetch for Model data, triggered only if the current type is defined as 'model'.
+     */
     $(document).on('change', selectors.route, function () {
         const route = $(this).val();
         const type = $(selectors.type).val();
         const module = $(selectors.module).val();
 
-        // Model dropdown is only needed if type is 'model'
+        // Model data fetching is conditionally handled based on the route type.
         if (!route || type !== 'model') {
             ui.lock('model', messages.model.default);
             return;

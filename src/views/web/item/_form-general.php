@@ -10,7 +10,11 @@ use portalium\menu\bundles\MenuDepDropAsset;
 use kartik\select2\Select2;
 
 /**
- * EN: Registering the asset bundle for cascade dropdown logic (depdropMenu.js).
+ * @var yii\web\View $this
+ * @var portalium\menu\models\MenuItem $model
+ * @var yii\widgets\ActiveForm $form
+ * @var int $id_menu
+ * * Registering the asset bundle for cascade dropdown logic (depdropMenu.js).
  */
 MenuDepDropAsset::register($this);
 ?>
@@ -21,16 +25,17 @@ MenuDepDropAsset::register($this);
 
 <?php 
 /**
- * EN: Optimized Parent List: Uses Eager Loading behind the scenes to prevent N+1 queries.
- */ ?>
+ * Parent List Optimization:
+ * Uses Eager Loading behind the scenes to prevent N+1 queries during menu tree rendering.
+ */
+?>
 <?= $form->field($model, 'id_parent')->dropDownList(MenuItem::getParents($id_menu), ['id' => 'id_item'])->label(Module::t('Parent')) ?>
-
 
 <?= $form->field($model, 'type')->dropDownList(MenuItem::getTypes(), ['id' => 'type']) ?>
 
 <?php
-/** 
- * EN: Module List: Populated using Reflection to avoid heavy module booting and save performance.
+/** * Module List Optimization:
+ * Populated using Reflection to avoid heavy module booting and save system resources.
  */
 echo $form->field($model, 'module', ['options' => ['id' => 'module-list-div']])->dropDownList(MenuItem::getModuleList(), [
     'id' => 'module-list',
@@ -38,7 +43,8 @@ echo $form->field($model, 'module', ['options' => ['id' => 'module-list-div']])-
 ]);
 
 /**
- * EN: Dependent Dropdowns: Initial state (disabled/enabled) is controlled by PHP to prevent UI flickering during Pjax..
+ * Dependent Dropdowns Logic:
+ * Initial state (disabled/enabled) is controlled by PHP to prevent UI flickering during Pjax transitions.
  */
 echo $form->field($model, 'routeType', ['options' => ['id' => 'routeType-list-div']])->dropDownList([], [
     'id' => 'routeType-list',
@@ -61,7 +67,8 @@ echo $form->field($model, 'model', ['options' => ['id' => 'model-list-div']])->d
 echo $form->field($model, 'url', ['options' => ['id' => 'url-input-div']])->textInput(['rows' => 6])->label(Module::t('URL'));
 
 /**
- * EN: RBAC Access List: Select2 widget for high-performance role/permission selection following Portalium standards.
+ * RBAC Access Selection:
+ * Select2 widget implemented for high-performance role/permission selection following Portalium standards.
  */
 echo $form->field($model, 'name_auth', ['options' => ['id' => 'name-auth-input-div']])->widget(Select2::classname(), [
     'data' => MenuItem::getAuthList(),
@@ -78,10 +85,11 @@ echo $form->field($model, 'name_auth', ['options' => ['id' => 'name-auth-input-d
 
 <?php
 /**
- * EN: Security & Styling: Injected via RegisterJs/Css to follow Portalium framework guidelines.
+ * Security & Styling Configuration:
+ * Injected via RegisterJs/Css to ensure full compatibility with Portalium's dynamic asset loading.
  */
 $this->registerJs('
-    // EN: CSRF Token Injection: Ensures all AJAX POST requests are authenticated by Portalium security layer.
+    // CSRF Token Injection: Ensures all AJAX POST requests are authenticated by the Portalium security layer.
     $(document).ajaxSend(function(event, jqxhr, settings) {
         if (settings.type == "POST") {
             settings.data = settings.data + "&' . Yii::$app->request->csrfParam . '=' . Yii::$app->request->csrfToken . '";
@@ -91,7 +99,7 @@ $this->registerJs('
 
 $this->registerCss(
     <<<CSS
-    /*EN: Layout Fix: Enforces Select2 to respect container width within the Portalium theme. */
+    /* Layout Fix: Enforces Select2 to respect container width within the Portalium responsive theme. */
     #name-auth-input-div .selection {
         width: 100% !important;
     }

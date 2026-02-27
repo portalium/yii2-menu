@@ -68,7 +68,8 @@ use portalium\theme\widgets\Tabs;
 <?php
 $this->registerJs("
     /**
-     * EN: UI Visibility Manager: Controls the display of form sections based on menu type.
+     * UI Visibility Manager:
+     * Controls the display of form sections (Module, URL, Route) based on the selected menu type.
      */
     function toggleDivs() {
         var typeVal = $('#type').val();
@@ -91,14 +92,17 @@ $this->registerJs("
     }
 
     /**
-     * EN: Event listener for manual changes. Actual data fetching is handled by depdropMenu.js.
+     * Change Listeners:
+     * Trigger visibility updates on manual user interactions.
      */
     $(document).on('change', '#type, #module-list, #routeType-list, #route-list', function() {
         toggleDivs();
     });
 
     /**
-     * EN: ASYNC INITIAL LOAD: Populates form fields on page load using PHP model data without freezing the UI.
+     * Async Initial Load:
+     * Populates dependent dropdowns sequentially using async/await to ensure data integrity
+     * without blocking the main UI thread during page load.
      */
     async function loadFormData() {
         var moduleName = '" . $model->module . "';
@@ -118,7 +122,7 @@ $this->registerJs("
         toggleDivs();
 
         try {
-            // EN: Fetch dependent dropdown data sequentially using async/await.
+            // Fetch dependent dropdown data sequentially using async/await to prevent race conditions.
             let types = await $.post('/menu/item/route-type', { moduleName: moduleName });
             fillSelect('#routeType-list', types, routeType);
 
@@ -132,9 +136,9 @@ $this->registerJs("
                 fillSelect('#model-list', models, modelName);
             }
         } catch (err) {
-            console.error('Initial load error / İlk yükleme hatası:', err);
+            console.error('Initial load failed during async data fetching:', err);
         } finally {
-            // EN: Re-enable UI components and sync visibility.
+            // Re-enable UI components and synchronize final visibility state.
             $('#drop-menu-form').show();
             $('#spinner-div-form').hide();
             $('.edit-item, .clone-item, .delete-item, .create-item, .move-item, .dd-handle-button').attr('disabled', false);
@@ -143,7 +147,8 @@ $this->registerJs("
     }
 
     /**
-     * EN: Helper to clear and populate a select element.
+     * Select Population Helper:
+     * Utility function to clear, populate, and optionally select a value in a dropdown.
      */
     function fillSelect(selector, data, selected) {
         let \$el = $(selector);
@@ -157,11 +162,12 @@ $this->registerJs("
         }
     }
 
-    // EN: Initialize form on render. / TR: Çizim sırasında formu ilklendir.
+    // Initialize the form data as soon as the view is rendered.
     loadFormData();
 
     /**
-     * EN: SUBMIT HANDLER: Handles AJAX submission and triggers Pjax container reloads.
+     * Form Submission Handler:
+     * Manages AJAX submission and chains Pjax reloads to maintain nestable tree consistency.
      */
     $(document).off('click', '#create-menu-item').on('click', '#create-menu-item', function (e) {
         disabledButton();
@@ -175,7 +181,7 @@ $this->registerJs("
             data: data,
             beforeSend: function () { $('#spinner').show(); },
             success: function (response) {
-                // EN: Chain Pjax reloads to ensure tree consistency.
+                // Refresh both nestable Pjax containers and trigger expand-all for a consistent user experience.
                 $.pjax.reload({ container: '#nestable-pjax' }).done(function () {
                     $.pjax.reload({ container: '#nestable2-pjax' }).done(function () {
                         $('#expand-all').trigger('click');
@@ -187,7 +193,8 @@ $this->registerJs("
     });
 
     /**
-     * EN: UI Locker: Prevents race conditions during active AJAX requests.
+     * UI Locker:
+     * Disables interactive elements and shows spinners to prevent race conditions during AJAX operations.
      */
     function disabledButton() {
         $('#drop-menu-form').hide();

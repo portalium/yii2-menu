@@ -58,6 +58,9 @@ class Menu extends \yii\db\ActiveRecord
         return '{{%' . Module::$tablePrefix . 'menu}}';
     }
 
+    /**
+     * @return array
+     */
     public function extraFields()
     {
         return ['items'];
@@ -93,6 +96,9 @@ class Menu extends \yii\db\ActiveRecord
         ];
     }
 
+    /**
+     * @return array
+     */
     public static function getTypes()
     {
         return [
@@ -101,6 +107,9 @@ class Menu extends \yii\db\ActiveRecord
         ];
     }
 
+    /**
+     * @return array
+     */
     public static function getDirections()
     {
         return [
@@ -109,36 +118,46 @@ class Menu extends \yii\db\ActiveRecord
         ];
     }
 
+    /**
+     * @param int $direction
+     * @return string
+     */
     public static function getDirection($direction)
     {
         $directions = [self::DIRECTION['vertical'] => "vertical", self::DIRECTION['horizontal'] => "horizontal"];
         return $directions[$direction];
     }
 
+    /**
+     * @return \yii\db\ActiveQuery
+     */
     public function getItems()
     {
         return $this->hasMany(MenuItem::class, ['id_menu' => 'id_menu'])->orderBy('sort');
     }
 
-   
+    /**
+     * Optimized Menu Tree Builder:
+     * Resolves N+1 query issues by utilizing Eager Loading to fetch all items and relations 
+     * in minimal database hits.
+     * * @param int $id_menu
+     * @return array
+     */
     public static function getMenuWithChildren($id_menu)
     {
-        // EN: 1. Fetch all items in a single query (Eager Loading) to prevent N+1 issue.
+        // Fetch all menu items in a single query to eliminate database-heavy N+1 loops.
         $items = MenuItem::find()->where(['id_menu' => $id_menu])->orderBy('sort')->all();
 
         if (empty($items)) {
             return [];
         }
 
-        $itemIds = [];
-        foreach ($items as $item) {
-            $itemIds[] = $item->id_item;
-        }
+        $itemIds = array_column($items, 'id_item');
 
-        // Fetch all parent-child relationships in a single query.
+        // Retrieve all parent-child relationships for the selected menu items.
         $relations = ItemChild::find()->where(['id_child' => $itemIds])->asArray()->all();
 
-        // EN: 3. Map relations for O(1) memory access.
+        // Map relationships for efficient O(1) memory access during tree construction.
         $childToParent = [];
         $parentToChildren = [];
         foreach ($relations as $rel) {
@@ -148,8 +167,6 @@ class Menu extends \yii\db\ActiveRecord
 
         $itemsById = [];
         foreach ($items as $item) {
-            
-           
             $title = Module::t($item->label);
             if (!empty($item->module)) {
                 $title = Yii::t($item->module, $item->label);
@@ -164,19 +181,17 @@ class Menu extends \yii\db\ActiveRecord
             ];
         }
 
-        //Build the hierarchical tree in RAM using PHP references (&$node) for maximum speed.
+        // Build the hierarchical tree in RAM using PHP references to maximize performance.
         $rootItems = [];
         foreach ($itemsById as $id => &$node) {
             if (isset($childToParent[$id])) {
                 $parentId = $childToParent[$id];
-                //If parent exists, add this node to parent's children array
                 if (isset($itemsById[$parentId])) {
                     $itemsById[$parentId]['children'][] = &$node;
                 } else {
                     $rootItems[] = &$node; 
                 }
             } else {
-                //If no parent, it's a root menu item
                 $rootItems[] = &$node;
             }
         }
@@ -184,6 +199,11 @@ class Menu extends \yii\db\ActiveRecord
         return self::jsonSortWithSortRecursive($rootItems);
     }
     
+    /**
+     * Recursively sorts the menu tree based on the sort property.
+     * @param array $data
+     * @return array
+     */
     public static function jsonSortWithSortRecursive($data)
     {
         foreach ($data as $key => $value) {
@@ -197,6 +217,13 @@ class Menu extends \yii\db\ActiveRecord
         return $data;
     }
 
+    /**
+     * Clones a menu item and its children to the current menu.
+     * @param int $id_item
+     * @param bool $addChildren
+     * @param int|null $id_parent
+     * @return MenuItem|bool
+     */
     public function addItem($id_item, $addChildren = false, $id_parent = null)
     {
         try {
@@ -208,18 +235,21 @@ class Menu extends \yii\db\ActiveRecord
             $copyItem->data = $item->data;
             $copyItem->loadData();
             $copyItem->save();
+            
             if ($addChildren) {
                 foreach ($item->children as $child) {
                     $copyItem->addItem($child->id_child, $addChildren);
                 }
             }
-            if ($id_parent != null || $id_parent != 0) {
+            
+            if ($id_parent != null && $id_parent != 0) {
                 $itemChild = new ItemChild();
                 $itemChild->id_item = $id_parent;
                 $itemChild->id_child = $copyItem->id_item;
                 $itemChild->save();
             }
         } catch (\Exception $e) {
+            Yii::error("Clone error in addItem: " . $e->getMessage());
             return false;
         }
 
