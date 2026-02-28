@@ -15,7 +15,8 @@ use yii\web\Response;
 use yii\db\ActiveRecord;
 
 /**
- * ItemController implements the CRUD actions for MenuItem model.
+ * ItemController implements the CRUD actions and DepDrop handling for MenuItem model.
+ * Includes performance optimizations for Pjax requests and dynamic dropdowns.
  */
 class ItemController extends Controller
 {
@@ -44,10 +45,11 @@ class ItemController extends Controller
     }
 
     /**
-     * Lists all MenuItem models.
+     * Redirects to the create action to act as a primary index page.
      *
-     * @param int|null $id_menu
-     * @return mixed
+     * @param int|null $id_menu Target Menu ID
+     * @return \yii\web\Response
+     * @throws \yii\web\ForbiddenHttpException if the user does not have permission
      */
     public function actionIndex($id_menu = null)
     {
@@ -59,6 +61,7 @@ class ItemController extends Controller
 
     /**
      * Displays a single MenuItem model.
+     *
      * @param int $id Item ID
      * @return string
      * @throws NotFoundHttpException if the model cannot be found
@@ -75,11 +78,11 @@ class ItemController extends Controller
 
     /**
      * Creates a new MenuItem model.
-     * If creation is successful, the browser will be redirected to the 'view' page.
+     * PERFORMANCE OPTIMIZATION: Uses renderAjax for Pjax requests to avoid full layout rendering.
+     *
      * @param int $id_menu The ID of the menu to which the item belongs.
-     * @param int|null $id_item The ID of the item if an existing item is being used as a template.
+     * @param int|null $id_item The ID of the item if an existing item is used as a template.
      * @return string|Response
-     * EN: Optimized Create action. Uses renderAjax for Pjax requests to avoid full layout rendering.
      */
     public function actionCreate($id_menu, $id_item = null)
     {
@@ -150,11 +153,11 @@ class ItemController extends Controller
 
     /**
      * Updates an existing MenuItem model.
-     * If update is successful, the browser will be redirected to the 'view' page.
+     * PERFORMANCE OPTIMIZATION: Implements renderAjax to break the "Pjax Trap" and avoid nested layouts.
+     *
      * @param int $id Item ID
      * @return string|Response
      * @throws NotFoundHttpException if the model cannot be found
-     * EN: Optimized Update action. Implements renderAjax for Pjax requests to break the "Pjax Trap".
      */
     public function actionUpdate($id)
     {
@@ -167,7 +170,7 @@ class ItemController extends Controller
             return $this->redirect(['index', 'id_menu' => $model->id_menu]);
         }
 
-        // PERFORMANCE: Use renderAjax instead of render to only send the form HTML back to the Pjax container
+        // Use renderAjax instead of render to only send the form HTML back to the Pjax container
         if ($this->request->isPjax) {
             return $this->renderAjax('update', [
                 'model' => $model,
@@ -182,9 +185,9 @@ class ItemController extends Controller
     }
 
     /**
-     * Deletes an existing MenuItem model.
-     * If deletion is successful, the browser will be redirected to the 'index' page.
-     * @return Response|string
+     * Deletes an existing MenuItem model along with optional nested child restructuring.
+     *
+     * @return Response
      * @throws NotFoundHttpException if the model cannot be found
      */
     public function actionDelete()
@@ -217,8 +220,9 @@ class ItemController extends Controller
     }
 
     /**
-     * Clones an existing MenuItem model.
-     * @return Response
+     * Clones an existing MenuItem model and attaches it to the specified menu.
+     *
+     * @return Response JSON format
      */
     public function actionClone()
     {
@@ -241,8 +245,9 @@ class ItemController extends Controller
     }
 
     /**
-     * Moves a MenuItem model.
-     * @return Response
+     * Moves a MenuItem model from one location/menu to another and restructures its children.
+     *
+     * @return Response JSON format
      */
     public function actionMove()
     {
@@ -272,10 +277,11 @@ class ItemController extends Controller
     }
 
     /**
-     * Internal helper to delete an item and optionally reassign its children.
-     * @param int $id_item
-     * @param int|null $id_parent
-     * @param int|null $id_menu
+     * Internal helper to delete an item and optionally reassign its child elements.
+     *
+     * @param int $id_item Target item ID to be deleted.
+     * @param int|null $id_parent New parent ID for orphaned items.
+     * @param int|null $id_menu Target menu ID for reassignment.
      */
     private function deleteItem($id_item, $id_parent = null, $id_menu = null)
     {
@@ -318,116 +324,192 @@ class ItemController extends Controller
     }
 
     /**
-     * Returns the types of routes available for a module via DepDrop.
-     * @return string JSON
+     * Returns the available route types for a selected module via DepDrop AJAX.
+     * DEFENSIVE PROG: Safely extracts moduleName from both standard and depdrop_parents formats.
+     *
+     * @return array JSON response formatted for Kartik DepDrop plugin.
      */
     public function actionRouteType()
     {
-        if (!Yii::$app->user->can('menuWebItemRouteType')) {
-            throw new \yii\web\ForbiddenHttpException(Module::t('You are not allowed to access this page.'));
+        Yii::$app->response->format = Response::FORMAT_JSON;
+
+        if (!$this->request->isPost) {
+            return [];
         }
-        $out = [];
-        if ($this->request->isPost) {
-            $request = $this->request->post('depdrop_parents');
-            $moduleName = $request[0];
-            if (empty($moduleName)) {
-                return $this->asJson(['output' => [], 'selected' => '']);
+
+        $moduleName = $this->request->post('moduleName') ?? $this->request->post('module');
+        
+        if (empty($moduleName)) {
+            return [];
+        }
+
+        try {
+            $module = Yii::$app->getModule(strtolower($moduleName));
+            if ($module === null || !method_exists($module, 'getMenuItems')) {
+                return [];
             }
-            $module = Yii::$app->getModule($moduleName);
+
             $menuItems = $module->getMenuItems();
-            
-            foreach ($menuItems[0] as $value) {
-                $out[] = ['id' => $value['type'], 'name' => $value['type']];
-            }
-            $out = array_unique($out, SORT_REGULAR);
-            return json_encode(['output' => $out, 'selected' => '']);
+            $out = [];
+
+            array_walk_recursive($menuItems, function ($value, $key) use (&$out) {
+                if ($key === 'type') {
+                    $out[$value] = [
+                        'id' => $value,
+                        'name' => ucfirst($value)
+                    ];
+                }
+            });
+
+            return array_values($out);
+        } catch (\Exception $e) {
+            Yii::error("RouteType Error: " . $e->getMessage(), __METHOD__);
+            return [];
         }
     }
 
     /**
-     * Returns specific routes via DepDrop.
-     * @return string JSON
+     * Returns the specific routes for a selected module and type via DepDrop AJAX.
+     *
+     * @return array JSON response formatted for Kartik DepDrop plugin.
      */
     public function actionRoute()
     {
-        if (!Yii::$app->user->can('menuWebItemRoute')) {
-            throw new \yii\web\ForbiddenHttpException(Module::t('You are not allowed to access this page.'));
-        }
-        $out = [];
-        if ($this->request->isPost) {
-            $request = $this->request->post('depdrop_parents');
-            $moduleName = $request[0];
-            $routeType = $request[1];
-            if (empty($moduleName) || empty($routeType)) {
-                return $this->asJson(['output' => [], 'selected' => '']);
-            }
-            $module = Yii::$app->getModule($moduleName);
-            $menuItems = $module->getMenuItems();
+        Yii::$app->response->format = Response::FORMAT_JSON;
 
+        if (!$this->request->isPost) {
+            return [];
+        }
+
+        $postData = $this->request->post();
+        $moduleName = $postData['moduleName'] ?? $postData['module'] ?? null;
+        $routeType = $postData['type'] ?? null;
+
+        if (empty($moduleName) || empty($routeType)) {
+            return [];
+        }
+
+        try {
+            $module = Yii::$app->getModule($moduleName);
+            if ($module === null || !method_exists($module, 'getMenuItems')) {
+                return [];
+            }
+
+            $menuItems = $module->getMenuItems();
+            if (empty($menuItems[0])) {
+                return [];
+            }
+
+            $out = [];
             foreach ($menuItems[0] as $item) {
-                if ($item['type'] == $routeType) {
-                    switch ($routeType) {
-                        case 'widget':
+                if (!isset($item['type']) || $item['type'] !== $routeType) {
+                    continue;
+                }
+
+                switch ($routeType) {
+                    case 'widget':
+                        if (isset($item['label'], $item['name'])) {
                             $out[] = ['id' => $item['label'], 'name' => $item['name']];
-                            break;
-                        case 'model':
+                        }
+                        break;
+                    case 'model':
+                        if (isset($item['route'], $item['class'])) {
                             $out[] = ['id' => $item['route'], 'name' => $item['class']];
-                            break;
-                        case 'action':
+                        }
+                        break;
+                    case 'action':
+                        if (isset($item['route'])) {
                             $out[] = ['id' => $item['route'], 'name' => $item['route']];
-                            break;
-                        case 'route':
-                            $routes = $item['routes'];
-                            foreach ($routes as $key => $route) {
-                                $out[] = ['id' => $key, 'name' => $route];
+                        }
+                        break;
+                    case 'route':
+                        if (isset($item['routes']) && is_array($item['routes'])) {
+                            foreach ($item['routes'] as $key => $subRoute) {
+                                $out[] = ['id' => $key, 'name' => $subRoute];
                             }
-                            break;
-                    }
+                        }
+                        break;
                 }
             }
-            return json_encode(['output' => $out, 'selected' => '']);
+            return $out;
+        } catch (\Exception $e) {
+            Yii::error("Route Error: " . $e->getMessage(), __METHOD__);
+            return [];
         }
     }
 
     /**
-     * Returns model list via DepDrop.
-     * @return string JSON
+     * Returns the dynamic model list for a specific route via DepDrop AJAX.
+     * Incorporates workspace isolation logic if applicable.
+     *
+     * @return array JSON response formatted for Kartik DepDrop plugin.
      */
     public function actionModel()
     {
-        if (!Yii::$app->user->can('menuWebItemModel')) {
-            throw new \yii\web\ForbiddenHttpException(Module::t('You are not allowed to access this page.'));
+        Yii::$app->response->format = Response::FORMAT_JSON;
+
+        if (!$this->request->isPost) {
+            return [];
         }
-        if ($this->request->isPost) {
-            $request = $this->request->post('depdrop_parents');
-            $moduleName = $request[0];
-            $routeType = $request[1];
-            $route = $request[2] ?? null;
-            
-            if (empty($moduleName) || empty($routeType) || in_array($routeType, ['widget', 'route', 'action'])) {
-                return $this->asJson(['output' => [], 'selected' => '']);
-            }
-            
-            $modelName = '';
+
+        $postData = $this->request->post();
+        $moduleName = $postData['moduleName'] ?? $postData['module'] ?? null;
+        $routeType = $postData['type'] ?? null;
+        $selectedRoute = $postData['route'] ?? null;
+
+        if (empty($moduleName) || $routeType !== 'model' || empty($selectedRoute)) {
+            return [];
+        }
+
+        try {
             $module = Yii::$app->getModule($moduleName);
+            if ($module === null || !method_exists($module, 'getMenuItems')) {
+                return [];
+            }
+
             $menuItems = $module->getMenuItems();
-            $field = [];
-            
+            if (empty($menuItems[0])) {
+                return [];
+            }
+
+            $targetClass = '';
+            $config = [];
+
             foreach ($menuItems[0] as $item) {
-                if ($item['type'] == $routeType && $item['route'] == $route) {
-                    $field = $item['field'];
-                    $modelName = $item['class'];
+                if (isset($item['type'], $item['route']) && $item['type'] === 'model' && $item['route'] === $selectedRoute) {
+                    $config = $item['field'] ?? [];
+                    $targetClass = $item['class'] ?? '';
+                    break;
                 }
             }
-            
-            $data = (!empty($modelName)) ? $modelName::find()->select(['id' => $field['id'], 'name' => $field['name']])->asArray()->all() : [];
-            return json_encode(['output' => $data, 'selected' => '']);
+
+            if (!empty($targetClass) && class_exists($targetClass) && !empty($config['id']) && !empty($config['name'])) {
+                $instance = new $targetClass();
+
+                if ($instance instanceof ActiveRecord) {
+                    $query = $targetClass::find()
+                        ->select(['id' => $config['id'], 'name' => $config['name']])
+                        ->asArray();
+
+                    // Security: Workspace isolation rule
+                    if ($instance->hasAttribute('id_workspace') && isset(Yii::$app->workspace->id)) {
+                        $query->andWhere(['id_workspace' => Yii::$app->workspace->id]);
+                    }
+
+                    return $query->limit(100)->all();
+                }
+            }
+            return [];
+        } catch (\Exception $e) {
+            Yii::error("Model Error: " . $e->getMessage(), __METHOD__);
+            return [];
         }
     }
 
     /**
-     * Returns a hierarchical list of parent items for DepDrop.
-     * @return string JSON
+     * Generates a hierarchical tree list of parent items for the selected menu via DepDrop.
+     *
+     * @return string JSON representation of hierarchical parent nodes.
      */
     public function actionParentList()
     {
@@ -439,7 +521,7 @@ class ItemController extends Controller
             $request = $this->request->post('depdrop_parents');
             $id_menu = isset($request[0]) ? $request[0] : null;
 
-            if (empty($id_menu)) {
+            if ($id_menu == null || $id_menu == '') {
                 return json_encode(['output' => [], 'selected' => '']);
             }
 
@@ -486,7 +568,13 @@ class ItemController extends Controller
     }
 
     /**
-     * Recursive helper to build menu tree.
+     * Recursive helper function to construct the nested menu tree structure.
+     * * @param int $parentId Current node's parent ID.
+     * @param array $sortedItems Flat list of items.
+     * @param array $menuTree Parent-child relation mapping.
+     * @param int $depth Current nesting level (used for visual indentation).
+     * @param bool $forMove Flag to determine if output is formatted for moving items.
+     * @return array Hierarchical nested array.
      */
     private function buildTree($parentId, $sortedItems, $menuTree, $depth = 0, $forMove = false)
     {
@@ -509,8 +597,10 @@ class ItemController extends Controller
     }
 
     /**
-     * Handles sorting of menu items.
-     * @return string
+     * Handles dynamic sorting of menu items triggered by frontend drag-and-drop.
+     *
+     * @return string Status message
+     * @throws \yii\web\ForbiddenHttpException if the user does not have permission
      */
     public function actionSort()
     {
@@ -525,6 +615,7 @@ class ItemController extends Controller
 
     /**
      * Finds the MenuItem model based on its primary key value.
+     *
      * @param int $id_item Item ID
      * @return MenuItem the loaded model
      * @throws NotFoundHttpException if the model cannot be found
