@@ -596,32 +596,27 @@
         var data = form.serialize();
         data += "&id_item=" + activeItemId;
 
-
         $.ajax({
             type: "POST",
             url: form.attr("action"),
             data: data,
             success: function (response) {
-
                 $.pjax.reload({ container: "#nestable-pjax" }).done(function () {
-
-
                     $.pjax.reload({ container: "#nestable2-pjax" });
                     window.location.reload();
-
                     $("#expand-all").trigger("click");
                     $("#modal-clone").modal("hide");
                 });
             },
-        });
-    },
-    error: function (jqxhr, textStatus, errorThrown) {
-        if (jqxhr.status === 403) {
-            alert("You are not allowed to access this page.");
-            $("#modal-clone").modal("hide");
-        }
-    }
-    });
+            // DOĞRU YER: error bloğu AJAX objesinin içinde olmalı
+            error: function (jqxhr, textStatus, errorThrown) {
+                if (jqxhr.status === 403) {
+                    alert("You are not allowed to access this page.");
+                    $("#modal-clone").modal("hide");
+                }
+            }
+        }); // AJAX burada bitiyor
+    }); // Click fonksiyonu burada bitiyor
 
     $("#menu-move-item-form-button").click(function (e) {
         e.preventDefault();
@@ -629,31 +624,26 @@
         var data = form.serialize();
         data += "&id_item=" + activeItemId;
 
-
         $.ajax({
             type: "POST",
             url: form.attr("action"),
             data: data,
             success: function (response) {
-
                 $.pjax.reload({ container: "#nestable-pjax" }).done(function () {
-
-
                     $.pjax.reload({ container: "#nestable2-pjax" });
-
                     $("#expand-all").trigger("click");
                     $("#modal-move").modal("hide");
                 });
             },
-        });
-    },
-    error: function (jqxhr, textStatus, errorThrown) {
-        if (jqxhr.status === 403) {
-            alert("You are not allowed to access this page.");
-            $("#modal-move").modal("hide");
-        }
-    }
-    });
+            // DOĞRU YER: error AJAX'ın bir parçasıdır
+            error: function (jqxhr, textStatus, errorThrown) {
+                if (jqxhr.status === 403) {
+                    alert("You are not allowed to access this page.");
+                    $("#modal-move").modal("hide");
+                }
+            }
+        }); // AJAX kapandı
+    }); // Click kapandı
 
     $("#menu-delete-item-form-button").click(function (e) {
         /*  $(this).addClass("spinner-border spinner-border-sm");
@@ -716,7 +706,6 @@
             $("#create-menu-item").hide();
         }
     }
-}
-})(window.jQuery || window.Zepto, window, document);
+}) (window.jQuery || window.Zepto, window, document);
 
 
