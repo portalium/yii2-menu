@@ -173,15 +173,33 @@ class Nav extends \portalium\bootstrap5\Nav
 
     public function sortItems($items)
     {
-        $sort = [];
-        foreach ($items as $item) {
-            if (isset($item['sort']))
-                $sort[$item['sort']] = $item;
-            else
-                $sort[] = $item;
-        }
-        ksort($sort);
-        return $sort;
+        usort($items, static function ($first_item, $second_item)
+        {
+            $leftHasSort = isset($first_item['sort']);
+            $rightHasSort = isset($second_item['sort']);
+
+            if(!($leftHasSort && $rightHasSort))
+            {
+                return strcasecmp((string) ($first_item['label'] ?? ''), (string) ($second_item['label'] ?? ''));
+            }
+
+            if ($leftHasSort !== $rightHasSort)
+            {
+                return $leftHasSort ? -1 : 1;
+            }
+
+            $first_sort = (int) $first_item['sort'];
+            $second_sort = (int) $second_item['sort'];
+
+            if ($first_sort !== $second_sort)
+            {
+                return $first_sort < $second_sort ? -1 : 1;
+            }
+
+            return strcasecmp((string) ($first_item['label'] ?? ''), (string) ($second_item['label'] ?? ''));
+        });
+
+        return $items;
     }
 
     public function getIcon($item)
