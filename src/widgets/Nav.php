@@ -36,7 +36,7 @@ class Nav extends \portalium\bootstrap5\Nav
     public function run(): string
     {
         $items = [];
-        foreach ($this->model->items as $item) {
+        foreach ($this->sortItems($this->model->items) as $item) {
             if (!isset($item->parent)) {
                 $url = $this->getUrl($item);
                 $data = json_decode($item->data, true);
@@ -82,7 +82,7 @@ class Nav extends \portalium\bootstrap5\Nav
             }
         }
 
-        $items = $this->sortItems($items);
+        //$items = $this->sortItems($items);
         $this->items = $items;
         //$this->encodeLabels = false;
 
@@ -94,7 +94,7 @@ class Nav extends \portalium\bootstrap5\Nav
     public function getChildItems($id_parent)
     {
         $items = [];
-        foreach ($this->model->items as $item) {
+        foreach ($this->sortItems($this->model->items) as $item) {
             if (isset($item->parent) && $item->parent->id_item == $id_parent) {
                 $url = $this->getUrl($item);
                 $visible = (($item->name_auth != null || $item->name_auth != '') && $item->name_auth != 'guest') ? (Yii::$app->user->can($item->name_auth, ['id_module' => $item->module ?? null]) || Yii::$app->workspace->can($item->module ?? null, $item->name_auth) || Yii::$app->workspace->can($item->module ?? null, $item->name_auth . 'Own')) : ($item->name_auth == 'guest' || $item->name_auth == '' ? true : false);
@@ -175,28 +175,23 @@ class Nav extends \portalium\bootstrap5\Nav
     {
         usort($items, static function ($first_item, $second_item)
         {
-            $leftHasSort = isset($first_item['sort']);
-            $rightHasSort = isset($second_item['sort']);
+            $leftHasSort = isset($first_item->sort);
+            $rightHasSort = isset($second_item->sort);
 
             if(!($leftHasSort && $rightHasSort))
             {
-                return strcasecmp((string) ($first_item['label'] ?? ''), (string) ($second_item['label'] ?? ''));
-            }
+                return strcasecmp((string) ($first_item->label ?? ''), (string) ($second_item->label ?? ''));
+            } 
 
-            if ($leftHasSort !== $rightHasSort)
-            {
-                return $leftHasSort ? -1 : 1;
-            }
-
-            $first_sort = (int) $first_item['sort'];
-            $second_sort = (int) $second_item['sort'];
+            $first_sort = (int) $first_item->sort;
+            $second_sort = (int) $second_item->sort;
 
             if ($first_sort !== $second_sort)
             {
                 return $first_sort < $second_sort ? -1 : 1;
             }
 
-            return strcasecmp((string) ($first_item['label'] ?? ''), (string) ($second_item['label'] ?? ''));
+            return strcasecmp((string) ($first_item->label ?? ''), (string) ($second_item->label ?? ''));
         });
 
         return $items;
