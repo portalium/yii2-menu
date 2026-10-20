@@ -169,7 +169,7 @@ class Menu extends \yii\db\ActiveRecord
         foreach ($items as $item) {
             $title = Module::t($item->label);
             if (!empty($item->module)) {
-                $title = Yii::t($item->module, $item->label);
+                $title = Module::t($item->label);
             }
 
             $itemsById[$item->id_item] = [
