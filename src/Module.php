@@ -2,6 +2,10 @@
 
 namespace portalium\menu;
 
+use portalium\base\Event;
+use portalium\menu\components\TriggerActions;
+use portalium\user\Module as UserModule;
+
 class Module extends \portalium\base\Module
 {
     public static $tablePrefix = 'menu_';
@@ -15,7 +19,10 @@ class Module extends \portalium\base\Module
                 'menu/default',
                 'menu/item',
             ],
-            'pluralize' => false
+            'pluralize' => false,
+            'extraPatterns' => [
+                'GET mobile' => 'mobile',
+            ],
         ],
     ];
 
@@ -70,5 +77,10 @@ class Module extends \portalium\base\Module
     public static function t($message, array $params = [])
     {
         return parent::coreT('menu', $message, $params);
+    }
+
+    public function registerEvents()
+    {
+        Event::on($this::className(), UserModule::EVENT_USER_DELETE_BEFORE, [new TriggerActions(), 'onUserDeleteBefore']);
     }
 }
