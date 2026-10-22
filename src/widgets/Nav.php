@@ -22,7 +22,7 @@ class Nav extends \portalium\bootstrap5\Nav
     public $options;
     public $id;
 
-    public function init()
+    public function init(): void
     {
         parent::init();
 
@@ -122,6 +122,16 @@ class Nav extends \portalium\bootstrap5\Nav
         return $items;
     }
 
+    /**
+     * If the item's module is registered, its translation is used; otherwise, the menu module's translation is used.
+     * A single menu item linked to a non-registered module should not crash the page.
+     */
+    private function translateLabel($item)
+    {
+        $module = isset($item->module) ? Yii::$app->getModule($item->module) : null;
+        return $module !== null && method_exists($module, 't') ? $module->t($item->label) : Module::t($item->label);
+    }
+
     private function generateLabel($item, $isChild = false)
     {
         $label = "";
@@ -131,17 +141,17 @@ class Nav extends \portalium\bootstrap5\Nav
                     $label = '';
                     break;
                 case MenuItem::TYPE_DISPLAY['icon-text']:
-                    $label = isset($item->module) ? Yii::$app->getModule($item->module)->t($item->label) : Module::t($item->label);
+                    $label = $this->translateLabel($item);
                     break;
                 case MenuItem::TYPE_DISPLAY['text']:
-                    $label = isset($item->module) ? Yii::$app->getModule($item->module)->t($item->label) : Module::t($item->label);
+                    $label = $this->translateLabel($item);
                     break;
                 default:
-                    $label = isset($item->module) ? Yii::$app->getModule($item->module)->t($item->label) : Module::t($item->label);
+                    $label = $this->translateLabel($item);
                     break;
             }
         } else {
-            $label = isset($item->module) ? Yii::$app->getModule($item->module)->t($item->label) : Module::t($item->label);
+            $label = $this->translateLabel($item);
         }
 
         return $label;
