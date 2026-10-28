@@ -22,6 +22,14 @@ class Nav extends \portalium\bootstrap5\Nav
     public $options;
     public $id;
 
+    /**
+     * @var string|null how child items are shown: 'dropdown' (Bootstrap dropdown) or 'collapse'
+     * (nested list opening in place, for side menus). Null picks 'collapse' for `flex-column` menus.
+     */
+    public $submenuMode;
+
+    private static $submenuCounter = 0;
+
     public function init(): void
     {
         parent::init();
@@ -31,6 +39,11 @@ class Nav extends \portalium\bootstrap5\Nav
         }
         // $this->options['direction'] = Menu::getDirection($this->model->direction);
         $this->options['class'] .= ' ' . Menu::getDirection($this->model->direction);
+
+        if ($this->submenuMode === null) {
+            $classes = preg_split('/\s+/', (string) $this->options['class']);
+            $this->submenuMode = in_array('flex-column', $classes, true) ? 'collapse' : 'dropdown';
+        }
     }
 
     public function run(): string
@@ -255,6 +268,10 @@ class Nav extends \portalium\bootstrap5\Nav
         $disabled = ArrayHelper::getValue($item, 'disabled', false);
         $active = $this->isItemActive($item);
 
+        if (!empty($items) && is_array($items) && $this->submenuMode === 'collapse') {
+            return $this->renderCollapseItem($item, $label, $items, $active, $options, $linkOptions);
+        }
+
         if (empty($items)) {
             $items = '';
             Html::addCssClass($options, ['widget' => 'nav-item me-lg-0']);
@@ -288,6 +305,90 @@ class Nav extends \portalium\bootstrap5\Nav
             return Html::tag('li', Html::a('<span>' . $label . '</span>', $url, $linkOptions) . $items, $options);
         else
             return Html::tag('li', Html::a($item['icon'] . '<span>' . $label . '</span>', $url, $linkOptions) . $items, $options);
+    }
+
+    /**
+     * Renders an item with children as a toggle and a nested list that opens in place.
+     * The list starts open when one of its children is the current page.
+     */
+    protected function renderCollapseItem($item, $label, $items, $active, $options, $linkOptions): string
+    {
+        $items = $this->isChildActive($items, $active);
+        $active = $active || $this->hasActiveChild($items);
+        $submenuId = 'menu-' . $this->id . '-sub-' . (++self::$submenuCounter);
+        $url = ArrayHelper::getValue($item, 'url', '#');
+        $icon = $item['icon'] ?? '';
+        $content = $icon . '<span>' . $label . '</span>';
+        $indicator = Html::tag('span', '', ['class' => 'submenu-indicator', 'aria-hidden' => 'true']);
+        $toggle = [
+            'data-bs-toggle' => 'collapse',
+            'data-bs-target' => '#' . $submenuId,
+            'aria-controls' => $submenuId,
+            'aria-expanded' => $active ? 'true' : 'false',
+        ];
+
+        Html::addCssClass($options, ['widget' => 'nav-item has-submenu']);
+        if ($url === '#' || $url === '' || $url === null) {
+            // the whole row only opens the list
+            Html::addCssClass($linkOptions, ['widget' => 'nav-link submenu-toggle']);
+            $head = Html::a($content . $indicator, '#' . $submenuId, array_merge($linkOptions, $toggle, ['role' => 'button']));
+        } else {
+            // the label goes to its page, the button opens the list
+            Html::addCssClass($linkOptions, ['widget' => 'nav-link submenu-toggle submenu-link']);
+            if ($active) {
+                Html::addCssClass($linkOptions, ['activate' => 'active-parent']);
+            }
+            $head = Html::a($content, $url, $linkOptions)
+                . Html::button($indicator, array_merge($toggle, [
+                    'type' => 'button',
+                    'class' => 'submenu-toggle-button',
+                    'aria-label' => $label,
+                ]));
+        }
+
+        $children = [];
+        foreach ($items as $child) {
+            if (isset($child['visible']) && !$child['visible']) {
+                continue;
+            }
+            $children[] = $this->renderItem($child);
+        }
+
+        if (isset($item['displayType'])) {
+            $options['data-bs-type'] = $item['displayType'];
+        }
+        if (isset($item['placement'])) {
+            $options['data-bs-placement'] = $item['placement'];
+        }
+
+        return Html::tag(
+            'li',
+            $head . Html::tag('ul', implode("\n", $children), [
+                'id' => $submenuId,
+                'class' => 'nav flex-column submenu collapse' . ($active ? ' show' : ''),
+            ]),
+            $options
+        );
+    }
+
+    /**
+     * Whether any visible child, at any depth, is the current page.
+     */
+    protected function hasActiveChild(array $items): bool
+    {
+        foreach ($items as $child) {
+            if (!is_array($child) || !ArrayHelper::getValue($child, 'visible', true)) {
+                continue;
+            }
+            if (!empty($child['active']) || $this->isItemActive($child)) {
+                return true;
+            }
+            if (is_array($child['items'] ?? null) && $this->hasActiveChild($child['items'])) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     public function renderItems(): string
