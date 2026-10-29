@@ -276,6 +276,10 @@ class Nav extends \portalium\bootstrap5\Nav
             $items = '';
             Html::addCssClass($options, ['widget' => 'nav-item me-lg-0']);
             Html::addCssClass($linkOptions, ['widget' => 'nav-link']);
+            if ($this->submenuMode === 'collapse') {
+                // side menu items use the theme's button style
+                Html::addCssClass($linkOptions, ['button' => 'btn btn-success']);
+            }
         } else {
             $linkOptions['data']['bs-toggle'] = 'dropdown';
             $linkOptions['role'] = 'button';
@@ -328,6 +332,7 @@ class Nav extends \portalium\bootstrap5\Nav
         ];
 
         Html::addCssClass($options, ['widget' => 'nav-item has-submenu']);
+        Html::addCssClass($linkOptions, ['button' => 'btn btn-success']);
         if ($url === '#' || $url === '' || $url === null) {
             // the whole row only opens the list
             Html::addCssClass($linkOptions, ['widget' => 'nav-link submenu-toggle']);
