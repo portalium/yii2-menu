@@ -30,6 +30,11 @@ class Nav extends \portalium\bootstrap5\Nav
 
     private static $submenuCounter = 0;
 
+    /**
+     * @var int nesting level of the item being rendered in collapse mode (0 = top level)
+     */
+    private $depth = 0;
+
     public function init(): void
     {
         parent::init();
@@ -75,6 +80,8 @@ class Nav extends \portalium\bootstrap5\Nav
                             'items' => $this->getChildItems($item->id_item),
                             'visible' => (($item->name_auth != null || $item->name_auth != '') && $item->name_auth != 'guest') ? (Yii::$app->user->can($item->name_auth, ['id_module' => $item->module ?? null]) || Yii::$app->workspace->can($item->module ?? null, $item->name_auth) || Yii::$app->workspace->can($item->module ?? null, $item->name_auth . 'Own')) : ($item->name_auth == 'guest' || $item->name_auth == '' ? true : false),
                             'sort' => $item->sort,
+                            'id' => $item->id_item,
+                            'group' => $item->type == MenuItem::TYPE['group'],
                             'displayType' => MenuItem::getDisplays()[($item->display != 0 && $item->display != '') ? $item->display : MenuItem::TYPE_DISPLAY['text']],
                             'placement' => MenuItem::getPlacements()[($item->placement != 0 && $item->placement != '') != 0 ? $item->placement : MenuItem::LABEL_PLACEMENT['side-by-side']],
                         ];
@@ -88,6 +95,8 @@ class Nav extends \portalium\bootstrap5\Nav
                             'items' => $this->getChildItems($item->id_item),
                             'visible' => (($item->name_auth != null || $item->name_auth != '') && $item->name_auth != 'guest') ? (Yii::$app->user->can($item->name_auth, ['id_module' => $item->module ?? null]) || Yii::$app->workspace->can($item->module ?? null, $item->name_auth) || Yii::$app->workspace->can($item->module ?? null, $item->name_auth . 'Own')) : ($item->name_auth == 'guest' || $item->name_auth == '' ? true : false),
                             'sort' => $item->sort,
+                            'id' => $item->id_item,
+                            'group' => $item->type == MenuItem::TYPE['group'],
                             'displayType' => MenuItem::getDisplays()[($item->display != 0 && $item->display != '') != 0 ? $item->display : MenuItem::TYPE_DISPLAY['text']],
                             'placement' => MenuItem::getPlacements()[($item->placement != 0 && $item->placement != '') != 0 ? $item->placement : MenuItem::LABEL_PLACEMENT['side-by-side']],
                         ];
@@ -113,12 +122,18 @@ class Nav extends \portalium\bootstrap5\Nav
                 $visible = (($item->name_auth != null || $item->name_auth != '') && $item->name_auth != 'guest') ? (Yii::$app->user->can($item->name_auth, ['id_module' => $item->module ?? null]) || Yii::$app->workspace->can($item->module ?? null, $item->name_auth) || Yii::$app->workspace->can($item->module ?? null, $item->name_auth . 'Own')) : ($item->name_auth == 'guest' || $item->name_auth == '' ? true : false);
                 
                 $data = json_decode($item->data, true);
+                if ($item->type == MenuItem::TYPE['module'] && $data["data"]["routeType"] == "widget" && !$visible) {
+                    // a widget the user may not see is left out, like a link
+                    continue;
+                }
                 $itemTemp = ($item->type == MenuItem::TYPE['module'] && $data["data"]["routeType"] == "widget") ?
                     $data["data"]["route"]::widget() :
                     [
                         'label' => $this->generateLabel($item, true),
                         'icon' => $this->getIcon($item),
                         'url' => $url,
+                        'id' => $item->id_item,
+                        'group' => $item->type == MenuItem::TYPE['group'],
                         'visible' => (($item->name_auth != null || $item->name_auth != '') && $item->name_auth != 'guest') ? (Yii::$app->user->can($item->name_auth, ['id_module' => $item->module ?? null]) || Yii::$app->workspace->can($item->module ?? null, $item->name_auth) || Yii::$app->workspace->can($item->module ?? null, $item->name_auth . 'Own')) : ($item->name_auth == 'guest' || $item->name_auth == '' ? true : false),
                         'displayType' => MenuItem::getDisplays()[($item->display != 0 && $item->display != '') != 0 ? $item->display : MenuItem::TYPE_DISPLAY['text']],
                         'placement' => MenuItem::getPlacements()[($item->placement != 0 && $item->placement != '') != 0 ? $item->placement : MenuItem::LABEL_PLACEMENT['side-by-side']],
@@ -188,6 +203,8 @@ class Nav extends \portalium\bootstrap5\Nav
         } else if ($item->type == MenuItem::TYPE['url']) {
             $item = json_decode($item->data, true);
             $url = $item['data']['url'];
+        } elseif ($item->type == MenuItem::TYPE['group']) {
+            $url = '#';
         } else {
             $url = $item->url;
         }
@@ -248,7 +265,8 @@ class Nav extends \portalium\bootstrap5\Nav
     {
 
         if (is_string($item)) {
-            return Html::decode($item);
+            // a widget's own HTML; decoding it would turn the text it escaped back into markup
+            return $item;
         }
         if (!isset($item['label'])) {
             throw new InvalidConfigException("The 'label' option is required.");
@@ -268,6 +286,11 @@ class Nav extends \portalium\bootstrap5\Nav
         $disabled = ArrayHelper::getValue($item, 'disabled', false);
         $active = $this->isItemActive($item);
 
+        if (!empty($item['group']) && !$this->hasVisibleChild($items)) {
+            // a group with nothing the user can see is left out
+            return '';
+        }
+
         if (!empty($items) && is_array($items) && $this->submenuMode === 'collapse') {
             return $this->renderCollapseItem($item, $label, $items, $active, $options, $linkOptions);
         }
@@ -276,9 +299,9 @@ class Nav extends \portalium\bootstrap5\Nav
             $items = '';
             Html::addCssClass($options, ['widget' => 'nav-item me-lg-0']);
             Html::addCssClass($linkOptions, ['widget' => 'nav-link']);
-            if ($this->submenuMode === 'collapse') {
-                // side menu items use the theme's button style
-                Html::addCssClass($linkOptions, ['button' => 'btn btn-success']);
+            if ($this->submenuMode === 'collapse' && !isset($linkOptions['title'])) {
+                // the collapsed side menu shows only icons; the name appears on hover
+                $linkOptions['title'] = Html::decode(strip_tags($label));
             }
         } else {
             $linkOptions['data']['bs-toggle'] = 'dropdown';
@@ -313,51 +336,57 @@ class Nav extends \portalium\bootstrap5\Nav
 
     /**
      * Renders an item with children as a toggle and a nested list that opens in place.
-     * The list starts open when one of its children is the current page.
+     * The item only opens and closes its list, even when it has a URL of its own.
+     * A group on the top level of the side menu is a section heading; any other item with
+     * children (and a group deeper down) is a row with its icon and an arrow.
+     * Every list starts open.
      */
     protected function renderCollapseItem($item, $label, $items, $active, $options, $linkOptions): string
     {
         $items = $this->isChildActive($items, $active);
         $active = $active || $this->hasActiveChild($items);
+        $section = $this->depth === 0 && !empty($item['group']);
+        // every list starts open; the user closes what they do not need
+        $open = true;
         $submenuId = 'menu-' . $this->id . '-sub-' . (++self::$submenuCounter);
-        $url = ArrayHelper::getValue($item, 'url', '#');
-        $icon = $item['icon'] ?? '';
-        $content = $icon . '<span>' . $label . '</span>';
         $indicator = Html::tag('span', '', ['class' => 'submenu-indicator', 'aria-hidden' => 'true']);
         $toggle = [
             'data-bs-toggle' => 'collapse',
             'data-bs-target' => '#' . $submenuId,
             'aria-controls' => $submenuId,
-            'aria-expanded' => $active ? 'true' : 'false',
+            'aria-expanded' => $open ? 'true' : 'false',
         ];
 
-        Html::addCssClass($options, ['widget' => 'nav-item has-submenu']);
-        Html::addCssClass($linkOptions, ['button' => 'btn btn-success']);
-        if ($url === '#' || $url === '' || $url === null) {
-            // the whole row only opens the list
-            Html::addCssClass($linkOptions, ['widget' => 'nav-link submenu-toggle']);
-            $head = Html::a($content . $indicator, '#' . $submenuId, array_merge($linkOptions, $toggle, ['role' => 'button']));
-        } else {
-            // the label goes to its page, the button opens the list
-            Html::addCssClass($linkOptions, ['widget' => 'nav-link submenu-toggle submenu-link']);
+        if ($section) {
+            Html::addCssClass($options, ['widget' => 'nav-item nav-section']);
+            $options['data-section'] = $item['id'] ?? $label;
             if ($active) {
-                Html::addCssClass($linkOptions, ['activate' => 'active-parent']);
+                Html::addCssClass($options, ['activate' => 'has-active']);
             }
-            $head = Html::a($content, $url, $linkOptions)
-                . Html::button($indicator, array_merge($toggle, [
-                    'type' => 'button',
-                    'class' => 'submenu-toggle-button',
-                    'aria-label' => $label,
-                ]));
+            $head = Html::a(
+                Html::tag('span', $label, ['class' => 'nav-section-label']) . $indicator,
+                '#' . $submenuId,
+                array_merge(['class' => 'nav-section-toggle'], $toggle, ['role' => 'button'])
+            );
+        } else {
+            Html::addCssClass($options, ['widget' => 'nav-item has-submenu']);
+            Html::addCssClass($linkOptions, ['widget' => 'nav-link submenu-toggle']);
+            $head = Html::a(
+                ($item['icon'] ?? '') . '<span>' . $label . '</span>' . $indicator,
+                '#' . $submenuId,
+                array_merge($linkOptions, $toggle, ['role' => 'button'])
+            );
         }
 
         $children = [];
+        $this->depth++;
         foreach ($items as $child) {
             if (isset($child['visible']) && !$child['visible']) {
                 continue;
             }
             $children[] = $this->renderItem($child);
         }
+        $this->depth--;
 
         if (isset($item['displayType'])) {
             $options['data-bs-type'] = $item['displayType'];
@@ -370,10 +399,37 @@ class Nav extends \portalium\bootstrap5\Nav
             'li',
             $head . Html::tag('ul', implode("\n", $children), [
                 'id' => $submenuId,
-                'class' => 'nav flex-column submenu collapse' . ($active ? ' show' : ''),
+                'class' => 'nav flex-column submenu collapse' . ($open ? ' show' : ''),
             ]),
             $options
         );
+    }
+
+    /**
+     * Whether at least one child can be seen by the current user: a widget with some output, a
+     * visible link, or a visible group that itself holds something visible.
+     */
+    protected function hasVisibleChild($items): bool
+    {
+        if (!is_array($items)) {
+            return false;
+        }
+        foreach ($items as $child) {
+            if (is_string($child)) {
+                if (trim($child) !== '') {
+                    return true;
+                }
+                continue;
+            }
+            if (!is_array($child) || !ArrayHelper::getValue($child, 'visible', true)) {
+                continue;
+            }
+            if (empty($child['group']) || $this->hasVisibleChild($child['items'] ?? [])) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**

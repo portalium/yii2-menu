@@ -280,3 +280,20 @@ dd-handle dd-handle-button .dd-item,
 .btn:disabled {
     background-color: white !important;
 }
+
+/* group rows: a heading that holds other items */
+.dd-group > .dd-handle {
+    font-weight: 600;
+}
+
+.dd-group-badge {
+    margin-left: 8px;
+    padding: 1px 6px;
+    border-radius: 4px;
+    background: #e1efe3;
+    color: #14632b;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: .04em;
+    text-transform: uppercase;
+}

@@ -176,6 +176,7 @@ class Menu extends \yii\db\ActiveRecord
                 'title' => $title,
                 'id' => $item->id_item,
                 'hasChildren' => isset($parentToChildren[$item->id_item]),
+                'group' => $item->isGroup(),
                 'sort' => $item->sort,
                 'children' => [] 
             ];

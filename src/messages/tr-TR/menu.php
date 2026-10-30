@@ -91,4 +91,5 @@ return [
     'Category' => 'Kategori',
     'Product' => 'Ürün',
     'Could not delete menu item {label}.' => '{label} menü öğesi silinemedi.',
+    'Add Group' => 'Grup ekle',
 ];

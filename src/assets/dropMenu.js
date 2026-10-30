@@ -557,6 +557,16 @@
         $(".dd-handle-button").attr("disabled", true);
     }
 
+    // same as "create", with the form opened on the Group type
+    $(document).on("click", "#create-menu-group-button", function (e) {
+        e.preventDefault();
+        var id_menu = $(this).attr("id_menu");
+        $.pjax.reload({ container: "#nestable-pjax" }).done(function () {
+            $.pjax.reload({ container: "#nestable2-pjax", url: "?id_menu=" + id_menu + "&group=1", timeout: false });
+            $("#expand-all").trigger("click");
+        });
+    });
+
     $(document).on("click", "#create-menu-item-button", function (e) {
         e.preventDefault();
         var id_menu = $(this).attr("id_menu");

@@ -31,6 +31,12 @@ MenuDepDropAsset::register($this);
 ?>
 <?= $form->field($model, 'id_parent')->dropDownList(MenuItem::getParents($id_menu), ['id' => 'id_item'])->label(Module::t('Parent')) ?>
 
+<?php
+// "Add group" opens the form with ?group=1: a new item starts as a group
+if ($model->isNewRecord && Yii::$app->request->get('group')) {
+    $model->type = MenuItem::TYPE['group'];
+}
+?>
 <?= $form->field($model, 'type')->dropDownList(MenuItem::getTypes(), ['id' => 'type']) ?>
 
 <?php

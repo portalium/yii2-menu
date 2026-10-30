@@ -44,6 +44,7 @@ class MenuItem extends \yii\db\ActiveRecord
         'route' => '1',
         'module' => '2',
         'url' => '3',
+        'group' => '4',
     ];
 
     const TYPE_DISPLAY = [
@@ -85,7 +86,7 @@ class MenuItem extends \yii\db\ActiveRecord
             [['label', 'slug', 'style'], 'string', 'max' => 255],
             [['style'], 'default', 'value' => '{"icon":"0xf0f6","color":"rgb(234, 153, 153)","iconSize":"24","display":'.self::TYPE_DISPLAY['icon-text'].',"childDisplay":'.self::TYPE_DISPLAY['icon-text'].',"placement":'.self::LABEL_PLACEMENT['default'].'}'],
             [['url'], 'required', 'when' => function($model) {
-                return $model->type != MenuItem::TYPE['module'];
+                return $model->type != MenuItem::TYPE['module'] && !$model->isGroup();
             }]
         ];
     }
@@ -128,6 +129,7 @@ class MenuItem extends \yii\db\ActiveRecord
             'route' => Module::t('Route'),
             'module' => Module::t('Module'),
             'url' => Module::t('Url'),
+            'group' => Module::t('Group'),
         ];
     }
 
@@ -137,7 +139,16 @@ class MenuItem extends \yii\db\ActiveRecord
             '1' => 'Route',
             '2' => 'Module',
             '3' => 'Url',
+            '4' => Module::t('Group'),
         ];
+    }
+
+    /**
+     * Whether the item is a group: a heading that only holds other items.
+     */
+    public function isGroup(): bool
+    {
+        return (string) $this->type === self::TYPE['group'];
     }
 
     public static function getDisplays()
@@ -321,6 +332,9 @@ class MenuItem extends \yii\db\ActiveRecord
                 'route' => $this->url,
                 'module' => $this->module,
             ];
+        } elseif ($this->isGroup()) {
+            // a group only holds other items; it has no page of its own
+            $json_data['data'] = new \stdClass();
         }
         $this->data = json_encode($json_data);
 

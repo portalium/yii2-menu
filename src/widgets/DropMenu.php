@@ -49,6 +49,14 @@ class DropMenu extends Widget
                                 
                                 Html::tag('button', Module::t(''), ['type' => 'button', 'data-action' => 'expand-all', 'class' => 'fa fa-expand btn btn-sm btn-primary', 'id' => 'expand-all']),
                                 Html::tag('button', Module::t(''), ['type' => 'button', 'data-action' => 'collapse-all', 'class' => 'fa fa-compress btn btn-sm btn-primary', 'id' => 'collapse-all']),
+                                Html::tag('button', Module::t(''), [
+                                    'type' => 'button',
+                                    'class' => 'fa fa-folder-o btn btn-sm btn-success',
+                                    'title' => Module::t('Add Group'),
+                                    'aria-label' => Module::t('Add Group'),
+                                    'id' => 'create-menu-group-button',
+                                    'id_menu' => $this->id_menu,
+                                ]),
                                 Html::tag('button', Module::t(''), ['type' => 'button', 'class' => 'fa fa-plus btn btn-sm btn-success', 'title' => Module::t('Create Menu'), 'id' => 'create-menu-item-button', 'style' => '', 'id_menu' => $this->id_menu]),
                             ],
                             'footer' => [
@@ -139,10 +147,14 @@ class DropMenu extends Widget
 
     protected function renderItem($item)
     {
-        $html = Html::beginTag('li', ['class' => 'dd-item', 'data-id' => $item['id']]);
+        $isGroup = !empty($item['group']);
+        $html = Html::beginTag('li', ['class' => 'dd-item' . ($isGroup ? ' dd-group' : ''), 'data-id' => $item['id']]);
         $html .= Html::beginTag('div', ['class' => 'dd-handle']);
         $html .= Html::tag('button', '<i class="fa fa-arrows"></i>', ['class' => 'btn btn-sm btn-danger dd-handle-button', 'style' => 'float:left; margin-right: 5px; padding:0px 6px;']);
         $html .= Html::tag('span', $item['title']);
+        if ($isGroup) {
+            $html .= Html::tag('span', Module::t('Group'), ['class' => 'dd-group-badge']);
+        }
         $html .= Html::tag('button', '<i class="fa fa-copy"></i>', ['class' => 'btn btn-sm btn-info btn-clone clone-item', 'title' => Module::t('Clone') , 'name' => "clone-item", 'style' => 'float:right; margin-right: 5px; padding:0px 6px;', 'data' => $item['id'], 'id_menu' => $this->id_menu]);
         $html .= Html::tag('button', '<i class="fa fa-arrow-circle-right"></i>', ['class' => 'btn btn-sm btn-warning btn-move move-item','title' => Module::t('Move') ,'name' => "move-item", 'style' => 'float:right; margin-right: 5px; padding:0px 6px;', 'data' => $item['id'], 'id_menu' => $this->id_menu]);
         $html .= Html::tag('button', '<i class="fa fa-times"></i>', ['class' => 'btn btn-sm btn-danger btn-delete delete-item', 'title' => Module::t('Delete') ,'name' => "delete-item", 'style' => 'float:right; margin-right: 5px; padding:0px 6px;', 'data' => $item['id'], 'id_menu' => $this->id_menu]);
